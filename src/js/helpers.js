@@ -315,17 +315,6 @@ function youTubeUserToChannelID (user, done) {
   })
 }
 
-function findParentWith (el, match) {
-  var parent = el;
-  while(parent) {
-    parent = parent.parentElement;
-    if(elMatches(parent, match)) {
-      return parent;
-    }
-  }
-  return false
-}
-
 function copyToClipboard (e) {
   var parent = findParentWith(e.target, 'div');
   var input = parent.querySelector('textarea,input[type=text]');

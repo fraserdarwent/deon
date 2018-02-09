@@ -2,7 +2,7 @@
   position: relative;
   min-height: 110vh;
   overflow: hidden;
-  padding-bottom: 2em;
+  padding: 1em 0 2em;
 }
 
 .release-page > .container {
@@ -44,7 +44,7 @@
 .release-info {
   padding: 40px 0;
   background: #fff;
-  margin: 1em 0 5px 0;
+  margin: 0 0 5px 0;
   padding: 1em;
 }
 
@@ -78,23 +78,24 @@
 }
 
 .release-art-play .button {
-  width: 120px;
-  height: 120px;
+  width: 140px;
+  height: 140px;
   top: 50%;
-  margin-top: -60px;
-  margin-left: -60px;
+  margin-top: -70px;
+  margin-left: -70px;
   left: 50%;
   border-radius: 50%;
   background: #000;
   color: #fff;
   font-size: 64px;
   text-align: center;
-  line-height: 120px;
+  line-height: 140px;
   text-align: center;
   opacity: 0.75;
   position: absolute;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0,0,0);
   border: 5px solid #fff;
+  transition-duration: 0.25s;
 }
 
 .release-art-play .button:hover {
@@ -116,15 +117,16 @@
   flex-direction: column;;
 }
 
-.purchase-link {
+.release-cta-link {
   display: flex;
   position: relative;
   line-height: 60px;
   padding: 0 10px 0 0;
   height: 60px;
+  margin-bottom: 5px;
 }
 
-.purchase-link .fa {
+.release-cta-link .fa {
   font-size: 32px;
   width: 60px;
   text-align: center;
@@ -133,7 +135,11 @@
   margin-top: 10px;
 }
 
-.purchase-link .cta {
+.release-cta-link .fa.fa-download {
+  margin-top: 14px;
+}
+
+.release-cta-link .cta {
   text-transform: none;
   position: absolute;
   right: 8px;
@@ -326,6 +332,10 @@
 
 .release-page.type-Album .col-1 {
   flex: 0 0 30%;
+}
+
+.release-page.layout2 .{
+
 }
 
 @media screen and (max-width: 767px) {

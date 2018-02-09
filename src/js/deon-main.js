@@ -11,7 +11,7 @@ var SOCIAL_LINKS_MAP = {
   facebook: {
     icon: 'facebook',
     cta: 'Like on Facebook',
-    name: 'Facebook'
+    name: 'Facebook',
   },
   twitter: {
     icon: 'twitter',
@@ -34,6 +34,10 @@ var SOCIAL_LINKS_MAP = {
     name: 'SoundCloud'
   }
 }
+
+Object.keys(SOCIAL_LINKS_MAP).forEach(function (key) {
+  SOCIAL_LINKS_MAP[key].platform = key;
+})
 
 preLoadImage('/img/artwork.jpg')
 preLoadImage('/img/artwork-merch.jpg')
@@ -70,6 +74,24 @@ document.addEventListener("DOMContentLoaded", function (e) {
           opts.category = category;
         }
         recordEvent(action, opts);
+      }
+
+      var testEl = findParentWith(t, "[ab-test]")
+      if (testEl) {
+        var testName = testEl.getAttribute("ab-test")
+        var test = window[testName]
+        if (test) {
+          var kpi = testEl.getAttribute('kpi');
+          if (kpi) {
+            if (kpi.indexOf('click') != 0) {
+              kpi = 'click-' + kpi;
+            }
+            releasePageLayoutTest.convertKpi(kpi);
+          }
+          else {
+            releasePageLayoutTest.convert();
+          }
+        }
       }
     });
     stateChange(location.pathname + location.search)
@@ -549,7 +571,7 @@ function mapTrackArtists (track) {
 
 function getSocials (linkObjs) {
   var arr = []
-  return linkObjs.map(function (link) {
+  var socials = linkObjs.map(function (link) {
     var social = {
       link: link.original
     }
@@ -571,6 +593,7 @@ function getSocials (linkObjs) {
       social.cta = link.original
       social.label = link.original;
       social.name = 'Website'
+      social.platform = 'link'
     }
 
     if (!social.label) {
@@ -579,10 +602,15 @@ function getSocials (linkObjs) {
 
     return social;
   })
+
+  console.log('socials',socials);
+
+  return socials
 }
 
 function getSocialsAtlas (urls) {
   var socials = getSocials(urls);
+  console.log('socials', socials);
   var atlas = socials.reduce(function (at, value, index) {
     at[value.icon] = value;
     return at
@@ -680,9 +708,6 @@ function mapTrack (track) {
   track.bpm               = Math.round(track.bpm)
   track.licensable        = track.licensable === false ? false : true
   track.showDownloadLink  = (track.downloadable && track.streamable) || track.freeDownloadForUsers
-  console.log('track.downloadable',track.downloadable);
-  console.log('track.streamable',track.streamable);
-  console.log('track.showDownloadLink', track.showDownloadLink);
   track.time              = formatDuration(track.duration)
   track.artistsList       = mapTrackArtists(track);
   track.releaseDate       = formatDateJSON(track.release.releaseDate)

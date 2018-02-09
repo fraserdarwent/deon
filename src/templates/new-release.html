@@ -11,27 +11,47 @@
     {{/error}}
     {{#data}}
         {{#release}}
-            <div class="release-page type-{{type}}">
+            <div class="release-page type-{{type}} {{activeTest}}">
                 <div class="release-bg" style="background-image: url('{{coverImage}}')">
                 </div>
                 <div class="container">
-                    {{>release-info}}
-                    <div class="release-cols">
-                        <div class="col-1">
-                            <div class="release-summary">
-                                {{>release-art-play}}
-                            </div>
-                            {{>release-links}}
+                    {{#activeAlts.layout1}}
+                        {{>release-info}}
+                        <div class="release-cols">
+                                <div class="col-1">
+                                    <div class="release-summary">
+                                        {{>release-art-play}}
+                                    </div>
+                                    {{>release-links}}
+                                </div>
+                                <div class="col-2">
+                                    {{>release-tracks}}
+                                    {{>release-artists}}
+                                    {{#showMerch}}
+                                        {{>release-merch}}
+                                    {{/showMerch}}
+                                </div>
                         </div>
-                        <div class="col-2">
-                            {{>release-tracks}}
-                            {{>release-artists}}
-                            {{#showMerch}}
-                                {{>release-merch}}
-                            {{/showMerch}}
-                        </div>
+                    {{/activeAlts.layout1}}
+                    {{#activeAlts.layout2}}
+                        <div class="release-cols">
 
-                    </div>
+                            <div class="col-1">
+                                <div class="release-summary">
+                                    {{>release-art-play}}
+                                </div>
+                                {{>release-artists}}
+                            </div>
+                            <div class="col-2">
+                                {{>release-info}}
+                                {{>release-links}}
+                                {{>release-tracks}}
+                                {{#showMerch}}
+                                    {{>release-merch}}
+                                {{/showMerch}}
+                            </div>
+                        </div>
+                    {{/activeAlts.layout2}}
                 </div>
             </div>
         {{/release}}
@@ -44,6 +64,8 @@
     <img src="{{coverImage}}" class="cover" />
     {{#streamable}}
     <button class="button button--cta"
+            ab-test="{{activeTest}}"
+            kpi="play-release"
             action="playSongs"
             role="play-release"
             release-id="{{_id}}">
@@ -68,9 +90,13 @@
         mustache-name="release-links">
 <div class="release-links">
     {{^inEarlyAccess}}
-    <a  class="button button--cta purchase-link"
+    <a  class="button button--cta release-cta-link"
         click-action="Click Download Gold"
         click-category="Release Links"
+
+        ab-test="{{activeTest}}"
+        kpi="download-gold"
+
         target="_blank"
         title="Download Track"
         track-title="{{title}}"
@@ -82,9 +108,12 @@
     {{/inEarlyAccess}}
     {{#inEarlyAccess}}
         {{^hasGoldAccess}}
-            <a class="button button--cta purchase-link"
+            <a class="button button--cta release-cta-link"
                 click-action="Click Get Gold"
                 click-category="Release Links"
+                ab-test="{{activeTest}}"
+                kpi="get-gold"
+
                 href="/gold/get">
                 <span class="fa fa-chevron-right"></span>
                 Get Gold to Listen Early
@@ -92,10 +121,14 @@
         {{/hasGoldAccess}}
     {{/inEarlyAccess}}
     {{#purchaseLinks}}
-    <a class="button button--cta purchase-link"
+    <a class="button button--cta release-cta-link"
         click-action="Click Release Purchase"
         click-category="Release Links"
         click-label="{{label}}"
+
+        ab-test="{{activeTest}}"
+        kpi="release-cta-{{platform}}"
+
         href="{{original}}">
         <span class="fa fa-{{icon}}"></span>
         <span>{{label}}</span>
@@ -167,16 +200,39 @@
 <div class="release-artists{{#numArtistBeakpoints}} num-artists-{{.}}{{/numArtistBeakpoints}} num-artists-{{releaseArtists.length}}">
 {{#releaseArtists}}
     <div class="release-artist">
-        <a class="artist-image aspect-container aspect-container-16x9" href="{{artistPageUrl}}" style="background-image: url('{{profileImageUrl}}')" click-action="Click Artist Profile" label="Artist Image" click-category="Artist Links">
+        <a
+            class="artist-image aspect-container aspect-container-16x9"
+            href="{{artistPageUrl}}"
+            style="background-image: url('{{imageSmall}}'); background-position: center {{imagePositionY}}%;"
+            click-action="Click Artist Profile"
+            label="Artist Image"
+            click-category="Artist Links"
+            ab-test="{{activeTest}}"
+            kpi="artist"
+            >
         </a>
         <div class="artist-info">
-            <h3><a href="{{artistPageUrl}}" click-action="Click Artist Profile" label="Artist Name" click-category="Artist Links">{{name}}</a></h3>
+            <h3><a
+                    href="{{artistPageUrl}}"
+                    click-action="Click Artist Profile"
+                    click-label="Artist Name"
+                    click-category="Artist Links"
+                    ab-test="{{activeTest}}"
+                    kpi="artist"
+                    >{{name}}</a></h3>
             {{#aboutMD}}
             <div class="about">{{{aboutMD}}}</div>
             {{/aboutMD}}
             <div class="socials">
                 {{#socials}}
-                <a href="{{link}}" target="_blank" click-action="Click Artist {{name}}" click-label="{{artistName}} {{name}}" click-category="Artist Links" target="_blank"><i class="fa fa-{{icon}}"></i> {{label}}</a>
+                <a href="{{link}}"
+                    target="_blank"
+                    click-action="Click Artist {{name}}"
+                    click-label="{{artistName}} {{name}}"
+                    click-category="Artist Links"
+                    ab-test="{{activeTest}}"
+                    kpi="artist-{{platform}}"
+                    target="_blank"><i class="fa fa-{{icon}}"></i> {{label}}</a>
                 {{/socials}}
             </div>
         </div>
@@ -206,7 +262,12 @@
                 <h3 class="">Monstercat Merch</h3>
             </div>
             <div class="col-xs-4 text right">
-                <a click-action="Click Merch View All" href="https://shop.monstercat.com" class="button button--black button--icon button--transparent">
+                <a click-action="Click Merch View All"
+                    href="https://shop.monstercat.com"
+                    class="button button--black button--icon button--transparent"
+                    ab-test="{{activeTest}}"
+                    kpi="merch-view-all"
+                    >
                     View all
                     <i class="fa fa-chevron-right"></i>
                 </a>
@@ -215,7 +276,15 @@
         <ul class="art-list art-list--full-width">
         {{#products}}
             <li>
-                <a class="silent" click-action="Click Merch Product" click-label="Product: {{title}}" click-category="Release Page" href="https://shop.monstercat.com/products/{{handle}}" target="_BLANK" title="{{title}}">
+                <a class="silent"
+                    click-action="Click Merch Product"
+                    click-label="Product: {{title}}"
+                    click-category="Release Page"
+                    href="https://shop.monstercat.com/products/{{handle}}"
+                    ab-test="{{activeTest}}"
+                    kpi="merch-item"
+                    target="_BLANK"
+                    title="{{title}}">
                     <div class="image-wrapper">
                         <img src="/img/artwork-merch.jpg" class="preload" />
                         <img src="{{ images.0.src }}"/>

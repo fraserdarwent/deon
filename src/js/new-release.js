@@ -25,7 +25,7 @@ var RELEASE_LINK_MAP = {
     priority: 70
   },
   bandcamp: {
-    cta: 'Go To',
+    cta: 'Download',
     label: 'Bandcamp',
     icon: 'bandcamp',
     priority: 60
@@ -63,10 +63,11 @@ function transformReleaseMerch (obj) {
   return obj
 }
 
+var releasePageLayoutTest;
 function transformReleasePage (obj, done) {
-  console.log('obj',obj);
   var scope = {}
   scope.release = mapRelease(obj);
+
   requestJSON({
     url: endpoint + '/catalog/browse/?albumId=' + scope.release._id,
     withCredentials: true
@@ -96,7 +97,20 @@ function transformReleasePage (obj, done) {
       }
       setPageTitle(scope.release.title + ' by ' + scope.release.renderedArtists)
       scope.hasGoldAccess = hasGoldAccess()
-      return done(null, scope);
+
+      releasePageLayoutTest = new SplitTest({
+        name: 'new-release-layout',
+        checkStart: false,
+        onStarted: function (alt) {
+          scope.activeAlts = {}
+          scope.activeAlts[alt] = true; //For easy reference in the template
+          scope.activeAlt = alt
+          scope.activeTest = 'releasePageLayoutTest'
+          return done(null, scope);
+        },
+        modifiers: ['layout1', 'layout2']
+      });
+      releasePageLayoutTest.start();
     });
   });
 }
