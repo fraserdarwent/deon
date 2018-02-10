@@ -10,7 +10,8 @@ var RELEASE_LINK_MAP = {
     cta: 'Download',
     label: 'iTunes',
     icon: 'apple',
-    priority: 90
+    priority: 90,
+    oldLabel: 'Download On iTunes'
   },
   applemusic: {
     cta: 'Play',
@@ -21,12 +22,14 @@ var RELEASE_LINK_MAP = {
   googleplay: {
     cta: 'Download',
     label: 'Google Play',
+    oldLabel: 'Get on Google Play',
     icon: 'google',
     priority: 70
   },
   bandcamp: {
     cta: 'Download',
     label: 'Bandcamp',
+    oldLabel: 'Buy from Bandcamp',
     icon: 'bandcamp',
     priority: 60
   },
@@ -39,8 +42,19 @@ var RELEASE_LINK_MAP = {
     cta: 'Watch',
     label: 'Watch on YouTube',
     icon: 'youtube'
+  },
+  beatport: {
+    cta: 'Get',
+    oldLabel: 'Get From Beatport'
   }
 }
+
+/*
+Buy from Bandcamp': /bandcamp\.com/,
+    'Download On iTunes': /apple\.com/,
+    'Get From Beatport': /beatport\.com/,
+    'Get on Google Play': /play\.google\.com/
+*/
 
 function getAllTracksWebsiteArtists (tracks) {
   var artists = [];
@@ -61,6 +75,27 @@ function transformReleaseMerch (obj) {
   shuffle(obj.products)
   obj.products = obj.products.slice(0,8)
   return obj
+}
+
+var newReleasePageTest;
+function transformReleasePageSplit (obj, done, matches) {
+  obj = {}
+  obj.releaseId = matches[1]
+
+  newReleasePageTest = new SplitTest({
+    name: 'new-release-page',
+    checkStart: false,
+    force: 'old',
+    onStarted: function (alt) {
+      obj.activeAlts = {}
+      obj.activeAlts[alt] = true; //For easy reference in the template
+      obj.activeAlt = alt
+      obj.activeTest = 'newReleasePageTest'
+      return done(null, obj);
+    },
+    modifiers: ['old', 'new']
+  });
+  newReleasePageTest.start();
 }
 
 var releasePageLayoutTest;
@@ -97,20 +132,8 @@ function transformReleasePage (obj, done) {
       }
       setPageTitle(scope.release.title + ' by ' + scope.release.renderedArtists)
       scope.hasGoldAccess = hasGoldAccess()
-
-      releasePageLayoutTest = new SplitTest({
-        name: 'new-release-layout',
-        checkStart: false,
-        onStarted: function (alt) {
-          scope.activeAlts = {}
-          scope.activeAlts[alt] = true; //For easy reference in the template
-          scope.activeAlt = alt
-          scope.activeTest = 'releasePageLayoutTest'
-          return done(null, scope);
-        },
-        modifiers: ['layout1', 'layout2']
-      });
-      releasePageLayoutTest.start();
+      scope.activeTest = 'newReleasePageTest'
+      done(null, scope);
     });
   });
 }

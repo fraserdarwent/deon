@@ -80,16 +80,17 @@ document.addEventListener("DOMContentLoaded", function (e) {
       if (testEl) {
         var testName = testEl.getAttribute("ab-test")
         var test = window[testName]
+        console.log('test',test);
         if (test) {
           var kpi = testEl.getAttribute('kpi');
           if (kpi) {
             if (kpi.indexOf('click') != 0) {
               kpi = 'click-' + kpi;
             }
-            releasePageLayoutTest.convertKpi(kpi);
+            test.convertKpi(kpi);
           }
           else {
-            releasePageLayoutTest.convert();
+            test.convert();
           }
         }
       }
@@ -533,7 +534,7 @@ function getGetGoldLink () {
 }
 
 function updatePlayerPlaylist (playlistId, ptracks) {
-  var url = endpoint + "/playlist/" + playlistId + "/tracks"
+  var url = endpoint + "/catalog/browse?playlistId=" + playlistId
   loadCache(url, function(err, obj) {
     if (err) return window.alert(err) // TODO handle this error better
     var tracks = obj.results.map(function (item, index) {
@@ -636,6 +637,9 @@ function getReleasePurchaseLinks (urls) {
       var link = Object.assign(linkObj, extra)
       links.push(link)
     }
+    else {
+      links.push(Object.assign(linkObj, {platform: 'unknown'}))
+    }
     return links
   }, []).sort(function (a, b) {
     if (a.priority == b.priority) {
@@ -717,6 +721,12 @@ function mapTrack (track) {
   return track
 }
 
+function mapReleasePage (release) {
+  var obj = mapRelease(release);
+  obj.activeTest = 'newReleasePageTest'
+  return obj
+}
+
 function mapRelease (release) {
   var pdate = typeof release.preReleaseDate != 'undefined' ? new Date(release.preReleaseDate) : undefined
   var rdate = new Date(release.releaseDate)
@@ -749,6 +759,7 @@ function mapRelease (release) {
     release.copycredit = createCopycredit(release.title + ' by ' + release.artists, release.urls)
     release.share = getReleaseShareLink(release.urls)
     release.purchaseLinks = getReleasePurchaseLinks(release.urls)
+    console.log('release.purchaseLinks', release.purchaseLinks);
     release.purchase = !!release.purchaseLinks.length
   }
   release.copycreditOther = createCopycreditOther(release)
@@ -1068,6 +1079,7 @@ function transformReleaseTracks (obj, done) {
       trackIndex++
     }
   })
+  obj.activeTest = 'newReleasePageTest'
   obj.hasGoldAccess = hasGoldAccess()
 
   done(null, obj)

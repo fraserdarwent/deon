@@ -309,7 +309,8 @@ function openRoute (target, container, matches) {
     container: container,
     transform: getMethod(target, 'transform'),
     template:  target.textContent,
-    sourceType: target.getAttribute('source-type')
+    sourceType: target.getAttribute('source-type'),
+    matches: matches
   }
   opts.completed = function () {
     var fn = getMethod(target, 'completed')
@@ -391,9 +392,9 @@ function getElementSourceOptions (el) {
   }
 }
 
-function applyTransform (transform, data, done) {
+function applyTransform (transform, data, done, matches) {
   if (typeof transform == 'function') {
-    data = transform(data, done)
+    data = transform(data, done, matches)
     if (!data) {
       return
     }
@@ -418,7 +419,7 @@ function renderTemplateOptions (opts) {
       data: obj
     })
   }
-  if (transform) return applyTransform(transform, data, fn)
+  if (transform) return applyTransform(transform, data, fn, opts.matches)
   render(container, template, data)
   completed(opts.source, data)
 }

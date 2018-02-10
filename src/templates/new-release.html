@@ -1,9 +1,26 @@
 <script type="text/template"
         route="^release\/(.*)"
-        source="$endpoint/catalog/release/$1"
+        transform="transformReleasePageSplit"
+        >
+{{#data}}
+    {{#activeAlts.new}}
+        <div source="$endpoint/catalog/release/{{releaseId}}"
+            template="new-release-page">
+        </div>
+    {{/activeAlts.new}}
+    {{#activeAlts.old}}
+        <div source="$endpoint/catalog/release/{{releaseId}}"
+            template="old-release-page">
+        </div>
+    {{/activeAlts.old}}
+{{/data}}
+</script>
+
+<script type="text/template"
+        template-name="new-release-page"
         transform="transformReleasePage"
         completed="completedReleasePage">
-    {{#loading}}
+{{#loading}}
     {{>loading-view-black}}
     {{/loading}}
     {{#error}}
@@ -11,28 +28,27 @@
     {{/error}}
     {{#data}}
         {{#release}}
-            <div class="release-page type-{{type}} {{activeTest}}">
+            <div class="release-page type-{{type}}">
                 <div class="release-bg" style="background-image: url('{{coverImage}}')">
                 </div>
                 <div class="container">
-                    {{#activeAlts.layout1}}
-                        {{>release-info}}
-                        <div class="release-cols">
-                                <div class="col-1">
-                                    <div class="release-summary">
-                                        {{>release-art-play}}
-                                    </div>
-                                    {{>release-links}}
+                    {{>release-info}}
+                    <div class="release-cols">
+                            <div class="col-1">
+                                <div class="release-summary">
+                                    {{>release-art-play}}
                                 </div>
-                                <div class="col-2">
-                                    {{>release-tracks}}
-                                    {{>release-artists}}
-                                    {{#showMerch}}
-                                        {{>release-merch}}
-                                    {{/showMerch}}
-                                </div>
-                        </div>
-                    {{/activeAlts.layout1}}
+                                {{>release-links}}
+                            </div>
+                            <div class="col-2">
+                                {{>release-tracks}}
+                                {{>release-artists}}
+                                {{#showMerch}}
+                                    {{>release-merch}}
+                                {{/showMerch}}
+                            </div>
+                    </div>
+                    <!--
                     {{#activeAlts.layout2}}
                         <div class="release-cols">
 
@@ -52,6 +68,7 @@
                             </div>
                         </div>
                     {{/activeAlts.layout2}}
+                    -->
                 </div>
             </div>
         {{/release}}
@@ -127,7 +144,7 @@
         click-label="{{label}}"
 
         ab-test="{{activeTest}}"
-        kpi="release-cta-{{platform}}"
+        kpi="purchase-{{platform}}"
 
         href="{{original}}">
         <span class="fa fa-{{icon}}"></span>
