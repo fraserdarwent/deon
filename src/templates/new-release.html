@@ -32,21 +32,23 @@
                 <div class="release-bg" style="background-image: url('{{coverImage}}')">
                 </div>
                 <div class="container">
-                    {{>release-info}}
                     <div class="release-cols">
                             <div class="col-1">
                                 <div class="release-summary">
                                     {{>release-art-play}}
                                 </div>
-                                {{>release-links}}
                             </div>
                             <div class="col-2">
-                                {{>release-tracks}}
+                                {{>release-info}}
                                 {{>release-artists}}
+
+                            </div>
+                    </div>
+                            {{>release-links}}
+                                {{>release-tracks}}
                                 {{#showMerch}}
                                     {{>release-merch}}
                                 {{/showMerch}}
-                            </div>
                     </div>
                     <!--
                     {{#activeAlts.layout2}}
@@ -228,7 +230,7 @@
             kpi="artist"
             >
         </a>
-        <div class="artist-info">
+        <div class="artist-info" style="display: none;'">
             <h3><a
                     href="{{artistPageUrl}}"
                     click-action="Click Artist Profile"

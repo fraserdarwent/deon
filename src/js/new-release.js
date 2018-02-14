@@ -85,7 +85,7 @@ function transformReleasePageSplit (obj, done, matches) {
   newReleasePageTest = new SplitTest({
     name: 'new-release-page',
     checkStart: false,
-    force: 'old',
+    force: 'new',
     onStarted: function (alt) {
       obj.activeAlts = {}
       obj.activeAlts[alt] = true; //For easy reference in the template
