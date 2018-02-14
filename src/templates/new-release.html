@@ -33,22 +33,16 @@
                 </div>
                 <div class="container">
                     <div class="release-cols">
-                            <div class="col-1">
-                                <div class="release-summary">
-                                    {{>release-art-play}}
-                                </div>
+                            <div class="release-art-container">
+                                {{>release-art-play}}
                             </div>
-                            <div class="col-2">
+                            <div class="release-info-container">
                                 {{>release-info}}
                                 {{>release-artists}}
-
                             </div>
                     </div>
-                            {{>release-links}}
-                                {{>release-tracks}}
-                                {{#showMerch}}
-                                    {{>release-merch}}
-                                {{/showMerch}}
+                    {{>release-links}}
+                    {{>release-tracks}}
                     </div>
                     <!--
                     {{#activeAlts.layout2}}
@@ -228,9 +222,10 @@
             click-category="Artist Links"
             ab-test="{{activeTest}}"
             kpi="artist"
+            title="{{name}}"
             >
         </a>
-        <div class="artist-info" style="display: none;'">
+        <div class="artist-info">
             <h3><a
                     href="{{artistPageUrl}}"
                     click-action="Click Artist Profile"
