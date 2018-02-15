@@ -214,8 +214,8 @@
             <tr>
                 <th class="shrink col-xs-hidden col-md-visible">#</th>
                 <th class="shrink nohpad"></th>
-                <th>Title</th>
-                <th>Artists</th>
+                <th class="col-xs-hidden col-md-visible">Title</th>
+                <th class="col-xs-hidden col-md-visible">Artists</th>
                 <th class="col-xs-hidden col-md-visible">Time</th>
                 <th></th>
             </tr>
@@ -232,9 +232,13 @@
                        onmouseenter="scrollTrackTitle(this)" onmouseleave="removeScrollTrackTitle(this)">
                     <span class="scroll-title artists">{{title}}</span>
                   </div>
+                  <div class="scroll-container col-xs-visible col-md-hidden"
+                       onmouseenter="scrollTrackTitle(this)" onmouseleave="removeScrollTrackTitle(this)">
+                      {{>artists-csv-list}}
+                  </div>
                   {{>unlicensable}}
                 </td>
-                <td class="longer-width artists">
+                <td class="longer-width artists col-xs-hidden col-md-visible"">
                     <div class="scroll-container"
                        onmouseenter="scrollTrackTitle(this)" onmouseleave="removeScrollTrackTitle(this)">
                     <span class="scroll-title">
