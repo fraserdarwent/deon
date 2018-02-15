@@ -14,7 +14,7 @@
 .release-page .release-bg {
   position: absolute;
   background: center center;
-  filter: blur(30px);
+  filter: blur(18px) grayscale(50%);
   background-size: cover;
   width: 110%;
   height: 110%;
@@ -22,7 +22,8 @@
   top: -5%;
   z-index: 0;
   text-align: center;
-  transform: scale(1.0);
+  transform: scale(1.1);
+  background-attachment: fixed;
 }
 
 .release-bg:before {
@@ -52,15 +53,16 @@
   margin: 0px;
 }
 
-.release-art-play {
+.release-art {
   width: 100%;
   position: relative;
   display: block;
-  margin: 0 auto 5px;
+  margin: 0 auto 0;
   overflow: visible;
 }
 
-.release-art-play img {
+.release-art .preload {
+  z-index: 3;
   width: 100%;
   height: 100%;
   left: 0px;
@@ -68,58 +70,44 @@
   position: absolute;
 }
 
-.release-art-play:hover .button {
-  opacity: 1;
-  transform: scale(1.1);
-}
-
-.release-art-play .button {
-  width: 140px;
-  height: 140px;
-  top: 50%;
-  margin-top: -70px;
-  margin-left: -70px;
-  left: 50%;
-  border-radius: 50%;
-  background: #000;
-  color: #fff;
-  font-size: 64px;
-  text-align: center;
-  line-height: 140px;
-  text-align: center;
-  opacity: 0.75;
+.release-art img {
+  width: 100%;
+  height: 100%;
+  left: 0px;
+  top: 0px;
   position: absolute;
-  background: rgba(0,0,0);
-  border: 5px solid #fff;
-  transition-duration: 0.25s;
+  z-index: 5;
+  cursor: pointer;
 }
 
-.release-art-play .button:hover {
-  background: #fff;
-  border-color: #fff;
-  color: dodgerblue;
-}
-
-.release-art-play .button .fa.fa-play {
-  margin-right: -10px;
-}
-
-.release-art-play .button .fa.fa-pause {
-  font-size: 58px;
-}
-
-.release-links {
+.release-buttons {
   display: flex;
-  flex-direction: column;;
+  flex-flow: row wrap;
+  align-content: space-between;
+  justify-content: space-between;
+  padding-bottom: 0.5em;
+}
+
+.release-buttons:before, .release-buttons:after {
+  content: '';
+  width: 100%;
+  order: 1;
 }
 
 .release-cta-link {
-  display: flex;
   position: relative;
-  line-height: 60px;
+  line-height: 55px;
   padding: 0 10px 0 0;
   height: 60px;
-  margin-bottom: 5px;
+  width: 49.5%;
+  margin: 1% 0 0 0;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.release-cta-link.release-cta-filler:nth-child(odd) {
+  display: none;
 }
 
 .release-cta-link .fa {
@@ -128,7 +116,7 @@
   text-align: center;
   float: left;
   display: block;
-  margin-top: 10px;
+  margin-top: 11px;
 }
 
 .release-cta-link .fa.fa-download {
@@ -147,112 +135,183 @@
   line-height: 24px;
   top: 50%;
   margin-top: -12px;
+  display: none;
+}
+
+.release-buttons .button--release-play.active i.active,
+.release-buttons .button--release-play.active i.active+span {
+  display: inherit;
+}
+
+.release-buttons .button--release-play .active+span,
+.release-buttons .button--release-play i.active,
+.release-buttons .button--release-play.active .inactive+span,
+.release-buttons .button--release-play.active i.inactive  {
+  display: none;
+}
+
+ {
+  display: none;
 }
 
 .release-artists {
+  margin-top: 10px;
+}
+
+.release-artist-container {
+  width: 60px;
+  height: 60px;
+  float: left;
+  position: relative;
+  margin-right: 10px;
+}
+
+.release-artist-container:hover {
+  z-index: 100;
+}
+
+.release-artist-container:hover .artist-info-container {
   display: block;
 }
 
-.release-artists .release-artist-break,
-.release-artists.num-artists-gte-4.num-artists-gte-9 .release-artist-break:nth-child(4n),
-.release-artists.num-artists-gte-4.num-artists-gte-9.num-artists-gte-13 .release-artist-break:nth-child(6n+1) {
-  display: none;
+.release-artist-container:hover .artist-info {
+  transform: translateX(0px) !important;
 }
 
-
-.release-artists.num-artists-gte-4 {
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: space-between;
+.release-artist-container:hover a.artist-image {
+  transform: scale(1.1);
+  filter: grayscale(0%);
+  box-shadow: 0px 0px 1px #000;
 }
 
-.release-artists.num-artists-gte-4 .release-artist {
-  width: 49.5%;
-  margin-bottom: 1%;
+.release-artist-container .artist-info-container {
+  position: absolute;
+  height: 60px;
+  width: auto;
+  overflow: hidden;
+  top: 0px;
+  left: 30px;
+  z-index: -10;
 }
 
-.release-artists.num-artists-gte-4 .release-artist-break:nth-child(4n) {
-  display: block;
-  height: 0;
-  width: 100%;
-}
-
-.release-artists.num-artists-gte-9 .release-artist {
-  width: 33%;
-  margin-bottom: 0.5%;
-}
-
-.release-artists.num-artists-gte-9 .release-artist .socials {
-  display: none;
-}
-
-.release-artists.num-artists-gte-9 .release-artist h3 {
-  margin-bottom: 0px;
-  font-size: 22px;
-}
-
-
-.release-artists.num-artists-gte-9 .release-artist-break:nth-child(6n+1) {
-  display: block;
-  height: 0;
-  width: 100%;
-}
-
-.release-artists.num-artists-gte-13 .release-artist {
-  width: 24.5%;
-  margin-bottom: 0.6%;
-  padding: 0.5em;
-}
-
-.release-artists.num-artists-gte-13 .release-artist-break:nth-child(13n+1) {
-}
-
-
-.release-artist {
+.release-artist-container .artist-info {
+  position: relative;
+  width: auto;
+  float: left;
+  height: 60px;
+  font-size: 12px;
+  transform: translateX(-250px);
+  top: 0px;
+  left: 0px;
+  transition: transform 0.25s ease;
   background: #fff;
-  padding: 1em;
+  padding: 8px 20px 4px 45px;
+  border-top-right-radius: 30px;
+  border-bottom-right-radius: 30px;
+}
+
+.release-artist-container:nth-child(n+5) .artist-info-container {
+  right: 30px;
+  left: auto;
+}
+
+.release-artist-container:nth-child(n+5) .artist-info {
+  transform: translateX(250px);
+  float: right;
+  left: auto;
+  right: 0px;
+  padding: 8px 45px 4px 20px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-top-left-radius: 30px;
+  border-bottom-left-radius: 30px;
+  text-align: right;
+
+}
+
+.release-artist-container .artist-info h6 {
+  font-size: 14px;
+  white-space: nowrap;
+  text-transform: none;
   margin-bottom: 5px;
 }
 
-.num-artists-1 .release-artist {
-  background: #fff;
-  padding: 1em;
-  width: 100%;
-}
-
-.release-artist .artist-image {
-  height: auto;
-  display: block;
-  background: center center no-repeat;
-  background-size: 100% auto;
-  margin-bottom: 0.25em;
-  transition: all 0.25s ease;
-}
-
-.release-artist .artist-image:hover {
-  background-size: 110% auto;
-}
-
-.release-artist .artist-info {
-  width: 100%;
-  padding-right: 0.5em;
-}
-
-.release-artist .artist-info h3 {
-  margin-bottom: 0.25em;
-}
-
-.release-artist .artist-info h3 a {
+.release-artist-container .artist-info a {
   text-decoration: none;
 }
 
-.release-artist .about p {
-  margin-bottom: 1em;
+.release-artist-container .artist-info .socials {
+  white-space: nowrap;
 }
 
-.release-artist .socials {
-  line-height: 1.3;
+.release-artist-container .artist-info .socials a {
+  margin: 0 3px 0 0;
 }
+
+.release-artist-container .artist-info .socials a span {
+  display: none;
+}
+
+.preload {
+  background: center center no-repeat url(/img/artwork.jpg);
+  background-size: cover;
+}
+
+.release-artists .preload {
+  position: absolute;
+  width: 58px;
+  height: 58px;
+  top: 1px;
+  left: 1px;
+  border-radius: 50%;
+  z-index: 4;
+}
+
+.release-artists a.artist-image,
+.more-artists {
+  display: block;
+  width: 60px;
+  height: 60px;
+  float: left;
+  border-radius: 50%;
+  background-position: center center;
+  background-size: cover;
+  filter: grayscale(100%);
+  position: relative;
+  z-index: 5;
+}
+
+.more-artists {
+  font-size: 12px;
+  font-weight: 400;
+  text-transform: uppercase;
+  font-family: Montserrat, sans-serif;
+  text-align: center;
+  padding: 14px 5px;
+  background: #000;
+  color: #ccc;
+}
+
+.more-artists:hover {
+  cursor: pointer;
+  padding-top: 18px;
+  font-size: 20px;
+  padding-left: 7px;
+  color: #fff;
+}
+
+.more-artists:hover i {
+  display: inline;
+}
+
+.more-artists i {
+  display: none;
+}
+
+.more-artists:hover  span {
+  display: none;
+}
+
 
 .release-artist .socials a {
   text-decoration: none;
@@ -276,7 +335,7 @@
 
 .release-page .release-tracks {
   background: #fff;
-  margin-bottom: 5px;
+  margin-bottom: 10px;
 }
 
 .release-page .release-tracks .scroll-container {
@@ -285,17 +344,48 @@
 
 .release-cols {
   display: flex;
-  padding: 0 0 2em 0;
+  padding: 0 0 0 0;
   margin: 0 auto;
 }
 
-.release-cols .col-1 {
-  flex: 0 0 50%;
-  margin-right: 5px;
+.release-cols .release-art-container {
+  flex: 0 0 256px;
 }
 
-.release-cols .col-2 {
+.release-cols .release-info-container {
   width: 100%;
+  margin-left: 20px;
+  color: #fff;
+}
+
+.release-cols .release-info-container .release-info {
+  margin-bottom: auto;
+}
+
+.feature-separator {
+  margin: 30px auto 30px;
+  height: 2px;
+  background: #fff;
+  opacity: 0.25;
+  width: 95%;
+}
+
+.release-twitter-follow-buttons {
+  background: #fff;
+  padding: 1em 1.5em;
+  margin-bottom: 10px;
+}
+
+.release-twitter-follow-buttons .follow-buttons {
+  display: flex;
+}
+
+.release-twitter-follow-buttons .follow-buttons [twitter-follow] {
+  height: 28px;
+}
+
+.release-twitter-follow-buttons iframe {
+  margin: 0 10px 5px 0px;
 }
 
 .release-merch {
@@ -321,22 +411,91 @@
   display: none;
 }
 
-.release-page.type-Podcast .col-1 {
-  flex: 0 0 30%;
+.release-twitter {
+  display: flex;
+  flex-direction: row;
 }
 
-
-.release-page.type-Album .col-1 {
-  flex: 0 0 30%;
+.release-twitter .official-tweet {
+  flex: 0 0 502px;
+  background: #fff;
 }
 
-.release-page.layout2 .{
+.release-twitter .follow-buttons {
+  width: 100%;
+  margin-left: 10px;
+  background: #fff;
+  padding: 1em;
+}
 
+.release-gold {
+  padding: 1.5em;
+  color: #fff;
+  overflow: hidden;
+  position: relative;
+}
+
+.release-gold h3 {
+  font-size: 28px;
+  font-family: Montserrat, sans-serif;
+}
+
+.release-gold .pricing {
+  margin-bottom: 1em;
+}
+
+.release-gold a:not(.button) {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.release-gold .button--gold {
+  color: #000;
+  background: gold;
+}
+
+.release-gold .button--gold:hover {
+  color: #fff;
+  background: transparent;
+}
+
+.release-gold .banner {
+  width: 100%;
+  left: 0px;
+  top: 0px;
+  height: 100%;
+}
+
+.release-gold ul {
+  list-style-position: inside;
 }
 
 @media screen and (max-width: 767px) {
+  .release-page .container {
+    max-width: 400px;
+  }
+
   .release-page .release-cols {
     display: block;
+  }
+
+  .release-page .release-info-container {
+    margin-left: 0px;
+    margin: 1em 0 0 0;
+  }
+
+  .release-page .release-cols .release-art-container {
+    margin: 0 auto;
+  }
+
+  .release-buttons {
+    width: 100%;
+    padding-top: 1em;
+  }
+
+  .release-buttons .release-cta-link {
+    width: 100%;
+    margin: 0 0 1% 0;
   }
 
   .release-page h1 {

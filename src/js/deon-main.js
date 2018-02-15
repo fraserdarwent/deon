@@ -604,14 +604,11 @@ function getSocials (linkObjs) {
     return social;
   })
 
-  console.log('socials',socials);
-
   return socials
 }
 
 function getSocialsAtlas (urls) {
   var socials = getSocials(urls);
-  console.log('socials', socials);
   var atlas = socials.reduce(function (at, value, index) {
     at[value.icon] = value;
     return at
@@ -638,7 +635,8 @@ function getReleasePurchaseLinks (urls) {
       links.push(link)
     }
     else {
-      links.push(Object.assign(linkObj, {platform: 'unknown'}))
+      var link = Object.assign(linkObj, {platform: 'unknown'})
+      links.push(link)
     }
     return links
   }, []).sort(function (a, b) {
@@ -648,6 +646,17 @@ function getReleasePurchaseLinks (urls) {
 
     return a.priority > b.priority ? -1 : 1;
   })
+
+  links = links.map(function (link) {
+    if (!link.icon) {
+      link.icon = 'link';
+    }
+    if (!link.label) {
+      link.label = link.original
+    }
+    return link
+  })
+
   return links
 }
 
@@ -759,7 +768,6 @@ function mapRelease (release) {
     release.copycredit = createCopycredit(release.title + ' by ' + release.artists, release.urls)
     release.share = getReleaseShareLink(release.urls)
     release.purchaseLinks = getReleasePurchaseLinks(release.urls)
-    console.log('release.purchaseLinks', release.purchaseLinks);
     release.purchase = !!release.purchaseLinks.length
   }
   release.copycreditOther = createCopycreditOther(release)
@@ -774,6 +782,7 @@ function transformWebsiteDetails (wd) {
   if (wd.profileImageUrl) {
     wd.image = wd.profileImageUrl
     wd.imageSmall = wd.profileImageUrl + "?image_width=256"
+    wd.imageTiny = wd.profileImageUrl + "?image_width=128"
   }
   if (isNaN(wd.imagePositionY))
     wd.imagePositionY = 60

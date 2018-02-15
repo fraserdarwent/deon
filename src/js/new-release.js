@@ -8,7 +8,7 @@ var RELEASE_LINK_MAP = {
   },
   itunes: {
     cta: 'Download',
-    label: 'iTunes',
+    label: 'Download on iTunes',
     icon: 'apple',
     priority: 90,
     oldLabel: 'Download On iTunes'
@@ -21,21 +21,21 @@ var RELEASE_LINK_MAP = {
   },
   googleplay: {
     cta: 'Download',
-    label: 'Google Play',
+    label: 'Get on Google Play',
     oldLabel: 'Get on Google Play',
     icon: 'google',
     priority: 70
   },
   bandcamp: {
     cta: 'Download',
-    label: 'Bandcamp',
+    label: 'Buy on Bandcamp',
     oldLabel: 'Buy from Bandcamp',
     icon: 'bandcamp',
     priority: 60
   },
   soundcloud: {
     cta: 'Listen',
-    label: 'SoundCloud',
+    label: 'Listen on SoundCloud',
     icon: 'soundcloud'
   },
   youtube: {
@@ -45,6 +45,8 @@ var RELEASE_LINK_MAP = {
   },
   beatport: {
     cta: 'Get',
+    icon: 'link',
+    label: 'Get on Beatport',
     oldLabel: 'Get From Beatport'
   }
 }
@@ -100,6 +102,8 @@ function transformReleasePageSplit (obj, done, matches) {
 
 var releasePageLayoutTest;
 function transformReleasePage (obj, done) {
+  history.scrollRestoration = "manual"
+
   var scope = {}
   scope.release = mapRelease(obj);
 
@@ -119,6 +123,36 @@ function transformReleasePage (obj, done) {
         return done(err);
       }
       scope.releaseArtists = getAllTracksWebsiteArtists(tracks);
+
+      var maxArtists = 6;
+      if (scope.releaseArtists.length > maxArtists) {
+        scope.moreArtists = scope.releaseArtists.length - maxArtists;
+        shuffle(scope.releaseArtists);
+        scope.releaseArtists = scope.releaseArtists.map(function (artist, index) {
+          artist.shown = index < maxArtists
+          return artist
+        })
+      }
+      else {
+        scope.moreArtists = false;
+        scope.releaseArtists = scope.releaseArtists.map(function (artist, index) {
+          artist.shown = true
+          return artist
+        })
+      }
+
+      scope.artistTwitters = scope.releaseArtists.reduce(function (handles, artist) {
+        artist.socials.forEach(function (social) {
+          if(social.platform == 'twitter') {
+            handles.push({
+              handle: getTwitterLinkUsername(social.link).substr(1)
+            })
+          }
+        })
+
+        return handles
+      }, [])
+
       scope.numArtistBeakpoints = [];
       scope.coverImage = (scope.release.cover);
       scope.tracks = tracks;
@@ -133,6 +167,24 @@ function transformReleasePage (obj, done) {
       setPageTitle(scope.release.title + ' by ' + scope.release.renderedArtists)
       scope.hasGoldAccess = hasGoldAccess()
       scope.activeTest = 'newReleasePageTest'
+
+      var feature = window.location.hash.substr(1);
+      scope.feature = {
+        merch: false,
+        tweet: false,
+        gold: false,
+        twitterFollowButtons: false
+      }
+
+      if (feature) {
+        scope.feature[feature] = true
+      }
+      else {
+        var keys = Object.keys(scope.feature);
+        shuffle(keys)
+        console.log('keys[0]',keys[0]);
+        scope.feature[keys[0]] = true
+      }
       done(null, scope);
     });
   });
@@ -150,8 +202,8 @@ function completedReleasePage () {
       samesame = 0;
     }
 
-    if (samesame == 50) {
-      EPPZScrollTo.scrollTo(document.querySelector('.release-page'), 0, 500);
+    if (samesame == 10) {
+      EPPZScrollTo.scrollTo(document.querySelector('.release-page'), 0, 1000);
     }
     else {
       setTimeout(checkHeight, 10);
@@ -162,4 +214,69 @@ function completedReleasePage () {
 
   checkHeight();
   startCountdownTicks();
+
+  var bg = document.querySelector('.release-bg')
+
+  function parallaxScroll () {
+    var pos = EPPZScrollTo.documentVerticalScrollPosition()
+    if (bg) {
+      bg.style.backgroundPositionY = (pos * 1.5 * -1) + 'px';
+    }
+  }
+
+  window.addEventListener("openroute", function () {
+    window.removeEventListener('scroll', parallaxScroll, {once: true})
+  })
+
+  window.addEventListener('scroll', parallaxScroll)
+
+  var followButtons = document.querySelectorAll('[twitter-follow]');
+  followButtons.forEach(function (el) {
+    var handle = el.getAttribute('twitter-follow')
+    twttr.widgets.createFollowButton(
+      handle,
+      el,
+      {
+        size: 'large'
+      }
+    );
+  })
+
+  //TODO: Store tweet IDs in releases and check them here
+  var tweetContainer = document.getElementById('release-official-tweet')
+  if (tweetContainer) {
+    twttr.widgets.createTweet(
+      '963485399766122501',
+      tweetContainer,
+      {
+        theme: 'light'
+      }
+    );
+  }
+}
+
+function clickCycleReleaseArtists () {
+  var artists = document.querySelectorAll('.release-artist-container');
+  console.log('artists', artists);
+  if (!artists[artists.length - 1].classList.contains('hide')) {
+    artists.forEach(function (el, index) {
+      el.classList.toggle('hide', index >= 6)
+    })
+  }
+  else {
+    var numShown = 0;
+    var startShowing = false
+    artists.forEach(function (el) {
+      if (!el.classList.contains('hide')) {
+        startShowing = true;
+        el.classList.toggle('hide', true)
+      }
+      else {
+        if (startShowing && numShown < 6) {
+          el.classList.toggle('hide', false)
+          numShown++
+        }
+      }
+    })
+  }
 }

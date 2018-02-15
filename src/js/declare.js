@@ -312,6 +312,7 @@ function openRoute (target, container, matches) {
     sourceType: target.getAttribute('source-type'),
     matches: matches
   }
+  window.dispatchEvent(new Event('openroute'))
   opts.completed = function () {
     var fn = getMethod(target, 'completed')
     if (fn) {

@@ -453,8 +453,8 @@
 <script type="text/template"
         mustache-name="albumReleaseDates">
     {{^inEarlyAccess}}
-        {{#preReleaseDate}}Pre-Released on {{preReleaseDate}}{{/preReleaseDate}}
-        {{#releaseDate}}Released on {{releaseDate}}{{/releaseDate}}
+        {{#preReleaseDate}}Pre-Released {{preReleaseDate}}{{/preReleaseDate}}
+        {{#releaseDate}}Released {{releaseDate}}{{/releaseDate}}
     {{/inEarlyAccess}}
     {{#inEarlyAccess}}
         {{#preReleaseDateObj}}Pre-Releases in <span role="countdown" class="countdown" to="{{preReleaseDateObj}}" completed="featuredReleaseCountdownEnd"></span>{{/preReleaseDateObj}}
