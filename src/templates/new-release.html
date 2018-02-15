@@ -58,6 +58,11 @@
                     {{#feature.merch}}
                         {{>release-merch}}
                     {{/feature.merch}}
+                    {{#feature.moreFromArtists}}
+                        <div class="more-from-artists">
+                            {{>loading-view}}
+                        </div>
+                    {{/feature.moreFromArtists}}
                     <!--
                     {{#activeAlts.layout2}}
                         <div class="release-cols">
@@ -231,7 +236,7 @@
                     <div class="scroll-container"
                        onmouseenter="scrollTrackTitle(this)" onmouseleave="removeScrollTrackTitle(this)">
                     <span class="scroll-title">
-                      {{>track-artists}}
+                      {{>artists-csv-list}}
                     </span>
                   </div>
                 </td>
@@ -265,7 +270,7 @@
             >
         </a>
         <div class="artist-info-container">
-            <div class="artist-info">
+            <div class="artist-info{{^socials.length}} no-socials{{/socials.length}}">
                 <h6><a
                         href="{{artistPageUrl}}"
                         click-action="Click Artist Profile"
@@ -274,7 +279,7 @@
                         ab-test="{{activeTest}}"
                         kpi="artist"
                         >{{name}}</a></h6>
-                <div class="socials">{{#socials}}<a href="{{link}}"
+                <div class="socials{{^socials.length}} no-socials{{/socials.length}}">{{#socials}}<a href="{{link}}"
                         target="_blank"
                         click-action="Click Artist {{name}}"
                         click-label="{{artistName}} {{name}}"
@@ -364,6 +369,7 @@
 <script type="text/template"
         mustache-name="release-twitter-follow-buttons"
         >
+<h3>Follow On Twitter</h3>
 <div class="follow-buttons">
     <div twitter-follow="Monstercat"><div class="load"></div></div>
     {{#artistTwitters}}
@@ -400,4 +406,26 @@
     <span class="or">or</span>
     <a href="/gold">learn more</a>
 </div>
+</script>
+
+<script type="text/template"
+        template-name="more-from-artists"
+>
+<h3>More From {{#listArtists}}{{>artists-csv-list}}{{/listArtists}}{{^listArtists}}These Artists{{/listArtists}}</h3>
+
+<ul class="tracks art-list">
+{{#results}}
+    <li class="track">
+        <a class="silent" href="/release/{{release.catalogId}}" title="{{title}} by {{artistsTitle}}">
+            <div class="image-wrapper">
+                <img src="/img/artwork.jpg" alt="" class="preload">
+                <img src="{{release.coverUrl}}?image_width=512" alt="">
+            </div>
+            <label class="title one-line-ellipsis">{{title}}</label>
+            <br>
+            <label class="artist one-line-ellipsis">{{artistsTitle}}</label>
+        </a>
+    </div>
+{{/results}}
+</ul>
 </script>

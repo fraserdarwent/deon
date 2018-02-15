@@ -73,6 +73,20 @@ function getAllTracksWebsiteArtists (tracks) {
   return artists;
 }
 
+function getAllTracksArtistsUsers (tracks) {
+  var users = [];
+  var userIds = [];
+  tracks.forEach(function (track) {
+    track.artistUsers.forEach(function (user) {
+      if (userIds.indexOf(user._id) == -1) {
+        users.push(user);
+        userIds.push(user._id);
+      }
+    })
+  })
+  return users;
+}
+
 function transformReleaseMerch (obj) {
   shuffle(obj.products)
   obj.products = obj.products.slice(0,8)
@@ -123,6 +137,7 @@ function transformReleasePage (obj, done) {
         return done(err);
       }
       scope.releaseArtists = getAllTracksWebsiteArtists(tracks);
+      scope.releaseArtistUsers = getAllTracksArtistsUsers(tracks);
 
       scope.titleFontSize = 46;
       var width = getTextWidth(scope.release.title, scope.titleFontSize + 'px Montserrat')
@@ -181,7 +196,8 @@ function transformReleasePage (obj, done) {
         merch: false,
         tweet: false,
         gold: false,
-        twitterFollowButtons: false
+        twitterFollowButtons: false,
+        moreFromArtists: false
       }
 
       if (feature) {
@@ -190,9 +206,9 @@ function transformReleasePage (obj, done) {
       else {
         var keys = Object.keys(scope.feature);
         shuffle(keys)
-        console.log('keys[0]',keys[0]);
         scope.feature[keys[0]] = true
       }
+      transformReleasePage.scope = scope;
       done(null, scope);
     });
   });
@@ -228,7 +244,7 @@ function completedReleasePage () {
   function parallaxScroll () {
     var pos = EPPZScrollTo.documentVerticalScrollPosition()
     if (bg) {
-      bg.style.backgroundPositionY = (pos * 1.5 * -1) + 'px';
+      bg.style.backgroundPositionY = (pos * 1.6 * -1) + 'px';
     }
   }
 
@@ -259,13 +275,59 @@ function completedReleasePage () {
       {
         theme: 'light'
       }
-    );
+    )
+  }
+
+  //If the "More From These Artists" container exists, then we will populate with
+  //a random sampling of tracks that aren't on this page
+  var moreFromContainer = document.querySelector('.more-from-artists')
+  if (moreFromContainer) {
+    requestJSON({
+      url: endpoint + '/catalog/browse?types=Single,EP,Album&limit=50&artistIds=' + transformReleasePage.scope.releaseArtistUsers.map(function (artist) {
+        return artist._id
+      })
+    }, function (err, result) {
+      if (err) {
+        console.log(err)
+        moreFromContainer.classList.toggle('hide', true)
+        return
+      }
+
+      var tracks = transformTracks(result, function (err, tracks) {
+        //Randomize them
+        shuffle(tracks)
+
+        //Filter out any tracks that are this release
+        tracks = tracks.filter(function (track) {
+          var isThisRelease = track.release._id == transformReleasePage.scope.release._id
+          return !isThisRelease
+        });
+
+        if (tracks.length >= 8) {
+          tracks = tracks.splice(0, 8)
+        }
+        else {
+          tracks = tracks.splice(0, 6)
+        }
+
+        if (tracks.length > 0) {
+          var scope = {
+            results: tracks,
+            listArtists: transformReleasePage.scope.releaseArtistUsers.length <= 4,
+            artistsList: transformReleasePage.scope.releaseArtists
+          }
+          render(moreFromContainer, getTemplate('more-from-artists'), scope)
+        }
+        else {
+          moreFromContainer.classList.toggle('hide', true)
+        }
+      });
+    })
   }
 }
 
 function clickCycleReleaseArtists () {
   var artists = document.querySelectorAll('.release-artist-container');
-  console.log('artists', artists);
   if (!artists[artists.length - 1].classList.contains('hide')) {
     artists.forEach(function (el, index) {
       el.classList.toggle('hide', index >= 6)

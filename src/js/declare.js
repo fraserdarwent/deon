@@ -213,8 +213,11 @@ function interceptClick (e) {
   if (!isAnchor || !t.hasAttribute('href')) return
   if(e.ctrlKey) return
   var url = t.getAttribute("href")
-  if (url.indexOf('http') == 0)
-    return
+  if (url.indexOf('http') == 0) {
+    var ourUrl = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '');
+    if (url.substr(0, ourUrl.length) != ourUrl)
+      return
+  }
   e.preventDefault()
   go(url)
 }

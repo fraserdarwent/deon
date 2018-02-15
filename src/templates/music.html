@@ -216,7 +216,7 @@
 </td>
 {{/playlistId}}
 <td class="longer-width">
-    {{>track-artists}}
+    {{>artists-csv-list}}
 </td>
 <td class="col-xs-hidden col-md-visible genre">{{#genre}}<span>{{.}}</span>{{/genre}}</td>
 <td class="col-xs-hidden col-md-visible">{{time}}</td>
@@ -225,7 +225,7 @@
 
 
 <script type="text/template"
-        mustache-name="track-artists">
+        mustache-name="artists-csv-list">
 {{#artistsList.length}}
     <span class="artists comma-list">
     {{#artistsList}}<span class="artist">{{#public}}<a href="{{artistPageUrl}}">{{name}}</a>{{/public}}{{^public}}{{name}}{{/public}}</span>{{/artistsList}}
@@ -243,7 +243,7 @@
 <td><a href="/release/{{releaseId}}">{{releaseTitle}}</a></td>
 {{/playlistId}}
 <td>
-    {{>track-artists}}
+    {{>artists-csv-list}}
 </td>
 <td class="col-xs-hidden col-md-visible genre">{{#genre}}<span>{{.}}</span>{{/genre}}</td>
 <td class="col-xs-hidden col-md-visible">{{time}}</td>

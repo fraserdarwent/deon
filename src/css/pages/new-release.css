@@ -54,6 +54,10 @@
   margin: 0px;
 }
 
+.release-page h3 {
+  margin-bottom: 0.5em;
+}
+
 .release-art {
   width: 100%;
   position: relative;
@@ -191,33 +195,20 @@
   width: auto;
   overflow: hidden;
   top: 0px;
-  left: 30px;
+  right: 30px;
+  left: auto;
   z-index: -10;
 }
 
 .release-artist-container .artist-info {
   position: relative;
   width: auto;
-  float: left;
   height: 60px;
   font-size: 12px;
-  transform: translateX(-250px);
+  transform: translateX(250px);
   top: 0px;
-  left: 0px;
   transition: transform 0.25s ease;
   background: #fff;
-  padding: 8px 20px 4px 45px;
-  border-top-right-radius: 30px;
-  border-bottom-right-radius: 30px;
-}
-
-.release-artist-container:nth-child(n+5) .artist-info-container {
-  right: 30px;
-  left: auto;
-}
-
-.release-artist-container:nth-child(n+5) .artist-info {
-  transform: translateX(250px);
   float: right;
   left: auto;
   right: 0px;
@@ -227,7 +218,10 @@
   border-top-left-radius: 30px;
   border-bottom-left-radius: 30px;
   text-align: right;
+}
 
+.release-artist-container .artist-info.no-socials {
+  padding-top: 19px;
 }
 
 .release-artist-container .artist-info h6 {
@@ -397,6 +391,10 @@
   padding: 1em;
 }
 
+.release-merch h3 {
+  margin-bottom: 0px;
+}
+
 .release-merch a.button {
   padding: 0.25em;
 }
@@ -471,6 +469,20 @@
 
 .release-gold ul {
   list-style-position: inside;
+}
+
+.more-from-artists {
+  background: #fff;
+  padding: 1em;
+}
+
+.more-from-artists h3 {
+  margin-bottom: 0.5em;
+}
+
+.more-from-artists h3 a {
+  text-decoration: none;
+  font-size: 26px;
 }
 
 @media screen and (max-width: 767px) {
