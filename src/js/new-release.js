@@ -124,6 +124,14 @@ function transformReleasePage (obj, done) {
       }
       scope.releaseArtists = getAllTracksWebsiteArtists(tracks);
 
+      scope.titleFontSize = 46;
+      var width = getTextWidth(scope.release.title, scope.titleFontSize + 'px Montserrat')
+      var maxTitlewidth = 490
+      while(width > maxTitlewidth) {
+        scope.titleFontSize -= 3
+        width = getTextWidth(scope.release.title, scope.titleFontSize + 'px Montserrat')
+      }
+
       var maxArtists = 6;
       if (scope.releaseArtists.length > maxArtists) {
         scope.moreArtists = scope.releaseArtists.length - maxArtists;

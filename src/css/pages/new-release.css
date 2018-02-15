@@ -2,7 +2,7 @@
   position: relative;
   min-height: 110vh;
   overflow: hidden;
-  padding: 1em 0 2em;
+  padding: 2em 0 2em;
 }
 
 .release-page > .container {
@@ -47,6 +47,7 @@
 
 .release-info h1 {
   margin: 0px;
+  font-family: Montserrat;
 }
 
 .release-info h2 {
@@ -354,8 +355,10 @@
 
 .release-cols .release-info-container {
   width: 100%;
-  margin-left: 20px;
+  margin-left: 10px;
   color: #fff;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 1em;
 }
 
 .release-cols .release-info-container .release-info {

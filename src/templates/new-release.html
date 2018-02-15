@@ -58,7 +58,6 @@
                     {{#feature.merch}}
                         {{>release-merch}}
                     {{/feature.merch}}
-                    </div>
                     <!--
                     {{#activeAlts.layout2}}
                         <div class="release-cols">
@@ -82,6 +81,7 @@
                     -->
                 </div>
             </div>
+
         {{/release}}
     {{/data}}
 </script>
@@ -111,7 +111,7 @@
 <script type="text/template"
         mustache-name="release-info">
 <div class="release-info">
-    <h1>{{release.title}}</h1>
+    <h1 style="font-size: {{titleFontSize}}px">{{release.title}}</h1>
     <h3 class="release-rendered-artists">{{renderedArtists}}</h3>
     <div class="release-date">{{>albumReleaseDates}}</div>
 </div>
