@@ -204,9 +204,12 @@ function transformReleasePage (obj, done) {
         scope.feature[feature] = true
       }
       else {
+        scope.feature = false
+        /*
         var keys = Object.keys(scope.feature);
         shuffle(keys)
         scope.feature[keys[0]] = true
+        */
       }
       transformReleasePage.scope = scope;
       done(null, scope);

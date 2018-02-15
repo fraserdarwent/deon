@@ -43,7 +43,9 @@
                     </div>
                     {{>release-buttons}}
                     {{>release-tracks}}
-                    <div class="feature-separator"></div>
+                    {{#feature}}
+                        <div class="feature-separator"></div>
+                    {{/feature}}
                     {{#feature.tweet}}
                         {{>release-tweet}}
                     {{/feature.tweet}}
