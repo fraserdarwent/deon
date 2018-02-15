@@ -375,10 +375,12 @@
 
 .release-twitter-follow-buttons .follow-buttons {
   display: flex;
+  flex-flow: row wrap;
 }
 
 .release-twitter-follow-buttons .follow-buttons [twitter-follow] {
-  height: 28px;
+  height: 36px;
+  width: 50%;
 }
 
 .release-twitter-follow-buttons iframe {
@@ -486,6 +488,10 @@
 }
 
 @media screen and (max-width: 767px) {
+  .release-twitter-follow-buttons .follow-buttons [twitter-follow] {
+    width: 100%;
+  }
+
   .release-page .container {
     max-width: 400px;
   }

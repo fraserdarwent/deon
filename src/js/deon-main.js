@@ -640,6 +640,12 @@ function getReleasePurchaseLinks (urls) {
     }
     return links
   }, []).sort(function (a, b) {
+    if (!a.priority) {
+      a.priority = 0
+    }
+    if (!b.priority) {
+      b.priority = 0
+    }
     if (a.priority == b.priority) {
       return 0
     }

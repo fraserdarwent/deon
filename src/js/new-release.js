@@ -36,18 +36,27 @@ var RELEASE_LINK_MAP = {
   soundcloud: {
     cta: 'Listen',
     label: 'Listen on SoundCloud',
-    icon: 'soundcloud'
+    icon: 'soundcloud',
+    priority: 50
   },
   youtube: {
     cta: 'Watch',
     label: 'Watch on YouTube',
-    icon: 'youtube'
+    icon: 'youtube',
+    priority: 40
   },
   beatport: {
     cta: 'Get',
     icon: 'link',
     label: 'Get on Beatport',
-    oldLabel: 'Get From Beatport'
+    oldLabel: 'Get From Beatport',
+    priority: 30
+  },
+  mixcloud: {
+    cta: 'Get',
+    icon: 'link',
+    label: 'Get on Mixcloud',
+    priority: 20
   }
 }
 
