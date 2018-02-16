@@ -129,7 +129,7 @@ function transformReleasePageSplit (obj, done, matches) {
   newReleasePageTest = new SplitTest({
     name: 'new-release-page',
     checkStart: false,
-    force: 'new',
+    //force: 'new',
     onStarted: function (alt) {
       obj.activeAlts = {}
       obj.activeAlts[alt] = true; //For easy reference in the template
@@ -230,7 +230,7 @@ function transformReleasePage (obj, done) {
       }).join(',')
 
       var feature = window.location.hash.substr(1);
-      feature = 'artistsEvents';
+      //feature = 'artistsEvents';
       scope.feature = {
         merch: false,
         tweet: false,

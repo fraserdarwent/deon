@@ -99,23 +99,23 @@
   order: 1;
 }
 
-.release-cta-link {
+.release-cta-button {
   position: relative;
   line-height: 55px;
   padding: 0 10px 0 0;
   height: 60px;
   width: 49.5%;
-  margin: 1% 0 0 0;
+  margin: 10px 0 0 0;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
 }
 
-.release-cta-link.release-cta-filler:nth-child(odd) {
+.release-cta-button.release-cta-filler:nth-child(odd) {
   display: none;
 }
 
-.release-cta-link .fa {
+.release-cta-button .fa {
   font-size: 32px;
   width: 60px;
   text-align: center;
@@ -124,11 +124,11 @@
   margin-top: 11px;
 }
 
-.release-cta-link .fa.fa-download {
+.release-cta-button .fa.fa-download {
   margin-top: 14px;
 }
 
-.release-cta-link .cta {
+.release-cta-button .cta {
   text-transform: none;
   position: absolute;
   right: 8px;
@@ -528,9 +528,9 @@
     padding-top: 1em;
   }
 
-  .release-buttons .release-cta-link {
+  .release-buttons .release-cta-button {
     width: 100%;
-    margin: 0 0 1% 0;
+    margin: 0 0 10px 0;
   }
 
   .release-page h1 {

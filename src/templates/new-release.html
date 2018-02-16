@@ -136,7 +136,7 @@
         mustache-name="release-buttons">
 <div class="release-buttons">
     {{#streamable}}
-        <a class="button button--cta button--release-play release-cta-link"
+        <a class="button button--cta button--release-play release-cta-button"
                 ab-test="{{activeTest}}"
                 kpi="play-release"
                 action="playSongs"
@@ -157,7 +157,7 @@
     {{/streamable}}
 
     {{^inEarlyAccess}}
-    <a  class="button button--cta release-cta-link"
+    <a  class="button button--cta release-cta-button"
         click-action="Click Download Gold"
         click-category="Release Links"
 
@@ -175,7 +175,7 @@
     {{/inEarlyAccess}}
     {{#inEarlyAccess}}
         {{^hasGoldAccess}}
-            <a class="button button--cta release-cta-link"
+            <a class="button button--cta release-cta-button"
                 click-action="Click Get Gold"
                 click-category="Release Links"
                 ab-test="{{activeTest}}"
@@ -187,7 +187,7 @@
         {{/hasGoldAccess}}
     {{/inEarlyAccess}}
     {{#purchaseLinks}}
-    <a class="button button--cta release-cta-link"
+    <a class="button button--cta release-cta-button"
         click-action="Click Release Purchase"
         click-category="Release Links"
         click-label="{{label}}"
@@ -201,7 +201,7 @@
         <span class="cta">{{cta}}</span>
     </a>
     {{/purchaseLinks}}
-    <a class="button button--cta release-cta-link release-cta-filler"
+    <a class="button button--cta release-cta-button release-cta-filler"
         click-action="Click Shop Filler"
         click-category="Release Links"
         ab-test="{{activeTest}}"
@@ -328,7 +328,7 @@
 {{/loading}}
 {{#data}}
     {{#results.length}}
-        <h3 class="comma-or">Upcoming {{#listArtists}}{{>artists-csv-list}}{{/listArtists}}{{^listArtists}}These Artists{{/listArtists}} Events</h3>
+        <h3 class="comma-or">Upcoming {{#listArtists}}{{>artists-csv-list}}{{/listArtists}} Events{{^listArtists}} With These Artists{{/listArtists}}</h3>
         <table class="events">
         {{#results}}
             {{>upcoming-event-tr}}
