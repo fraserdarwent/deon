@@ -666,3 +666,21 @@ ul.errors li {
     line-height: 1.5;
   }
 }
+
+.comma-list span:before {
+  content: ", ";
+}
+
+.comma-list span:nth-child(1):before,
+.comma-list span:nth-last-child(1):nth-child(1):before,
+.comma-or .comma-list span:nth-last-child(1):nth-child(1):before {
+  content: "";
+}
+
+.comma-list span:nth-last-child(1):before {
+  content: " & ";
+}
+
+.comma-or .comma-list span:nth-last-child(1):before {
+  content: " or ";
+}

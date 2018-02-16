@@ -65,6 +65,14 @@
                             {{>loading-view}}
                         </div>
                     {{/feature.moreFromArtists}}
+                    {{#feature.artistsEvents}}
+                        {{#artistIds}}
+                            <div class="release-events">
+                                <div source="$endpoint/events/upcoming?websiteDetailsIds={{artistIds}}" template="release-events"></div>
+                            </div>
+                        {{/artistIds}}
+                    {{/feature.artistsEvents}}
+                    <span></span>
                     <!--
                     {{#activeAlts.layout2}}
                         <div class="release-cols">
@@ -310,6 +318,25 @@
 <script type="text/template"
         mustache-name="release-merch">
     <div source="https://shop.monstercat.com/collections/website-featured/products.json" template="release-merch"></div>
+</script>
+
+<script type="text/template"
+        template-name="release-events"
+        transform="transformReleaseEvents"
+        completed="completedReleaseEvents">
+{{#loading}}
+    {{>loading-view-black}}
+{{/loading}}
+{{#data}}
+    {{#results.length}}
+        <h3 class="comma-or">Upcoming {{#listArtists}}{{>artists-csv-list}}{{/listArtists}}{{^listArtists}}These Artists{{/listArtists}} Events</h3>
+        <table class="events">
+        {{#results}}
+            {{>upcoming-event-tr}}
+        {{/results}}
+        </table>
+    {{/results.length}}
+{{/data}}
 </script>
 
 <script type="text/template"

@@ -102,6 +102,25 @@ function transformReleaseMerch (obj) {
   return obj
 }
 
+function transformReleaseEvents (obj) {
+  obj.results = transformEvents(obj.results)
+  obj.results = obj.results.slice(0, 10)
+  obj.artistsList = transformReleasePage.scope.releaseArtists
+  obj.listArtists = transformReleasePage.scope.releaseArtists.length <= 4;
+  obj.activeTest= 'newReleasePageTest';
+
+  return obj;
+}
+
+function completedReleaseEvents () {
+  var h3 = document.querySelector('.release-events h3')
+  console.log('h3', h3);
+  if (!h3) {
+    document.querySelector('.release-events').classList.toggle('hide', true)
+    document.querySelector('.feature-separator').classList.toggle('hide', true)
+  }
+}
+
 var newReleasePageTest;
 function transformReleasePageSplit (obj, done, matches) {
   obj = {}
@@ -110,7 +129,7 @@ function transformReleasePageSplit (obj, done, matches) {
   newReleasePageTest = new SplitTest({
     name: 'new-release-page',
     checkStart: false,
-    //force: 'new',
+    force: 'new',
     onStarted: function (alt) {
       obj.activeAlts = {}
       obj.activeAlts[alt] = true; //For easy reference in the template
@@ -204,14 +223,19 @@ function transformReleasePage (obj, done) {
       setPageTitle(scope.release.title + ' by ' + scope.release.renderedArtists)
       scope.hasGoldAccess = hasGoldAccess()
       scope.activeTest = 'newReleasePageTest'
+      scope.artistIds = scope.releaseArtists.map(function (wd) {
+        return wd._id
+      }).join(',')
 
       var feature = window.location.hash.substr(1);
+      feature = 'artistsEvents';
       scope.feature = {
         merch: false,
         tweet: false,
         gold: false,
         twitterFollowButtons: false,
-        moreFromArtists: false
+        moreFromArtists: false,
+        artistsEvents: false
       }
 
       if (feature) {

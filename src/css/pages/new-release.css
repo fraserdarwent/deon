@@ -387,6 +387,19 @@
   margin: 0 10px 5px 0px;
 }
 
+.release-events {
+  background: #fff;
+}
+
+.release-events h3 {
+  padding: 0.5em;
+  margin-bottom: 5px;
+}
+
+.release-events table.events td.title {
+  width: 35%;
+}
+
 .release-merch {
   margin-bottom: 5px;
   background: #fff;
@@ -482,7 +495,7 @@
   margin-bottom: 0.5em;
 }
 
-.more-from-artists h3 a {
+.release-page h3 a {
   text-decoration: none;
   font-size: 26px;
 }
