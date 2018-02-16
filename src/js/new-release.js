@@ -168,16 +168,18 @@ function transformReleasePage (obj, done) {
       scope.releaseArtistUsers = getAllTracksArtistsUsers(tracks);
 
       scope.titleFontSize = 46;
-      var width = getTextWidth(scope.release.title, scope.titleFontSize + 'px Montserrat')
+      var width = getTextWidth(scope.release.title, 'bold ' + scope.titleFontSize + 'px Montserrat')
       var maxTitleWidth = 490
 
       if (window.innerWidth < 490)  {
         maxTitleWidth = window.innerWidth * 0.8
       }
 
-      while(width > maxTitleWidth) {
+      var attempts = 0
+      while(width > maxTitleWidth && attempts < 100) {
         scope.titleFontSize -= 2
-        width = getTextWidth(scope.release.title, scope.titleFontSize + 'px Montserrat')
+        width = getTextWidth(scope.release.title, 'bold ' + scope.titleFontSize + 'px Montserrat')
+        attempts++
       }
 
       var maxArtists = 6;
