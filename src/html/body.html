@@ -281,13 +281,13 @@
     </form>
 </script>
 
-<script type="text/template" mustache-name="loading-view">
+<script type="text/template" data-template="loading-view" data-partial>
     <div class="loading">
         <span class="loader"></span>
     </div>
 </script>
 
-<script type="text/template" mustache-name="errors">
+<script type="text/template" data-template="errors" data-partial>
 {{#errors.length}}
     <ul class="errors">
     {{#errors}}
@@ -297,7 +297,7 @@
 {{/errors.length}}
 </script>
 
-<script type="text/template" mustache-name="error">
+<script type="text/template" data-template="error" data-partial>
     <div class="container">
         <ul class="errors">
             <li>{{message}}</li>
@@ -305,19 +305,19 @@
     </div>
 </script>
 
-<script type="text/template" mustache-name="loading-view-black">
+<script type="text/template" data-template="loading-view-black" data-partial>
     <div class="loading loading--black">
         <span class="loader"></span>
     </div>
 </script>
 
-<script type="text/template" mustache-name="loading-inner-view">
+<script type="text/template" data-template="loading-inner-view" data-partial>
     <div class="loading loading-inner">
         <span class="loader"></span>
     </div>
 </script>
 
-<script type="text/template" mustache-name="loading-table-view">
+<script type="text/template" data-template="loading-table-view" data-partial>
 <tr>
     <td class="loading-table" colspan="10">
         <span class="loader"></span>

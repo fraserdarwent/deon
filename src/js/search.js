@@ -265,7 +265,7 @@ function completedSearchArtists() {
   completedSearchPage('artists')
 }
 
-openRoute.completed.push(function () {
+document.addEventListener('statechange', function () {
   if (window.location.pathname.indexOf('/search') >= 0) return
   (getGlobalSearchInput() || {value:''}).value = ''
 })

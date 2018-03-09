@@ -43,7 +43,9 @@ preLoadImage('/img/artwork.jpg')
 preLoadImage('/img/artwork-merch.jpg')
 preLoadImage('/img/artist.jpg')
 
+
 document.addEventListener("DOMContentLoaded", function (e) {
+  registerPartials()
   initSocials()
   renderHeader()
   loadSession(function (err, obj) {
@@ -55,9 +57,9 @@ document.addEventListener("DOMContentLoaded", function (e) {
       stateChange(location.pathname + location.search, e.state)
     })
     document.addEventListener("click", interceptClick)
-    document.addEventListener("dblclick", interceptDoubleClick)
-    document.addEventListener("keypress", interceptKeyPress)
-    document.addEventListener("submit", interceptSubmit);
+    //document.addEventListener("dblclick", interceptDoubleClick)
+    //document.addEventListener("keypress", interceptKeyPress)
+    //document.addEventListener("submit", interceptSubmit);
 
     document.addEventListener("click", function (e) {
       var t = e.target;
@@ -93,28 +95,30 @@ document.addEventListener("DOMContentLoaded", function (e) {
         }
       }
     });
-    stateChange(location.pathname + location.search)
+    changeState(location.pathname + location.search)
     stickyPlayer()
     //siteNotices.completeProfileNotice.start();
     //siteNotices.goldShopCodeNotice.start()
   });
   document.querySelector('.credit [role=year]').innerText = new Date().getFullYear();
+
+  window.addEventListener('changestate', function (e) {
+    recordPage()
+    renderHeader()
+    closeModal()
+    window.scrollTo(0,0)
+    if (location.pathname == "/") {
+      getStats()
+    }
+    if (typeof(stopCountdownTicks) == 'function') {
+      stopCountdownTicks()
+    }
+  })
 })
 
-openRoute.completed.push(function () {
-  recordPage()
-  renderHeader()
-  closeModal()
-  window.scrollTo(0,0)
-  if (location.pathname == "/") getStats()
-})
-openRoute.started.push(function () {
-  if (typeof(stopCountdownTicks) == 'function') {
-    stopCountdownTicks()
-  }
-})
+startState();
 
-requestDetect.credentialDomains.push(endhost)
+//requestDetect.credentialDomains.push(endhost)
 
 var releaseTypes = {
   album: { value: 'Album', name: "Albums", key: 'album' },
@@ -798,6 +802,35 @@ function transformWebsiteDetails (wd) {
   return wd
 }
 
+function processPage (opts) {
+  renderContent(opts.node.dataset.template, {})
+}
+
+function processHomePage () {
+  console.log('render home');
+  var scope = {
+    loading: true
+  }
+  renderContent('home-page')
+}
+
+function processHomeFeatured (opts) {
+  var scope = {}
+  if (opts.state == 'start') {
+    scope.loading = true
+  }
+  else if (opts.state == 'finish') {
+    var results = opts.result.results.map(mapRelease)
+    var featured = results.shift()
+    scope =  {
+      featured: featured,
+      releases: results.slice(0,8),
+      loading: false
+    }
+  }
+  render('home-featured', opts.node, scope)
+}
+
 /* Transform Methods */
 
 function transformHome (obj) {
@@ -835,13 +868,33 @@ function transformPodcast (obj) {
   return obj
 }
 
-function transformHomeMerch (obj) {
-  obj.products = obj.products.slice(0,8)
-  obj.products = obj.products.map(function (prod) {
-    prod.utm = '?utm_source=website&utm_medium=home_page'
-    return prod
-  })
-  return obj
+function processHomeMerch (opts) {
+  if (opts.state == 'start') {
+    render('home-merch', opts.node, {
+      loading: true
+    })
+  }
+  else if (opts.state == 'finish') {
+    if (opts.err) {
+      render('home-merch', opts.node, {
+        loading: false,
+        err: opts.err
+      })
+      return
+    }
+    const maxProducts = 8
+    let products = opts.result.products.slice(0, maxProducts)
+
+    products = products.map((prod) => {
+      prod.utm = '?utm_source=website&utm_medium=home_page'
+      return prod
+    })
+
+    render('home-merch', opts.node, {
+      products: products,
+      loading: false
+    })
+  }
 }
 
 function transformRoster () {
@@ -1336,6 +1389,11 @@ function renderHeader () {
   render(el, template, {
     data: data
   })
+}
+
+function renderContent (template, scope) {
+  var content = findNode('[role=content]')
+  render(template, content, scope)
 }
 
 function renderHeaderMobile () {

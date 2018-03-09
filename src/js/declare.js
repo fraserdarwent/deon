@@ -220,24 +220,6 @@ function interceptClick (e) {
   go(url)
 }
 
-function interceptDoubleClick (e, el) {
-  var isAction = null
-  if (!e.path) {
-    addEventPath(e)
-  }
-  for (var i = 0; i < e.path.length; i++) {
-    var t = e.path[i]
-    if (t.hasAttribute && t.hasAttribute('dblc-action')) {
-      isAction = t
-    }
-  }
-  if(isAction) {
-    runDblCAction(e, isAction)
-  }
-  //TODO: Make exceptions for things people actually double click
-  e.preventDefault()
-  return
-}
 
 function addEventPath(e) {
   e.path = []
