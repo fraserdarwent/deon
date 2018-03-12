@@ -42,8 +42,10 @@ function request (opts, done) {
     opts.headers = {}
   }
 
-  //Assume if we have no headers set and that we're sending an object that it is JSON
-  if(opts.data && typeof(opts.data) == 'object' && !(opts.data instanceof FormData) && !opts.headers['Accept']) {
+  //Assume if no headers set and that we're sending an obj that it's JSON
+  if (opts.data && typeof opts.data == 'object'
+    && !(opts.data instanceof FormData)
+    && !opts.headers['Accept']) {
     opts.headers['Accept'] = 'application/json'
     opts.headers['Content-Type'] = 'application/json'
     opts.data = JSON.stringify(opts.data)
@@ -334,10 +336,7 @@ function loadNodeSources (parent) {
 function loadNodeSource (node, matches) {
   if (!matches) matches = {}
   var source = node.getAttribute('data-source')
-  console.log('--');
-  console.log('source', source);
   var dataProcess = node.getAttribute('data-process')
-  console.log('dataProcess', dataProcess);
   var targetTemplate = node.dataset.targetTemplate
   var process
   if (targetTemplate) {
@@ -345,14 +344,12 @@ function loadNodeSource (node, matches) {
     dataProcess = target.dataset.process
   }
   process = getMethod(dataProcess) || dummyMethod;
-  console.log('process', process);
 
   var args = {
     state: 'start',
     node: node,
     matches: matches
   }
-  console.log('args',args);
   process(args)
 
   if (!source) {

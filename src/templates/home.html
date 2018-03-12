@@ -1,17 +1,17 @@
 <script type="text/template"
-        data-data-route="^(\?.*)?$"
+        data-route="^(\?.*)?$"
         data-title="Monstercat"
         data-process="processPage"
         data-template="home-page"
         >
     <div role="home-featured">
         <div
-            data-data-source="$endpoint/catalog/release?limit=15"
+            data-source="$endpoint/catalog/release?limit=15"
             data-process="processHomeFeatured">
         </div>
     </div>
     <div data-source="https://shop.monstercat.com/collections/website-featured/products.json" data-no-cors="true" data-target-template="home-merch"></div>
-    <div data-data-source="$endpoint/catalog/release?filters=type,Podcast&limit=8" template="home-podcast"></div>
+    <div data-source="$endpoint/catalog/release?filters=type,Podcast&limit=8" template="home-podcast"></div>
     {{>spotify-and-social}}
 </script>
 

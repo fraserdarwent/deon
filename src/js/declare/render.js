@@ -16,7 +16,6 @@ function getTemplate (name) {
  */
 function getPartials () {
   var els = findNodes('[data-partial]');
-  console.log('getPartials', els);
   var obj = {};
   for(var i=0; i<els.length; i++) {
     obj[els[i].getAttribute('data-template')] = els[i].textContent;
@@ -66,7 +65,6 @@ render.defaultPartials = {}
  */
 function registerPartials () {
   var partials = getPartials()
-  console.log('partials', partials);
 
   if(window.Handlebars) {
     for(var key in partials) {

@@ -1388,6 +1388,10 @@ function renderHeader () {
   })
 }
 
+function renderLoading () {
+  renderContent('loading-view')
+}
+
 function renderContent (template, scope) {
   var content = findNode('[role=content]')
   render(template, content, scope)
