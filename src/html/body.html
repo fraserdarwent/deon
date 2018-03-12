@@ -76,8 +76,7 @@
                            placeholder="Search"
                            value=""/>
                 </li>
-                <li id="navigation-mobile"
-                     template="navigation">
+                <li id="navigation-mobile">
                 </li>
                 <li><a action="closeNav" href="/music">Music</a></li>
                 <li><a action="closeNav" href="/artists">Artists</a></li>
@@ -94,8 +93,7 @@
 
         <!-- Desktop Contextual Navigation -->
         <div class="col-xs-hidden col-md-visible push-right navigation"
-                id="navigation"
-                template="navigation">
+                id="navigation">
         </div>
         <div class="col-xs-hidden col-md-visible global-search"
              trigger-target="searchForm"
@@ -325,7 +323,7 @@
 </tr>
 </script>
 
-<script type="text/template" template-name="navigation">
+<script type="text/template" data-template="navigation">
     {{#data}}
     {{#user}}
     <a class="silent nav-item" action="closeNav" href="/playlists"><i class="fa fa-bars"></i>Playlists</a>

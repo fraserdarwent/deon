@@ -37,10 +37,9 @@ function getPartials () {
  * @returns {Element}
  */
 function render (name, el, scope, partials) {
-  console.log('----');
-  console.log('name',name);
-  console.log('el',el);
-  console.log('scope',scope);
+  if (typeof(el) == 'string') {
+    el = document.querySelector(el)
+  }
   var tmpl = getTemplate(name);
   partials = partials || render.defaultPartials
   if (!tmpl) return;

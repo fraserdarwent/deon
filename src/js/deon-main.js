@@ -1379,14 +1379,11 @@ function transformCurrentUrl (data) {
 }
 
 function renderHeader () {
-  var el = document.querySelector('#navigation')
-  var target = '[template-name="' + el.getAttribute('template') + '"]'
-  var template = document.querySelector(target).textContent
   var data = transformCurrentUrl()
   if (session) {
     data.user = session ? session.user : null
   }
-  render(el, template, {
+  render('navigation', '#navigation', {
     data: data
   })
 }
@@ -1397,17 +1394,14 @@ function renderContent (template, scope) {
 }
 
 function renderHeaderMobile () {
-  var el = document.querySelector('#navigation-mobile')
-  var target = '[template-name="' + el.getAttribute('template') + '"]'
-  var template = document.querySelector(target).textContent
-  var data = null
+  var data = transformCurrentUrl()
   if (session) {
-    data = {}
     data.user = session ? session.user : null
   }
-  render(el, template, {
+  render('navigation', '#navigation-mobile', {
     data: data
   })
+
 }
 
 function setPageTitle (title, glue, suffix) {
