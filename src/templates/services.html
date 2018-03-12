@@ -1,5 +1,5 @@
 <script type="text/template"
-        route="^account\/services\/?(\?.*)?$"
+        data-route="^account\/services\/?(\?.*)?$"
         completed="completedServices"
         transform="transformServices">
     {{#data}}
@@ -74,7 +74,7 @@
                             <th>Options</th>
                         </tr>
                     </thead>
-                    <tbody source="$endpoint/self/whitelist"
+                    <tbody data-source="$endpoint/self/whitelist"
                         template="whitelist-licenses"
                         role="whitelists"
                         transform="transformWhitelists">
@@ -146,8 +146,8 @@
 </script>
 
 <script type="text/template"
-        mustache-name="services-sign-up"
-        template-name="services-sign-up"
+        data-partial data-template="services-sign-up"
+        data-template="services-sign-up"
         >
 <input type="hidden" name="signOnMethod" value="sign-up" />
 <h3>Register</h3>
@@ -161,8 +161,8 @@ Already have an account? <a class="switch-sign-on" onclick="servicesChangeSignOn
 </script>
 
 <script type="text/template"
-        mustache-name="services-sign-in"
-        template-name="services-sign-in"
+        data-partial data-template="services-sign-in"
+        data-template="services-sign-in"
         >
 <input type="hidden" name="signOnMethod" value="sign-in" />
 <h3>Login</h3>
@@ -178,8 +178,8 @@ Already have an account? <a class="switch-sign-on" onclick="servicesChangeSignOn
 </script>
 
 <script type="text/template"
-        template-name="gold-subscription"
-        mustache-name="gold-subscription"
+        data-template="gold-subscription"
+        data-partial data-template="gold-subscription"
         transform="transformGoldSubscription">
     {{^canceled}}
     <label>Gold Subscription Active</label>
@@ -198,7 +198,7 @@ Already have an account? <a class="switch-sign-on" onclick="servicesChangeSignOn
     {{/canceled}}
 </script>
 
-<script type="text/template" mustache-name="payment-method">
+<script type="text/template" data-partial data-template="payment-method">
     <label>
         <input type="radio" name="method" value="paypal">
         <span><i class="fa fa-fw fa-cc-paypal"></i></span>
@@ -209,12 +209,12 @@ Already have an account? <a class="switch-sign-on" onclick="servicesChangeSignOn
     </label>
 </script>
 
-<script type="text/template" mustache-name="payment-method-recurring">
+<script type="text/template" data-partial data-template="payment-method-recurring">
 <div class="recurring-warning-germany hide"><strong>Warning:</strong> PayPal cannot process recurring payments for German users. Please use Stripe.</div>
 {{>payment-method}}
 </script>
 
-<script type="text/template" mustache-name="channel-id-help-text">
+<script type="text/template" data-partial data-template="channel-id-help-text">
 <div class="vendor-help none">
     <div class="help-text YouTube">http:s//www.youtube.com/channel/<strong>Channel_ID</strong></div>
     <div class="help-text Twitch">https://www.twitch.tv/<strong>Channel_ID</strong></div>
@@ -223,7 +223,7 @@ Already have an account? <a class="switch-sign-on" onclick="servicesChangeSignOn
 </div>
 </script>
 
-<script type="text/template" template-name="subscription-row">
+<script type="text/template" data-template="subscription-row">
     <tr>
         <td>
             {{name}}
@@ -243,7 +243,7 @@ Already have an account? <a class="switch-sign-on" onclick="servicesChangeSignOn
 </script>
 
 <script type="text/template"
-        template-name="whitelist-licenses"
+        data-template="whitelist-licenses"
         transform="transformWhitelists">
     {{#loading}}
     <tr><td colspan="8"><i class="fa fa-refresh fa-spin"></i></td></tr>
@@ -328,7 +328,7 @@ Already have an account? <a class="switch-sign-on" onclick="servicesChangeSignOn
 </script>
 
 <script type="text/template"
-        route="^account\/services\/processing"
+        data-route="^account\/services\/processing"
         completed="completedProcessing">
     <div class="container">
         <h1>Payment Processing <i class="fa fa-spin fa-gear"></i></h1>
@@ -337,7 +337,7 @@ Already have an account? <a class="switch-sign-on" onclick="servicesChangeSignOn
 </script>
 
 <script type="text/template"
-        route="^account\/services\/subscribed"
+        data-route="^account\/services\/subscribed"
         transform="transformSubscribed"
         completed="redirectServices">
     <div class="container">
@@ -347,7 +347,7 @@ Already have an account? <a class="switch-sign-on" onclick="servicesChangeSignOn
 </script>
 
 <script type="text/template"
-        route="^account\/services\/unsubscribed\/?"
+        data-route="^account\/services\/unsubscribed\/?"
         completed="redirectServices">
     <div class="container">
         <h1>Unsubscribed</h1>
@@ -357,7 +357,7 @@ Already have an account? <a class="switch-sign-on" onclick="servicesChangeSignOn
 
 <script type="text/template"
         transform="transformCanceledPayment"
-        route="^account\/services\/canceled-payment\/?$">
+        data-route="^account\/services\/canceled-payment\/?$">
     <div class="container">
         <h1>Payment Canceled</h1>
         <p>The payment has been canceled. Go back to <a href="{{returnUrl}}">{{returnLabel}}</a>.</p>
@@ -365,8 +365,8 @@ Already have an account? <a class="switch-sign-on" onclick="servicesChangeSignOn
 </script>
 
 <script type="text/template"
-        route="^account\/services\/buyout\/purchased\/?"
-        page-title="Purchased Whitelist"
+        data-route="^account\/services\/buyout\/purchased\/?"
+        data-title="Purchased Whitelist"
         completed="redirectServices">
     <div class="container">
         <h1>Purchased Whitelist!</h1>
@@ -375,15 +375,15 @@ Already have an account? <a class="switch-sign-on" onclick="servicesChangeSignOn
 </script>
 
 <script type="text/template"
-        route="account\/services\/error"
-        page-title="Payment Error">
+        data-route="account\/services\/error"
+        data-title="Payment Error">
     <div class="container">
         <h1>An error occured.</h1>
         <p>An error occured while working with the payment information provided. Please contact support.</p>
     </div>
 </script>
 
-<script type="text/template" template-name="resume-whitelist">
+<script type="text/template" data-template="resume-whitelist">
     <div class="modal panel">
         <div class="pointer-events" data-set="resume-payment">
             <input type="hidden" name="id" value="{{id}}">
@@ -410,10 +410,10 @@ Already have an account? <a class="switch-sign-on" onclick="servicesChangeSignOn
 </script>
 
 <script type="text/template"
-        route="^account\/services\/buyout\/?(\?.*)?$"
+        data-route="^account\/services\/buyout\/?(\?.*)?$"
         transform="transformBuyWhitelist"
         completed="buyWhitelistComplete"
-        page-title="Purchase Whitelist">
+        data-title="Purchase Whitelist">
     <div class="container">
         {{#data}}
             <h1>Purchase Whitelist</h1>
@@ -459,11 +459,11 @@ Already have an account? <a class="switch-sign-on" onclick="servicesChangeSignOn
 </script>
 
 <script type="text/template"
-        route="^account\/services\/buyout\/(.+)$"
+        data-route="^account\/services\/buyout\/(.+)$"
         transform="transformBuyOut"
         completed="completedBuyOut"
-        source="$endpoint/self/whitelist/$1"
-        page-title="Whitelist Prepay">
+        data-source="$endpoint/self/whitelist/$1"
+        data-title="Whitelist Prepay">
     <div class="container">
         <h1>Prepay for 20 Months of Whitelist</h1>
         <div class="panel">

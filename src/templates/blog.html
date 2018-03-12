@@ -1,9 +1,7 @@
 <script type="text/template"
-        route="^(?:news|blog)\/(?:article|posts|[\d+\-]+)\/([^\/\?]*)\/?"
-        page-title="Article"
-        transform="transformPost"
-        completed="completedPost"
-        source="$newshost/json/posts/$1.json">
+        data-route="^(?:news|blog)\/(?:article|posts|[\d+\-]+)\/([^\/\?]*)\/?"
+        data-title="Article"
+        data-source="$newshost/json/posts/$1.json">
     {{#loading}}
     {{>loading-view}}
     {{/loading}}
@@ -18,7 +16,6 @@
             <div class="banner" style="background-image:url({{image}})"></div>
         </div>
     </div>
-    
     <div class="panel panel--article">
         <header>
             <h1 class="title uppercase">{{title}}</h1>
@@ -53,15 +50,14 @@
         <div class="md-container">
             <div
                 template="markdown-post"
-                source="$newshost/{{path}}">
+                data-source="$newshost/{{path}}">
             </div>
         </div>
     </div>
-    
     {{/data}}
 </script>
 
-<script type="text/template" template-name="markdown-post" transform="transformMarkdownPost" completed="completedMarkdownPost">
+<script type="text/template" data-template="markdown-post" transform="transformMarkdownPost" completed="completedMarkdownPost">
     {{#loading}}
     {{>loading-view}}
     {{/loading}}
@@ -74,7 +70,7 @@
 </script>
 
 <script type="text/template"
-        mustache-name="blog-featured">
+        data-partial data-template="blog-featured">
 
         <div class="top-banner top-banner--blog-featured">
             <div class="banner">
@@ -105,7 +101,7 @@
 </script>
 
 <script type="text/template"
-        mustache-name="blog-article">
+        data-partial data-template="blog-article">
         <article class="flex">
             <div class="col-xs-12 col-sm-12 col-md-6 article-banner{{#isOdd}} col-md-last{{/isOdd}} banner--scaled">
                 <a href="{{link}}" class="side-banner"
@@ -135,10 +131,10 @@
 </script>
 
 <script type="text/template"
-        route="^(?:news|blog)\/?(?:\?.*)?$"
-        page-title="News"
+        data-route="^(?:news|blog)\/?(?:\?.*)?$"
+        data-title="News"
         transform="transformBlogPagination"
-        source="$newshost/json/archive/pages/1.json">
+        data-source="$newshost/json/archive/pages/1.json">
     {{#loading}}
     {{>loading-view}}
     {{/loading}}
@@ -150,16 +146,16 @@
     {{#data}}
     <div
         template="blog-page"
-        source="$newshost/json/archive/pages/{{page}}.json">
+        data-source="$newshost/json/archive/pages/{{page}}.json">
     </div>
     {{/data}}
 </script>
 
 <script type="text/template"
-        route="^(?:news|blog)\/tags\/(.*)"
-        page-title="News"
+        data-route="^(?:news|blog)\/tags\/(.*)"
+        data-title="News"
         transform="transformBlogPagination"
-        source="$newshost/json/tags/$1/pages/1.json">
+        data-source="$newshost/json/tags/$1/pages/1.json">
     {{#loading}}
     {{>loading-view}}
     {{/loading}}
@@ -171,14 +167,14 @@
     {{#data}}
     <div
         template="blog-page"
-        source="$newshost/json/tags/{{tag}}/pages/{{page}}.json">
+        data-source="$newshost/json/tags/{{tag}}/pages/{{page}}.json">
     </div>
     {{/data}}
 </script>
 
 <script type="text/template"
         transform="transformBlog"
-        template-name="blog-page">
+        data-template="blog-page">
     {{#loading}}
     {{>loading-view}}
     {{/loading}}
@@ -204,7 +200,7 @@
 </script>
 
 <script type="text/template"
-        mustache-name="blogPagination">
+        data-partial data-template="blogPagination">
     {{#total}}
     <div class="container pagination pad-vertical pagination--blog text center">
         {{#previous}}

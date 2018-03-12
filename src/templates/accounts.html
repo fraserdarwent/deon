@@ -1,9 +1,9 @@
 <script type="text/template"
-    route="^verify\/(.*)"
-    source="$endhost/invite/info/$1"
+    data-route="^verify\/(.*)"
+    data-source="$endhost/invite/info/$1"
     transform="transformVerify"
     completed="completedVerify"
-    page-title="Verify"
+    data-title="Verify"
     >
     <div class="container">
         {{#loading}}
@@ -62,9 +62,9 @@
 </script>
 
 <script type="text/template"
-        route="^(signin|sign-in)"
+        data-route="^(signin|sign-in)"
         transform="transformSignIn"
-        page-title="Sign In">
+        data-title="Sign In">
     {{#data}}
     <div class="container">
         {{^continueTo}}
@@ -100,7 +100,7 @@
 </script>
 
 <script type="text/template"
-        mustache-name="birthday-fields"
+        data-partial data-template="birthday-fields"
         >
 <select name="birthday_month" class="birthday-month" value="{{birthday_month}}">
     <option value="01">Jan</option>
@@ -153,7 +153,7 @@
 </script>
 
 <script type="text/template"
-        mustache-name="sign-in-fields"
+        data-partial data-template="sign-in-fields"
         >
 <table class="form mobile">
     <tbody>
@@ -187,8 +187,8 @@
 </script>
 
 <script type="text/template"
-        route="authenticate-token"
-        page-title="Sign In 2 Factor">
+        data-route="authenticate-token"
+        data-title="Sign In 2 Factor">
     <div class="container">
         <h1>Authenticate Token</h1>
         <div class="panel">
@@ -209,8 +209,8 @@
 </script>
 
 <script type="text/template"
-        route="^forgot-password"
-        page-title="Forgot Password?">
+        data-route="^forgot-password"
+        data-title="Forgot Password?">
     <div class="container">
         <h1>Forgot Password?</h1>
         <div class="panel">
@@ -235,8 +235,8 @@
 </script>
 
 <script type="text/template"
-        route="^reset-password"
-        page-title="Reset Password"
+        data-route="^reset-password"
+        data-title="Reset Password"
         transform="transformPasswordReset"
         >
     <div class="container">
@@ -297,8 +297,8 @@
 </script>
 
 <script type="text/template"
-        route="^confirm-sign-up"
-        page-title="Confirm Sign Up"
+        data-route="^confirm-sign-up"
+        data-title="Confirm Sign Up"
         completed="completedSignUp"
         transform="mapConfirmSignup">
     <div class="container">
@@ -323,8 +323,8 @@
 </script>
 
 <script type="text/template"
-        route="^sign-up"
-        page-title="Sign Up"
+        data-route="^sign-up"
+        data-title="Sign Up"
         completed="completedSignUp"
         transform="transformSignUp">
     <div class="container">
@@ -363,8 +363,8 @@
 </script>
 
 <script type="text/template"
-        route="^account\/gold\/?"
-        page-title="My Gold Features"
+        data-route="^account\/gold\/?"
+        data-title="My Gold Features"
         transform="transformAccountGold"
         completed="completedAccountGold"
         >
@@ -525,9 +525,9 @@
 </script>
 
 <script type="text/template"
-        route="^(account\/?$|account\/?\?(.*)$)"
-        source="$endpoint/self"
-        page-title="My Account"
+        data-route="^(account\/?$|account\/?\?(.*)$)"
+        data-source="$endpoint/self"
+        data-title="My Account"
         completed="completedAccount"
         transform="mapAccount">
     <div class="container">
@@ -632,7 +632,7 @@
             <div class="col-xs-12 col-md-6 panel">
                 <div id="settings">
                     <h2>Settings</h2>
-                    <div source="$endpoint/self/settings"
+                    <div data-source="$endpoint/self/settings"
                          template="account-settings">
                     </div>
                 </div>
@@ -694,7 +694,7 @@
 </script>
 
 <script type="text/template"
-        template-name="account-settings"
+        data-template="account-settings"
         transform="transformAccountSettings">
     {{#loading}}
     {{>loading-view}}
@@ -759,7 +759,7 @@
             </tr>
         </tbody>
     </table>
-    <div source="$endpoint/self/social-signins"
+    <div data-source="$endpoint/self/social-signins"
          template="social-settings">
     </div>
     <div class="button-group">
@@ -773,7 +773,7 @@
 </script>
 
 <script type="text/template"
-        mustache-name="signup-fields">
+        data-partial data-template="signup-fields">
     <tbody>
         <tr>
             <th>Email</th>
@@ -823,7 +823,7 @@
 </script>
 
 <script type="text/template"
-        mustache-name="account-email-optins">
+        data-partial data-template="account-email-optins">
     <div class="checkbox email-optin-checkbox">
         <label>
             <input type="checkbox" checked disabled />
@@ -836,7 +836,7 @@
 </script>
 
 <script type="text/template"
-        mustache-name="account-email-optin-news">
+        data-partial data-template="account-email-optin-news">
 <div class="checkbox email-optin-checkbox">
     <label>
         <input type="checkbox" name="emailOptIns[news]"{{#emailOptIns.news}} checked="checked"{{/emailOptIns.news}} value="1" />
@@ -846,7 +846,7 @@
 </script>
 
 <script type="text/template"
-        mustache-name="account-email-optin-merch">
+        data-partial data-template="account-email-optin-merch">
 <div class="checkbox email-optin-checkbox">
     <label>
         <input type="checkbox" name="emailOptIns[merch]"{{#emailOptIns.merch}} checked="checked"{{/emailOptIns.merch}} value="1" />
@@ -856,7 +856,7 @@
 </script>
 
 <script type="text/template"
-        mustache-name="account-email-optin-events">
+        data-partial data-template="account-email-optin-events">
 <div class="checkbox email-optin-checkbox">
     <label>
         <input type="checkbox" name="emailOptIns[events]"{{#emailOptIns.events}} checked="checked"{{/emailOptIns.events}} value="1" />
@@ -866,7 +866,7 @@
 </script>
 
 <script type="text/template"
-        template-name="social-settings"
+        data-template="social-settings"
         transform="transformSocialSettings">
     {{#data}}
         <div class="button-group">
@@ -896,7 +896,7 @@
 </script>
 
 <script type="text/template"
-        mustache-name="joinGoldDiscord">
+        data-partial data-template="joinGoldDiscord">
 {{#hasGoldAccess}}
 <div data-set="discord-join-info" trigger-target="joinDiscord">
 	<table class="form mobile">
@@ -921,7 +921,7 @@
 {{/hasGoldAccess}}
 </script>
 
-<script type="text/template" template-name="joinDiscordResponse">
+<script type="text/template" data-template="joinDiscordResponse">
 {{#loading}}{{/loading}}
 {{#error}}
 <p class="error-box">{{message}}</p>
@@ -941,9 +941,9 @@ Success please join the following channels with the links below:<br/><br/>
 </script>
 
 <script type="text/template"
-        mustache-name="required"><span class="required">*</span></script>
+        data-partial data-template="required"><span class="required">*</span></script>
 
 <script type="text/template"
-        mustache-name="continueTo">
+        data-partial data-template="continueTo">
 {{#buying}}{{#vendor}}a <strong>{{vendor}}</strong> license for <strong>{{identity}}</strong>{{/vendor}}{{#gold}}a <strong><a href="/gold">Gold subscription</a></strong>{{/gold}}{{/buying}}
 {{#msg}}{{{msg}}}{{/msg}}</script>

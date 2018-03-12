@@ -1,6 +1,6 @@
 <script type="text/template"
-        route="^(?:podcast|cotw|COTW)\/?$"
-        page-title="Monstercat | Call of the Wild"
+        data-route="^(?:podcast|cotw|COTW)\/?$"
+        data-title="Monstercat | Call of the Wild"
         completed="iframeHeight">
     <div class="fullpage-wrapper">
         <iframe class="fullpage-iframe" height="900" src="https://www.monstercat.com/podcast-iframe/"></iframe>
@@ -9,8 +9,8 @@
 </script>
 
 <script type="text/template"
-        route="^photo-?gallery\/?$"
-        page-title="Photo Gallery Submission"
+        data-route="^photo-?gallery\/?$"
+        data-title="Photo Gallery Submission"
         completed="onPodcastPageOpened">
 <div class="top-banner top-banner--no-margin ">
   <div class="banner">
@@ -168,7 +168,7 @@ function submitPodcastGallery (e, el) {
 </script>
 
 <script type="text/template"
-        route="^photo-?gallery\/terms-of-service\/?$"
+        data-route="^photo-?gallery\/terms-of-service\/?$"
         transform="transformMarkdown"
         source="https://raw.githubusercontent.com/monstercat/docs/master/site/Podcast%20Gallery%20Terms%20of%20Service.md">
   {{>markdown-basic}}

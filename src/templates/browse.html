@@ -1,6 +1,6 @@
 <script type="text/template"
-        route="^browse"
-        page-title="Browse Music"
+        data-route="^browse"
+        data-title="Browse Music"
         transform="transformBrowseMusic"
         completed="completedBrowseMusic">
     {{#data}}
@@ -21,7 +21,7 @@
             </div>
         </header>
         <div class="flex panel panel--mobile">
-            <div class="col-xs-12 col-sm-12 col-md-2 browse-filters" source="$endpoint/catalog/browse/filters"
+            <div class="col-xs-12 col-sm-12 col-md-2 browse-filters" data-source="$endpoint/catalog/browse/filters"
                  template="browse-filters">
             </div>
             <div class="col-xs-12 col-sm-12 col-md-10" role="browse-pages"></div>
@@ -37,7 +37,7 @@
 </script>
 
 <script type="text/template"
-        template-name="browse-filters"
+        data-template="browse-filters"
         completed="completedBrowseFilters">
     {{#loading}}{{>loading-view}}{{/loading}}
     {{#error}}<p>{{message}}</p>{{/error}}
@@ -81,7 +81,7 @@
     {{/data}}
 </script>
 
-<script type="text/template" template-name="browse-filter-item">
+<script type="text/template" data-template="browse-filter-item">
     <li>
         <input type="hidden" name="{{type}}s" value="{{value}}"/>
         <button action="removeBrowseFilter">{{value}} <i class="fa fa-close"></i></button>
@@ -89,12 +89,12 @@
 </script>
 
 <script type="text/template"
-        template-name="browse-page">
+        data-template="browse-page">
     <ul source="{{source}}" template="music-browse" class="music-browse"></ul>
 </script>
 
 <script type="text/template"
-        template-name="music-browse"
+        data-template="music-browse"
         transform="transformMusicBrowseResults"
         completed="completedMusicBrowseResults">
     {{#loading}}

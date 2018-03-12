@@ -1,17 +1,17 @@
 <script type="text/template"
-        data-route="^(\?.*)?$"
+        data-data-route="^(\?.*)?$"
         data-title="Monstercat"
         data-process="processPage"
         data-template="home-page"
         >
     <div role="home-featured">
         <div
-            data-source="$endpoint/catalog/release?limit=15"
+            data-data-source="$endpoint/catalog/release?limit=15"
             data-process="processHomeFeatured">
         </div>
     </div>
     <div data-source="https://shop.monstercat.com/collections/website-featured/products.json" data-no-cors="true" data-target-template="home-merch"></div>
-    <div data-source="$endpoint/catalog/release?filters=type,Podcast&limit=8" template="home-podcast"></div>
+    <div data-data-source="$endpoint/catalog/release?filters=type,Podcast&limit=8" template="home-podcast"></div>
     {{>spotify-and-social}}
 </script>
 
@@ -115,7 +115,7 @@
 </script>
 
 <script type="text/template"
-        template-name="home-page-tracks"
+        data-template="home-page-tracks"
         transform="transformHomeTracks"
         >
 {{#data}}
@@ -129,7 +129,7 @@
 >
 <input type="hidden" role="release-id" release-id="{{_id}}" />
 <div style="display: none;"
-    source="$endpoint/catalog/browse?types=Single,EP,Album"
+    data-source="$endpoint/catalog/browse?types=Single,EP,Album"
     template="home-page-tracks">
 </div>
 <a class="button button--cta button--icon button--icon button--home-play {{#inEarlyAccess}}early-access{{/inEarlyAccess}}"
@@ -142,7 +142,7 @@
 </script>
 
 <script type="text/template"
-        template-name="home-podcast"
+        data-template="home-podcast"
         transform="transformPodcast">
     {{#loading}}
     {{>loading-view}}
@@ -230,7 +230,7 @@
 </script>
 
 <script type="text/template"
-        template-name="blog-stories"
+        data-template="blog-stories"
         transform="transformBlog">
     {{#loading}}
     {{>loading-view}}

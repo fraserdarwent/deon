@@ -1,17 +1,17 @@
 <script type="text/template"
-        route="^music"
-        page-title="Music"
+        data-route="^music"
+        data-title="Music"
         completed="completedMusic"
         transform="transformMusic">
     {{#data}}
-    <div source="$endpoint/catalog/release?{{query}}"
+    <div data-source="$endpoint/catalog/release?{{query}}"
          template="music-releases">
     </div>
     {{/data}}
 </script>
 
 <script type="text/template"
-        template-name="music-releases"
+        data-template="music-releases"
         transform="transformMusicReleases">
     {{#loading}}
     {{>loading-view}}
@@ -62,12 +62,12 @@
 </script>
 
 <script type="text/template"
-        mustache-name="unlicensable">
+        data-partial data-template="unlicensable">
 {{^licensable}}<div class="unlicensable">Not available for Content Creator licenses. <a href="/non-licensable-tracks">Read more</a></div>{{/licensable}}
 </script>
 
 <script type="text/template"
-        mustache-name="early-access-msg">
+        data-partial data-template="early-access-msg">
 {{#inEarlyAccess}}
 <div class="in-early-access-msg">
     {{^hasGoldAccess}}
@@ -81,7 +81,7 @@
 </script>
 
 <script type="text/template"
-        mustache-name="playRelease">
+        data-partial data-template="playRelease">
 <button class="button--release-cta button--cta"
         action="playSongs"
         ab-test="{{activeTest}}"
@@ -94,7 +94,7 @@
 </script>
 
 <script type="text/template"
-        mustache-name="trackCellsOneLine">
+        data-partial data-template="trackCellsOneLine">
 <td class="longer-width">
   <div class="scroll-container"
        onmouseover="scrollTrackTitle(this)" onmouseleave="removeScrollTrackTitle(this)">
@@ -119,7 +119,7 @@
 
 
 <script type="text/template"
-        mustache-name="artists-csv-list">
+        data-partial data-template="artists-csv-list">
 {{#artistsList.length}}
     <span class="artists comma-list{{#or}} or{{/or}}">
     {{#artistsList}}<span class="artist">{{#public}}<a href="{{artistPageLink}}">{{name}}</a>{{/public}}{{^public}}{{name}}{{/public}}</span>{{/artistsList}}
@@ -131,7 +131,7 @@
 </script>
 
 <script type="text/template"
-        mustache-name="trackCells">
+        data-partial data-template="trackCells">
 <td>{{title}}{{>early-access-msg}}{{>unlicensable}}</td>
 {{#playlistId}}
 <td><a href="/release/{{releaseId}}">{{releaseTitle}}</a></td>
@@ -145,7 +145,7 @@
 </script>
 
 <script type="text/template"
-        mustache-name="playSong">
+        data-partial data-template="playSong">
 {{#streamable}}
 <button class="faux button--mobile{{#inEarlyAccess}} in-early-access{{/inEarlyAccess}}"
         action="playSong"
@@ -179,7 +179,7 @@
 </script>
 
 <script type="text/template"
-        mustache-name="trackButtons">
+        data-partial data-template="trackButtons">
 {{#showDownloadLink}}
 <a class="silent button--mobile"
    target="_blank"
@@ -223,7 +223,7 @@
 </script>
 
 <script type="text/template"
-        template-name="release-tracks"
+        data-template="release-tracks"
         transform="transformReleaseTracks"
         completed="completedReleaseTracks">
     <div class="panel panel--mobile">
@@ -279,11 +279,11 @@
 </script>
 
 <script type="text/template"
-        route="^artist\/(.*)"
-        page-title="Artist"
+        data-route="^artist\/(.*)"
+        data-title="Artist"
         transform="transformWebsiteDetails"
         completed="completedArtist"
-        source="$endpoint/catalog/artist/$1">
+        data-source="$endpoint/catalog/artist/$1">
     {{#loading}}
     {{>loading-view}}
     {{/loading}}
@@ -328,7 +328,7 @@
             {{{management}}}
         </div>
         {{/contact}}
-        <div source="$endpoint/catalog/artist/{{_id}}/releases"
+        <div data-source="$endpoint/catalog/artist/{{_id}}/releases"
             template="user-releases">
         </div>
         {{#shopifyCollectionId}}
@@ -355,7 +355,7 @@
 </script>
 
 <script type="text/template"
-  template-name="user-releases"
+  data-template="user-releases"
   transform="transformUserReleases">
     {{#loading}}
     <div class="panel">

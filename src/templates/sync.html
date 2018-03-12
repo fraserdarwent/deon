@@ -1,6 +1,6 @@
 <script type="text/template"
-        route="^sync\/thank-you"
-        page-title="Sync - Monstercat"
+        data-route="^sync\/thank-you"
+        data-title="Sync - Monstercat"
         transform=""
 >
 <div class="container">
@@ -12,8 +12,8 @@
 </script>
 
 <script type="text/template"
-        route="^sync"
-        page-title="Sync - Monstercat"
+        data-route="^sync"
+        data-title="Sync - Monstercat"
         transform="transformSyncPage"
 >
 <div class="top-banner top-banner--sync cl-white">
@@ -53,7 +53,7 @@
 
   <div class="panel">
     <h2 class="line-top">Featured Sync Tracks</h2>
-    <div  source="$endpoint/catalog/browse/?tags=Featured%20Sync&limit=12"
+    <div  data-source="$endpoint/catalog/browse/?tags=Featured%20Sync&limit=12"
           template="sync-tracks"
           >
     </div>
@@ -105,7 +105,7 @@
 </script>
 
 <script type="text/template"
-        template-name="sync-project-modal">
+        data-template="sync-project-modal">
   <div class="modal modal--sync-project">
     <div class="panel pointer-events">
       <h2>{{name}}</h2>
@@ -122,7 +122,7 @@
 
 <script type="text/template"
         transform="transformSyncTracks"
-        template-name="sync-tracks">
+        data-template="sync-tracks">
 <ul class="art-list art-list--play art-list--full-width sync-tracks">
   {{#data}}
     {{#results}}

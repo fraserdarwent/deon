@@ -1,5 +1,5 @@
 <script type="text/template"
-        route="^search\/artists(\?.*)?"
+        data-route="^search\/artists(\?.*)?"
         transform="transformSearchArtistsPage"
         completed="completedSearchArtists">
     <div class="container">
@@ -15,7 +15,7 @@
         </div>
         {{/error}}
         {{#data}}
-        <div source="$endpoint/catalog/artist?{{query}}"
+        <div data-source="$endpoint/catalog/artist?{{query}}"
              template="search-artists">
         </div>
         {{/data}}
@@ -23,7 +23,7 @@
 </script>
 
 <script type="text/template"
-        template-name="search-artists"
+        data-template="search-artists"
         transform="transformSearchArtistsResults">
     <div class="panel">
         {{#loading}}
@@ -45,7 +45,7 @@
 </script>
 
 <script type="text/template"
-        route="^search\/songs(\?.*)?"
+        data-route="^search\/songs(\?.*)?"
         transform="transformSearchTracksPage"
         completed="completedSearchTracks">
     <div class="container">
@@ -61,7 +61,7 @@
         </div>
         {{/error}}
         {{#data}}
-        <div source="$endpoint/catalog/browse?{{query}}"
+        <div data-source="$endpoint/catalog/browse?{{query}}"
              template="search-tracks">
         </div>
         {{/data}}
@@ -69,7 +69,7 @@
 </script>
 
 <script type="text/template"
-        template-name="search-tracks"
+        data-template="search-tracks"
         transform="transformSearchTrackResults">
     <div class="panel panel--mobile">
         {{#loading}}
@@ -91,7 +91,7 @@
 </script>
 
 <script type="text/template"
-        route="^search\/releases(\?.*)?"
+        data-route="^search\/releases(\?.*)?"
         transform="transformSearchReleasesPage"
         completed="completedSearchReleases">
     <div class="container">
@@ -107,14 +107,14 @@
         </div>
         {{/error}}
         {{#data}}
-        <div source="$endpoint/catalog/release?{{query}}"
+        <div data-source="$endpoint/catalog/release?{{query}}"
              template="search-releases"></div>
         {{/data}}
     </div>
 </script>
 
 <script type="text/template"
-        template-name="search-releases"
+        data-template="search-releases"
         transform="transformSearchReleaseResults">
         <div class="panel">
             {{#loading}}
@@ -139,8 +139,8 @@
 </script>
 
 <script type="text/template"
-        route="^search(\?.*)?"
-        page-title="Search All"
+        data-route="^search(\?.*)?"
+        data-title="Search All"
         completed="completedSearchAll"
         transform="transformSearch">
     <div class="container search">
@@ -149,19 +149,19 @@
         {{#searches}}
         <div class="panel panel--mobile">
             <h2>Songs</h2>
-            <div source="$endpoint/catalog/browse?{{tracks.query}}"
+            <div data-source="$endpoint/catalog/browse?{{tracks.query}}"
                  template="search-snippet-tracks">
             </div>
         </div>
         <div class="panel">
             <h2>Releases</h2>
-            <div source="$endpoint/catalog/release?{{releases.query}}"
+            <div data-source="$endpoint/catalog/release?{{releases.query}}"
                  template="search-snippet-releases">
             </div>
         </div>
         <div class="panel">
             <h2>Artists</h2>
-            <div source="$endpoint/catalog/artist?{{artists.query}}"
+            <div data-source="$endpoint/catalog/artist?{{artists.query}}"
                  template="search-snippet-artists">
             </div>
         </div>
@@ -176,7 +176,7 @@
 </script>
 
 <script type="text/template"
-        template-name="search-snippet-releases"
+        data-template="search-snippet-releases"
         transform="transformSearchSnippetReleases">
     {{#loading}}
     {{>loading-view}}
@@ -196,7 +196,7 @@
 </script>
 
 <script type="text/template"
-        template-name="search-snippet-artists"
+        data-template="search-snippet-artists"
         transform="transformSearchSnippetArtists">
     {{#loading}}
     {{>loading-view}}
@@ -217,7 +217,7 @@
 </script>
 
 <script type="text/template"
-        template-name="search-snippet-tracks"
+        data-template="search-snippet-tracks"
         transform="transformSearchSnippetTracks">
     {{#loading}}
     {{>loading-view}}
@@ -238,7 +238,7 @@
 </script>
 
 <script type="text/template"
-        mustache-name="searchTracksTable">
+        data-partial data-template="searchTracksTable">
     {{#results.length}}
     <table>
         <thead>
@@ -270,7 +270,7 @@
 </script>
 
 <script type="text/template"
-        mustache-name="searchReleasesList">
+        data-partial data-template="searchReleasesList">
     <ul class="art-list art-list--full-width">
         {{#results}}
         <li class="{{#inEarlyAccess}}in-early-access{{/inEarlyAccess}}">
@@ -290,7 +290,7 @@
 
 
 <script type="text/template"
-        mustache-name="searchArtistsList">
+        data-partial data-template="searchArtistsList">
     <ul class="art-list art-list--full-width">
         {{#results}}
         <li>
@@ -314,7 +314,7 @@
 </script>
 
 <script type="text/template"
-        mustache-name="searchPagination">
+        data-partial data-template="searchPagination">
     {{#total}}
     <div class="container pagination pad-vertical text center">
         {{#previous}}

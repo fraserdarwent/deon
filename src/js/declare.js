@@ -417,7 +417,7 @@ function render (container, template, scope) {
 }
 
 function getTemplateEl(name) {
-  return document.querySelector('[template-name="' + name + '"]');
+  return document.querySelector('[data-template="' + name + '"]');
 }
 
 function getTemplate (name) {

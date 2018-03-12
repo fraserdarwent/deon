@@ -1,6 +1,6 @@
 <script type="text/template"
-        route="^[Mm]ix[Cc]ontest2016\/votes"
-        page-title="Mix Contest 2016 Votes"
+        data-route="^[Mm]ix[Cc]ontest2016\/votes"
+        data-title="Mix Contest 2016 Votes"
         transform="transformMixContest">
   {{#loading}}
   {{>loading-view}}
@@ -12,13 +12,13 @@
   {{/error}}
   {{#data}}
   {{#pollId}}
-  <div source="$endpoint/poll/{{pollId}}/votes/breakdown" template="vote-breakdown"></div>
+  <div data-source="$endpoint/poll/{{pollId}}/votes/breakdown" template="vote-breakdown"></div>
   {{/pollId}}
   {{/data}}
 </script>
 
 <script type="text/template"
-        template-name="vote-breakdown"
+        data-template="vote-breakdown"
         transform="transformVotesBreakdown"
         completed="completedHome">
   {{#loading}}
@@ -53,8 +53,8 @@
 </script>
 
 <script type="text/template"
-        route="^[Mm]ix[Cc]ontest2016\/?$"
-        page-title="Mix Contest 2016"
+        data-route="^[Mm]ix[Cc]ontest2016\/?$"
+        data-title="Mix Contest 2016"
         transform="transformMixContest">
   {{#loading}}
   {{>loading-view}}
@@ -66,7 +66,7 @@
   {{/error}}
   {{#data}}
   {{#pollId}}
-  <div source="$endpoint/poll/{{pollId}}" template="mix-contest"></div>
+  <div data-source="$endpoint/poll/{{pollId}}" template="mix-contest"></div>
   {{/pollId}}
   {{^pollId}}
   <div class="container">
@@ -82,7 +82,7 @@
 </script>
 
 <script type="text/template"
-        template-name="mix-contest"
+        data-template="mix-contest"
         transform="transformMixContestPoll"
         completed="completedHome">
   {{#loading}}
@@ -157,8 +157,8 @@
 </script>
 
 <script type="text/template"
-        route="^poll\/?$"
-        page-title="Poll"
+        data-route="^poll\/?$"
+        data-title="Poll"
         transform="transformPoll">
   {{#loading}}
   {{>loading-view}}
@@ -236,7 +236,7 @@
   {{/data}}
 </script>
 
-<script type="text/template" template-name="poll-choice">
+<script type="text/template" data-template="poll-choice">
     <table>
       <tbody>
         <tr class="choice">

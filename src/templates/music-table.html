@@ -1,12 +1,12 @@
 <script type="text/template"
-        route="^catalog"
-        page-title="Catalog Music"
+        data-route="^catalog"
+        data-title="Catalog Music"
         transform="transformCatalogMusic"
         completed="completedCatalogMusic">
     {{#data}}
     <div class="container">
         <div class="flex" data-set="browse-filters">
-            <div class="col-xs-12 browse-filters browse-filters--table" source="$endpoint/catalog/browse/filters"
+            <div class="col-xs-12 browse-filters browse-filters--table" data-source="$endpoint/catalog/browse/filters"
                  template="catalog-filters">
             </div>
             <div class="col-xs-12 catalog-table" role="catalog-pages"></div>
@@ -18,7 +18,7 @@
 <script type="text/template"
         transform="transformCatalogFilters"
         completed="completedCatalogFilters"
-        template-name="catalog-filters">
+        data-template="catalog-filters">
     {{#loading}}{{>loading-view}}{{/loading}}
     {{#error}}<p>{{message}}</p>{{/error}}
     {{#data}}
@@ -63,18 +63,18 @@
 </script>
 
 <script type="text/template"
-        template-name="catalog-page">
+        data-template="catalog-page">
     <div template="catalog-rows" source="{{source}}"></div>
     </footer>
 </script>
 
 <script type="text/template"
-        mustache-name="catalog-sorting-header">
+        data-partial data-template="catalog-sorting-header">
 <a href="#" class="{{#sorting}}sorting-active {{/sorting}}{{#desc}}sorting-desc {{/#desc}}{{#asc}}sorting-asc{{/asc}}">{{label}}</a>
 </script>
 
 <script type="text/template"
-        template-name="catalog-rows"
+        data-template="catalog-rows"
         transform="transformMusicCatalogResults"
         completed="completedBrowseFilters">
   {{#loading}}{{>loading-view}}{{/loading}}

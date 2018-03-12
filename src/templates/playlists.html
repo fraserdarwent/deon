@@ -1,5 +1,5 @@
 <script type="text/template"
-        template-name="select-playlist">
+        data-template="select-playlist">
     {{#loading}}
     <option disabled checked>Loading...</option>
     {{/loading}}
@@ -14,7 +14,7 @@
 </script>
 
 <script type="text/template"
-        template-name="add-to-playlist-modal"
+        data-template="add-to-playlist-modal"
         transform="transformAddToPlaylist">
     <div class="modal">
         <div class="panel pointer-events">
@@ -75,8 +75,8 @@
 </script>
 
 <script type="text/template"
-        page-title="My Playlists"
-        route="^playlists">
+        data-title="My Playlists"
+        data-route="^playlists">
     <div class="container">
         <h1>My Playlists</h1>
         <div class="panel">
@@ -93,7 +93,7 @@
                     </tr>
                 </thead>
                 <tbody
-                    source="$endpoint/playlist?fields=name,public"
+                    data-source="$endpoint/playlist?fields=name,public"
                     template="playlists">
                 </tbody>
             </table>
@@ -102,7 +102,7 @@
 </script>
 
 <script type="text/template"
-        template-name="playlists">
+        data-template="playlists">
     {{#loading}}
     {{>loading-table-view}}
     {{/loading}}
@@ -134,8 +134,8 @@
 </script>
 
 <script type="text/template"
-        route="^playlist\/(.*)"
-        source="$endpoint/playlist/$1?fields=name,public,userId"
+        data-route="^playlist\/(.*)"
+        data-source="$endpoint/playlist/$1?fields=name,public,userId"
         completed="completedPlaylist"
         transform="transformPlaylist">
     <div class="container">
@@ -244,7 +244,7 @@
 </script>
 
 <script type="text/template"
-        template-name="playlist-tracks"
+        data-template="playlist-tracks"
         transform="transformPlaylistTracks"
         completed="completedPlaylistTracks">
     {{#error}}

@@ -1,6 +1,6 @@
 <script type="text/template"
-        route="^licensing\/content-creators\/?\??(.*)?$"
-        page-title="Licensing Music for YouTube, Twitch, and Mixer"
+        data-route="^licensing\/content-creators\/?\??(.*)?$"
+        data-title="Licensing Music for YouTube, Twitch, and Mixer"
         transform="transformLicensingContentCreators"
         completed="completedContentCreatorLicensing">
   <div class="licensing">
@@ -85,8 +85,8 @@
   </div>
 </script>
 <script type="text/template"
-        route="^licensing\/?$"
-        page-title="Licensing"
+        data-route="^licensing\/?$"
+        data-title="Licensing"
         transform="transformLicensing"
         completed="completedLicensing">
   <div class="licensing v-stretch">
@@ -116,15 +116,15 @@
 </script>
 
 <script type="text/template"
-        route="^license\/?$"
+        data-route="^license\/?$"
         redirect="/licensing">
 </script>
 
 <!-- POLICY PAGES -->
 
 <script type="text/template"
-        route="^licensing\/twitch-policy\/?\??(.*)?$"
-        page-title="Twitch License Policy">
+        data-route="^licensing\/twitch-policy\/?\??(.*)?$"
+        data-title="Twitch License Policy">
   <div class="container">
     <h1>Twitch Licensing Policy</h1>
   </div>
@@ -144,12 +144,12 @@
   </div>
 </script>
 
-<script type="text/template" template-name="markdown-simple" transform="transformMarkdown" completed="scrollToHighlightHash">
+<script type="text/template" data-template="markdown-simple" transform="transformMarkdown" completed="scrollToHighlightHash">
 {{>markdown-basic}}
 </script>
 
 
-<script type="text/template" template-name="markdown-bare" transform="transformMarkdown" completed="scrollToHighlightHash">
+<script type="text/template" data-template="markdown-bare" transform="transformMarkdown" completed="scrollToHighlightHash">
 {{#loading}}
 {{>loading-view}}
 {{/loading}}
@@ -162,8 +162,8 @@
 </script>
 
 <script type="text/template"
-        route="^licensing\/youtube-policy\/?\??(.*)?$"
-        page-title="Monstercat YouTube Licensing Policy">
+        data-route="^licensing\/youtube-policy\/?\??(.*)?$"
+        data-title="Monstercat YouTube Licensing Policy">
   <div class="container">
     <h1>YouTube Licensing Policy</h1>
   </div>
@@ -185,8 +185,8 @@
 </script>
 
 <script type="text/template"
-        route="^licensing\/other-platforms\/?\??(.*)?$"
-        page-title="Licensing Music for Facebook, Instagram, and more"
+        data-route="^licensing\/other-platforms\/?\??(.*)?$"
+        data-title="Licensing Music for Facebook, Instagram, and more"
         transform="transformLicensingOtherPlatformsPage">
 {{#data}}
 <div class="container">
@@ -234,7 +234,7 @@
 <!-- MUSTACHES -->
 
 <script type="text/template"
-        mustache-name="licensingContentCreatorCTAs">
+        data-partial data-template="licensingContentCreatorCTAs">
 <a class="button button--full button-cta button--youtube button-cta--mobile" role="licensing-cta" href="/account/services?vendor=youtube">
     <span class="title">YouTube</span>
     <span class="subtitle">$10/mo or $200</span>
@@ -250,7 +250,7 @@
 </script>
 
 <script type="text/template"
-        mustache-name="licensingOurContentCreators">
+        data-partial data-template="licensingOurContentCreators">
   <h2>Our Content Creators</h2>
   <p>Some of the great streamers and YouTubers using Monstercat music to make their content great.</p><!-- what year is it? -->
   <ul class="clients">
@@ -264,7 +264,7 @@
 </script>
 
 <script type="text/template"
-        mustache-name="licensingContentCreatorSellingPoints">
+        data-partial data-template="licensingContentCreatorSellingPoints">
   <ul class="selling-points">
     <li>Get whitelisted to use our music</li>
     <li>Pay monthly or prepay for 20 months</li>
@@ -273,7 +273,7 @@
 </script>
 
 <script type="text/template"
-        mustache-name="licensing-modal-main">
+        data-partial data-template="licensing-modal-main">
   <div class="section content-creators flex-buttons">
       <a class="button button-cta button-cta--mobile" href="/sync" action="closeModal">
         <span class="title">Commercial</span>
@@ -285,7 +285,7 @@
 <!-- MODALS -->
 
 <script type="text/template"
-        template-name="track-licensing-modal"
+        data-template="track-licensing-modal"
         transform="loadReleaseAndTrack">
     <div class="modal modal--licensing-track modal--licensing">
         <div class="panel pointer-events">
@@ -326,7 +326,7 @@
 </script>
 
 <script type="text/template"
-        template-name="release-licensing-modal"
+        data-template="release-licensing-modal"
         transform="loadRelease"
         >
     <div class="modal modal--licensing-release modal--licensing">

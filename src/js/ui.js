@@ -2,7 +2,7 @@ function toast (opts) {
   var container = document.querySelector('[role="toasts"]')
   if (!container) return
   var div = document.createElement('div')
-  var template = document.querySelector('[template-name="toast"]')
+  var template = document.querySelector('[data-template="toast"]')
   if (!template) return
   render(div, template.textContent, opts)
   var el = div.firstElementChild

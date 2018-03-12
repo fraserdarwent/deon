@@ -1,6 +1,6 @@
 
 <script type="text/template"
-        mustache-name="markdown-basic">
+        data-partial data-template="markdown-basic">
     <div class="container">
         {{#loading}}
         {{>loading-view}}
@@ -17,21 +17,21 @@
 </script>
 
 <script type="text/template"
-        route="^faqs(?:\/|\/general)?$"
+        data-route="^faqs(?:\/|\/general)?$"
         transform="transformMarkdown"
         source="https://raw.githubusercontent.com/monstercat/docs/master/site/General%20Questions.md">
     {{>markdown-basic}}
 </script>
 
 <script type="text/template"
-        route="^faqs\/whitelisting\/?$"
+        data-route="^faqs\/whitelisting\/?$"
         transform="transformMarkdown"
         source="https://raw.githubusercontent.com/monstercat/docs/master/site/Whitelisting.md">
     {{>markdown-basic}}
 </script>
 
 <script type="text/template"
-        route="^faqs/migration-notice\/?$"
+        data-route="^faqs/migration-notice\/?$"
         source-type="markdown"
         transform="transformMarkdown"
         completed="completedMarkdown"
@@ -40,28 +40,28 @@
 </script>
 
 <script type="text/template"
-        route="^twitch-policy\/?$"
+        data-route="^twitch-policy\/?$"
         transform="transformMarkdown"
         source="https://raw.githubusercontent.com/monstercat/docs/master/Twitch%20Policy.md">
     {{>markdown-basic}}
 </script>
 
 <script type="text/template"
-        route="^privacy-policy\/?$"
+        data-route="^privacy-policy\/?$"
         transform="transformMarkdown"
         source="https://raw.githubusercontent.com/monstercat/docs/master/connect/Privacy%20Policy.md">
     {{>markdown-basic}}
 </script>
 
 <script type="text/template"
-        route="^terms-of-service\/?$"
+        data-route="^terms-of-service\/?$"
         transform="transformMarkdown"
         source="https://raw.githubusercontent.com/monstercat/docs/master/connect/Terms%20of%20Service.md">
     {{>markdown-basic}}
 </script>
 
 <script type="text/template"
-        route="^non-licensable-tracks\/?$"
+        data-route="^non-licensable-tracks\/?$"
         source-type="markdown"
         transform="transformMarkdown"
         source="https://connect.monstercat.com/handbook/licensing">
@@ -69,14 +69,14 @@
 </script>
 
 <script type="text/template"
-        route="^dev\/api\/connect\/?$"
+        data-route="^dev\/api\/connect\/?$"
         transform="transformMarkdown"
         source="https://raw.githubusercontent.com/monstercat/docs/master/connect/api/alpha/README.md">
   {{>markdown-basic}}
 </script>
 
 <script type="text/template"
-        route="^halloween-stencils\/?$"
+        data-route="^halloween-stencils\/?$"
         transform="transformMarkdown"
         source="https://raw.githubusercontent.com/monstercat/docs/master/halloween-stencils.md">
   {{>markdown-basic}}

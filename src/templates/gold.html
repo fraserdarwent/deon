@@ -1,6 +1,6 @@
 <script type="text/template"
-        mustache-name="gold-subscribe-form"
-        template-name="gold-subscribe-form"
+        data-partial data-template="gold-subscribe-form"
+        data-template="gold-subscribe-form"
         >
 <div class="flex gold-subscribe">
   <div class="col-xs-12 col-md-5 col-md-last col-lg-last panel panel--dark">
@@ -133,9 +133,9 @@
 </script>
 
 <script type="text/template"
-        route="^gold/buy/success"
+        data-route="^gold/buy/success"
         transform="transformBuyGoldSuccess"
-        page-title="Monstercat Gold">
+        data-title="Monstercat Gold">
         <div class="container">
           <div class="panel">
             <h1>Success</h1>
@@ -145,10 +145,10 @@
 </script>
 
 <script type="text/template"
-        route="^gold/buy"
+        data-route="^gold/buy"
         transform="transformGoldBuyPage"
         completed="completedGoldBuyPage"
-        page-title="Buy Monstercat Gold">
+        data-title="Buy Monstercat Gold">
   {{#data}}
     <div class="container">
       {{#goldSubscribe}}
@@ -159,10 +159,10 @@
 </script>
 
 <script type="text/template"
-        route="^gold"
+        data-route="^gold"
         transform="transformGoldLanding"
         completed="completedGoldLanding"
-        page-title="Monstercat Gold">
+        data-title="Monstercat Gold">
   {{#data}}
     <div class="top-banner top-banner-gold">
       <div class="banner" style="background-image:url('/img/gold.jpg')"></div>

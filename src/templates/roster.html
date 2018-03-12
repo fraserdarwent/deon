@@ -1,8 +1,8 @@
 <script type="text/template"
-        route="^artists\/?"
+        data-route="^artists\/?"
         transform="transformRoster"
         completed="completedRoster"
-        page-title="Artists">
+        data-title="Artists">
     <div class="container">
         <h1>Artists</h1>
         <div class="panel">
@@ -31,7 +31,7 @@
                 </select>
             </div>
             <div
-            source="$endpoint/catalog/artist?fields=name,websiteDetailsId,vanityUri,profileImageBlobId,profileImageUrl&filters=years,{{selectedYear}}"
+            data-source="$endpoint/catalog/artist?fields=name,websiteDetailsId,vanityUri,profileImageBlobId,profileImageUrl&filters=years,{{selectedYear}}"
                  template="roster-year">
             </div>
             {{/data}}
@@ -40,7 +40,7 @@
 </script>
 
 <script type="text/template"
-        template-name="roster-year"
+        data-template="roster-year"
         transform="transformRosterYear">
     {{#loading}}
     {{>loading-view}}

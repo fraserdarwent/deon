@@ -1,6 +1,6 @@
 <script type="text/template"
-        route="^release-claim"
-        page-title="Remove YouTube Claim">
+        data-route="^release-claim"
+        data-title="Remove YouTube Claim">
     <div class="container">
         <h1>YouTube Release Claim</h1>
         <div class="panel">
@@ -26,7 +26,7 @@
     </div>
 </script>
 
-<script type="text/template" mustache-name="vendor-selector">
+<script type="text/template" data-partial data-template="vendor-selector">
     <select name="vendor">
         <option value="">Select One</option>
         <option>YouTube</option>

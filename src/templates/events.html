@@ -1,9 +1,9 @@
 <script type="text/template"
-        route="^event\/(.*)"
-        page-title="Event"
+        data-route="^event\/(.*)"
+        data-title="Event"
         transform="transformEventPage"
         completed="completedEventPage"
-        source="$endpoint/event/$1">
+        data-source="$endpoint/event/$1">
     {{#loading}}
     {{>loading-view}}
     {{/loading}}
@@ -78,7 +78,7 @@
 </script>
 
 <script type="text/template"
-        mustache-name="event-sponsor">
+        data-partial data-template="event-sponsor">
   <div class="container text left cl-white">
     <div class="footer-cta footer-cta--sponsor">
       <div class="button-group-center">
@@ -92,11 +92,11 @@
 </script>
 
 <script type="text/template"
-        route="^events\/?(\?.+)?$"
+        data-route="^events\/?(\?.+)?$"
         transform="transformEventsPage"
         completed="completedEventsPage">
     {{#data}}
-      <div source="$endpoint/events/header?limit=1" template="event-header"></div>
+      <div data-source="$endpoint/events/header?limit=1" template="event-header"></div>
       <section role="upcoming-events">
         <div class="container latest">
           <header class="flex top-cta">
@@ -122,14 +122,14 @@
         </div>
       </section>
       {{>events-email-optin}}
-      <section source="$endpoint/events/past?featured=1&limit=100" class="events-past" template="events-past"></section>
+      <section data-source="$endpoint/events/past?featured=1&limit=100" class="events-past" template="events-past"></section>
     {{/data}}
     {{>event-sponsor}}
     <div role="event-google-tracking"></div>
 </script>
 
 <script type="text/template"
-        template-name="event-header"
+        data-template="event-header"
         transform="transformHeaderEvent">
     {{#loading}}
     {{>loading-view-black}}
@@ -147,12 +147,12 @@
 </script>
 
 <script type="text/template"
-        template-name="events-table-container">
-<div source="$endpoint/events/upcoming?{{upcomingQueryString}}" template="events-table"></div>
+        data-template="events-table-container">
+<div data-source="$endpoint/events/upcoming?{{upcomingQueryString}}" template="events-table"></div>
 </script>
 
 <script type="text/template"
-        template-name="events-table"
+        data-template="events-table"
         transform="transformUpcomingEvents"
         completed="completedUpcomingEvents">
   {{#loading}}
@@ -173,7 +173,7 @@
 </script>
 
 <script type="text/template"
-        mustache-name="upcoming-event-tr">
+        data-partial data-template="upcoming-event-tr">
 <tr {{#featured}}class="featured"{{/featured}} data-date="{{startDate}}" event-id="{{_id}}">
     <td class="date">
       <div>
@@ -222,7 +222,7 @@
 </script>
 
 <script type="text/template"
-        template-name="events-past"
+        data-template="events-past"
         transform="transformPastEvents">
   {{#loading}}
   {{>loading-view}}
@@ -270,7 +270,7 @@
 </script>
 
 <script type="text/template"
-        mustache-name="event-header">
+        data-partial data-template="event-header">
   <div class="banner">
       <div class="banner" style="background-image:url({{coverImageLarge}})">
           <div class="banner-shade"></div>
@@ -317,9 +317,9 @@
 
 <!-- This is if you aren't logged in -->
 <script type="text/template"
-        mustache-name="events-email-optin">
+        data-partial data-template="events-email-optin">
 <div role="events-email-optin">
-{{#isSignedIn}}<div source="$endpoint/self" template="events-email-optin"></div>{{/isSignedIn}}
+{{#isSignedIn}}<div data-source="$endpoint/self" template="events-email-optin"></div>{{/isSignedIn}}
 {{^isSignedIn}}
   <div class="container panel events-email events-email-signin">
     <form onsubmit="false" data-set="credentials" data-submit-action="signUpForEventEmail" trigger-target="signUpForEventEmail">
@@ -339,7 +339,7 @@
 
 <!-- This is if you are logged in -->
 <script type="text/template"
-        template-name="events-email-optin"
+        data-template="events-email-optin"
         transform="transformEventsEmailOptin"
         completed="completedEventsEmailOptin">
 {{#loading}}
