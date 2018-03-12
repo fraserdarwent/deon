@@ -23,6 +23,7 @@
     "web-build": "git+https://github.com/monstercat/web-build.git"
   },
   "devDependencies": {
-    "eslint": "^4.18.1"
+    "eslint": "^4.18.1",
+    "eslint-config-monstercat": "git@github.com:monstercat/eslint-config.git"
   }
 }
