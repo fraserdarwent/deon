@@ -1,18 +1,13 @@
 <script type="text/template"
         data-route="^artists\/?"
-        transform="transformRoster"
+        data-process="processRosterPage"
+        data-template="page-roster"
         completed="completedRoster"
         data-title="Artists">
     <div class="container">
         <h1>Artists</h1>
         <div class="panel">
-            {{#data}}
-            <!-- desktop year selector -->
             <ul class="col-xs-hidden col-sm-visible button-list">
-                <!--<li>
-                    <a class="button {{^selectedYear}}selected-year{{/selectedYear}}" 
-                        href="/artists">Featured</a>
-		</li>-->
                 {{#years}}
                     <li>
                         <a class="button {{#selected}}selected-year{{/selected}}"
@@ -31,26 +26,20 @@
                 </select>
             </div>
             <div
-            data-source="$endpoint/catalog/artist?fields=name,websiteDetailsId,vanityUri,profileImageBlobId,profileImageUrl&filters=years,{{selectedYear}}"
-                 template="roster-year">
+                data-source="$endpoint/catalog/artist?fields=name,websiteDetailsId,vanityUri,profileImageBlobId,profileImageUrl&filters=years,{{selectedYear}}"
+                data-target-template="roster-year"
+                role="roster-artists"
+                >
             </div>
-            {{/data}}
         </div>
     </div>
 </script>
 
 <script type="text/template"
         data-template="roster-year"
-        transform="transformRosterYear">
-    {{#loading}}
-    {{>loading-view}}
-    {{/loading}}
-    {{#error}}
-    <p>{{message}}</p>
-    {{/error}}
-    {{#data}}
+        data-process="processRosterYear">
     <ul class="art-list artist-list">
-        {{#results}}
+        {{#each results}}
         <li>
             <a class="silent" href="/artist/{{uri}}" title="{{name}}">
                 {{#image}}
@@ -69,7 +58,6 @@
                 </div>
             </a>
         </li>
-        {{/results}}
+        {{/each}}
     </ul>
-    {{/data}}
 </script>

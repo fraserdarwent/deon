@@ -350,6 +350,11 @@ function loadNodeSource (node, matches) {
     node: node,
     matches: matches
   }
+
+  if (node && (node.dataset.template || node.dataset.targetTemplate)) {
+    args.template = node.dataset.template || node.dataset.targetTemplate
+  }
+
   process(args)
 
   if (!source) {
@@ -366,25 +371,60 @@ function loadNodeSource (node, matches) {
     }
     return match;
   })
-  console.log('--');
   var cors = !node.hasAttribute('data-no-cors')
-  console.log('cors',cors);
-  console.log(source);
   requestCached({
     url: source,
     cors: cors,
     delay: parseInt(node.getAttribute('data-delay'))
   }, function (err, body, xhr) {
-    process({
-      state: 'finish',
-      node: node,
-      err: err,
-      result: body,
-      xhr: xhr,
-      matches: matches
-    });
+    args.state = 'finish'
+    args.result = body
+    args.xhr = xhr
+    process(args);
     //loadNodeSources(node, matches);
   });
+}
+
+/**
+ * General purpose processor for other processors to call so that they don't have
+ * to rewrite stuff.
+ *
+ * @param {Object} args Arguments that the calling function got
+ * @param {Object} methods Map of functions to call based on the state of the request.
+ * @example
+ * function myPageProcessor () {
+ *  processor(arguments, {
+ *   success: function () { alert('XHR finished without erro'); },
+ *   start: function () { console.log('loading...'); },
+ *   error: function (args) { console.error('Error occured', args.error) }
+ *  })
+ * }
+ */
+function processor (args, methods) {
+  methods = methods || {}
+  if (methods[args.state] === false)
+    return
+
+  if (methods[args.state])
+    return methods[args.state](args)
+
+  if (args.state == 'start')
+    renderLoading()
+
+  //The ajax is done, and either succeeded or failed
+  if (args.state == 'finish') {
+    //Oh no an error!
+    if (args.err) {
+      if (methods.error)
+        return methods.error(args)
+
+      renderContent('error', {err: args.err})
+    }
+    if (methods.success)
+      return methods.success(args)
+
+    return renderContent(args.node, {err: args.err, data: args.body})
+  }
 }
 
 /**

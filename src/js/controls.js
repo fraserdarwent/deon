@@ -124,6 +124,7 @@ function toggleShuffle (e, el) {
 }
 
 function playSong (e, el) {
+  console.log('e', e)
   if(!el) {
     return
   }

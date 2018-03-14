@@ -802,6 +802,18 @@ function transformWebsiteDetails (wd) {
   return wd
 }
 
+function processArtistPage (args) {
+  processor(args, {
+    success: function (args) {
+      console.log('args', args)
+      var scope = {}
+
+      scope = transformWebsiteDetails(args.result)
+      renderContent(args.template, scope)
+    }
+  })
+}
+
 function processPage (opts) {
   renderContent(opts.node.dataset.template, {})
 }
@@ -897,39 +909,59 @@ function processHomeMerch (opts) {
   }
 }
 
-function transformRoster () {
-  var q = queryStringToObject(window.location.search)
-  var thisYear = (new Date()).getFullYear()
-  var arr = []
-  var i = thisYear
-  var year = q.year || thisYear;
-  while (i >= 2011) {
-    arr.push({
-      year: i,
-      selected: i == year
-    })
-    i--
-  }
-  return {
-    years: arr,
-    selectedYear: year
-  }
+function processRosterPage (args) {
+  processor(args, {
+    start: function (args) {
+      var q = queryStringToObject(window.location.search)
+      var firstYear = 2011
+      var thisYear = (new Date()).getFullYear()
+      var arr = []
+      var i = thisYear
+      var year = q.year || thisYear
+
+      while (i >= firstYear) {
+        arr.push({
+          year: i,
+          selected: i == year
+        })
+        i--
+      }
+      var scope = {
+        years: arr,
+        selectedYear: year
+      }
+
+      console.log('scope', scope)
+      renderContent(args.node.dataset.template, scope)
+      console.log('args.node.dataset.template', args.node.dataset.template);
+    }
+  })
 }
 
-function transformRosterYear (obj) {
-  obj.results.forEach(function (doc) {
-    if (doc.profileImageUrl)
-      doc.uri = doc.vanityUri || doc.websiteDetailsId || doc._id;
-      doc.image = doc.profileImageUrl;
-  });
-  obj.results.sort(function (a, b) {
-    a = a.name.toLowerCase()
-    b = b.name.toLowerCase()
-    if (a < b) return -1
-    if (a > b) return 1
-    return 0
-  });
-  return obj
+function processRosterYear (obj) {
+  processor(obj, {
+    start: function () {
+      render('loading-view', '[role=roster-artists]')
+    },
+    success: function (args) {
+      var scope = args.result
+      scope.results.forEach(function (doc) {
+        if (doc.profileImageUrl)
+          doc.uri = doc.vanityUri || doc.websiteDetailsId || doc._id;
+          doc.image = doc.profileImageUrl;
+      });
+      scope.results.sort(function (a, b) {
+        a = a.name.toLowerCase()
+        b = b.name.toLowerCase()
+        if (a < b) return -1
+        if (a > b) return 1
+        return 0
+      });
+      render(args.template, '[role=roster-artists]', scope)
+
+    }
+  })
+
 }
 
 function transformSocialSettings (obj) {
@@ -1041,6 +1073,31 @@ function transformReleases (obj) {
 function isVariousArtistsRelease(obj) {
   var artists = obj.artists || ""
   return artists.toLowerCase().indexOf("various artists") > -1
+}
+
+function processUserReleases (args) {
+  processor(args, {
+    start: function () {
+      console.log('start', args)
+      console.log('args.template', args.template)
+      console.log('args.node', args.node)
+      render(args.template, args.node, {
+        loading: true
+      })
+    },
+    success: function (args) {
+      var scope = transformUserReleases(args.result)
+
+      console.log('scope', scope)
+      scope.loading = false
+      render(args.template, args.node, scope)
+    },
+    error: function (args) {
+      render(args.template, args.node, {
+        error: args.err
+      })
+    }
+  })
 }
 
 function transformUserReleases (obj) {

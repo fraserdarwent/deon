@@ -74,7 +74,6 @@ function startState () {
  */
 function getRouteNode (path) {
   var nodes = findNodes('[data-route]');
-  console.log('nodes', nodes);
   var matches, target;
   for (var i=0; i<nodes.length; i++) {
     var node = nodes[i];

@@ -81,7 +81,7 @@
 </script>
 
 <script type="text/template"
-        data-partial data-template="playRelease">
+        data-partial data-template="play-release">
 <button class="button--release-cta button--cta"
         action="playSongs"
         ab-test="{{activeTest}}"
@@ -94,7 +94,7 @@
 </script>
 
 <script type="text/template"
-        data-partial data-template="trackCellsOneLine">
+        data-partial data-template="track-cells-one-line">
 <td class="longer-width">
   <div class="scroll-container"
        onmouseover="scrollTrackTitle(this)" onmouseleave="removeScrollTrackTitle(this)">
@@ -131,7 +131,7 @@
 </script>
 
 <script type="text/template"
-        data-partial data-template="trackCells">
+        data-partial data-template="track-cells">
 <td>{{title}}{{>early-access-msg}}{{>unlicensable}}</td>
 {{#playlistId}}
 <td><a href="/release/{{releaseId}}">{{releaseTitle}}</a></td>
@@ -145,10 +145,10 @@
 </script>
 
 <script type="text/template"
-        data-partial data-template="playSong">
+        data-partial data-template="play-song">
 {{#streamable}}
 <button class="faux button--mobile{{#inEarlyAccess}} in-early-access{{/inEarlyAccess}}"
-        action="playSong"
+        onclick="playSong(event, this)"
         role="play-song"
         play-link="{{playUrl}}"
         title="{{title}}"
@@ -179,7 +179,7 @@
 </script>
 
 <script type="text/template"
-        data-partial data-template="trackButtons">
+        data-partial data-template="track-buttons">
 {{#showDownloadLink}}
 <a class="silent button--mobile"
    target="_blank"
@@ -212,7 +212,7 @@
 {{#canPlaylist}}
 <a class="silent button--mobile"
    target="_blank"
-    action="openAddToPlaylist"
+    onclick="openAddToPlaylist(event, this)"
     release-id="{{releaseId}}"
     title="Add to Playlist"
     track-id="{{_id}}">
@@ -234,8 +234,6 @@
                     <th class="shrink nohpad"></th>
                     <th>Title</th>
                     <th>Artists</th>
-                    <th class="col-xs-hidden col-md-visible">Genre</th>
-                    <th class="col-xs-hidden col-md-visible">Time</th>
                     <th class="col-xs-hidden col-md-visible">BPM</th>
                     <th></th>
                 </tr>
@@ -252,14 +250,12 @@
                 <tr dblc-action="playSongDblC">
                     <td class="shrink">{{trackNumber}}.</td>
                     <td class="shrink nohpad">
-                      {{>playSong}}
+                      {{>play-song}}
                     </td>
                     {{>trackCells}}
                     <td class="push-right">
-                        {{>trackButtons}}
+                        {{>track-buttons}}
                     </td>
-                </tr>
-                {{/results}}
                 {{/data}}
             </tbody>
         </table>
@@ -281,18 +277,9 @@
 <script type="text/template"
         data-route="^artist\/(.*)"
         data-title="Artist"
-        transform="transformWebsiteDetails"
-        completed="completedArtist"
+        data-process="processArtistPage"
+        data-template="page-artist"
         data-source="$endpoint/catalog/artist/$1">
-    {{#loading}}
-    {{>loading-view}}
-    {{/loading}}
-    {{#error}}
-    <div class="container panel">
-        <p>{{message}}</p>
-    </div>
-    {{/error}}
-    {{#data}}
     <div class="bgbox">
         <div class="banner banner--scaled">
             <div class="banner" 
@@ -314,49 +301,48 @@
         </div>
     </div>
     <div class="container">
-        {{#about}}
+        {{#if about}}
         <div class="panel">
             <h2>About</h2>
             <p>{{about}}</p>
         </div>
-        {{/about}}
-        {{#contact}}
+        {{/if}}
+        {{#if contact}}
         <div class="panel">
             <h2>Booking &amp; Management</h2>
             <br/>
-            {{{booking}}}
-            {{{management}}}
+            {{{contact.booking}}}
+            {{{contact.management}}}
         </div>
-        {{/contact}}
+        {{/if}}
         <div data-source="$endpoint/catalog/artist/{{_id}}/releases"
-            template="user-releases">
+            data-target-template="user-releases">
         </div>
-        {{#shopifyCollectionId}}
+        {{#if shopifyCollectionId}}
         <div class="panel">
             <h2>Buy {{name}} Merch</h2>
             <div role="shopify-embed"></div>
         </div>
-        {{/shopifyCollectionId}}
+        {{/if}}
     </div>
-    {{/data}}
 </script>
 
 <script type="text/template"
         data-partial
         data-template="album-release-dates">
-    {{^inEarlyAccess}}
-        {{#preReleaseDate}}Pre-Released {{preReleaseDate}}{{/preReleaseDate}}
-        {{#releaseDate}}Released {{releaseDate}}{{/releaseDate}}
-    {{/inEarlyAccess}}
-    {{#inEarlyAccess}}
-        {{#preReleaseDateObj}}Pre-Releases in <span role="countdown" class="countdown" to="{{preReleaseDateObj}}" completed="featuredReleaseCountdownEnd"></span>{{/preReleaseDateObj}}
-        {{#releaseDateObj}}Releases in <span role="countdown" class="countdown" to="{{releaseDateObj}}" completed="featuredReleaseCountdownEnd"></span>{{/releaseDateObj}}
-    {{/inEarlyAccess}}
+    {{#unless inEarlyAccess}}
+        {{#if preReleaseDate}}Pre-Released {{preReleaseDate}}{{/if}}
+        {{#if releaseDate}}Released {{releaseDate}}{{/if}}
+    {{/unless}}
+    {{#if inEarlyAccess}}
+        {{#if preReleaseDateObj}}Pre-Releases in <span role="countdown" class="countdown" to="{{preReleaseDateObj}}" completed="featuredReleaseCountdownEnd"></span>{{/if}}
+        {{#if releaseDateObj}}Releases in <span role="countdown" class="countdown" to="{{releaseDateObj}}" completed="featuredReleaseCountdownEnd"></span>{{/if}}
+    {{/if}}
 </script>
 
 <script type="text/template"
   data-template="user-releases"
-  transform="transformUserReleases">
+  data-process="processUserReleases">
     {{#loading}}
     <div class="panel">
       <h2>Releases</h2>
@@ -367,31 +353,31 @@
       {{>loading-inner-view}}
     </div>
     {{/loading}}
-    {{#error}}
+    {{#if error}}
     <div class="panel">
       <p>{{message}}</p>
     </div>
-    {{/error}}
-    {{#data}}
-    <div class="panel">
-      <h2>Releases</h2>
-      <ul class="art-list art-list--full-width discography">
-      {{#releases}}
-      {{>release-list-item}}
-      {{/releases}}
-      </ul>
-    </div>
-    {{#appearsOn.length}}
-    <div class="panel">
-      <h2>Appears On</h2>
-      <ul class="art-list art-list--full-width discography">
-      {{#appearsOn}}
-      {{>release-list-item}}
-      {{/appearsOn}}
-      </ul>
-    </div>
-    {{/appearsOn.length}}
-    {{/data}}
+    {{/if  }}  
+    {{#unless loading}}
+        <div class="panel">
+          <h2>Releases</h2>
+          <ul class="art-list art-list--full-width discography">
+          {{#releases}}
+          {{>release-list-item}}
+          {{/releases}}
+          </ul>
+        </div>
+        {{#appearsOn.length}}
+        <div class="panel">
+          <h2>Appears On</h2>
+          <ul class="art-list art-list--full-width discography">
+          {{#appearsOn}}
+          {{>release-list-item}}
+          {{/appearsOn}}
+          </ul>
+        </div>
+        {{/appearsOn.length}}
+    {{/unless}}
 </script>
 
 <script type="text/template"

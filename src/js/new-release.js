@@ -261,8 +261,8 @@ function processReleasePage (obj) {
           onStarted: function () {
             scope.activeTest = 'release1FeatureOrder'
             transformReleasePage.scope = scope
-            cache('page:new-release', scope)
-          renderContent('new-release-page', scope)
+            cache('page:release', scope)
+            renderContent('new-release-page', scope)
           }
         })
         splittests.release1FeatureOrder.start()
