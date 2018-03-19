@@ -6,12 +6,21 @@ function getLoadMoreEventsEl () {
   return document.querySelector('[action=loadMoreUpcomingEvents]')
 }
 
-function transformEventPage (obj){
-  obj = transformEvent(obj)
-  obj.view = false
-  obj.single = true
-  obj.isSignedIn = isSignedIn()
-  return obj
+function processEventPage (args) {
+  processor(args, {
+    transform: function (args) {
+      console.log('args', args)
+      const scope = {
+        event: transformEvent(args.result)
+      }
+
+      scope.view = false
+      scope.single = true
+      scope.isSignedIn = isSignedIn()
+      setPageTitle(scope.event.title)
+      return scope
+    }
+  })
 }
 
 function openGalleryModal (e, el) {
@@ -21,59 +30,57 @@ function openGalleryModal (e, el) {
 }
 
 function transformEvents (results) {
-  results = results.map(function (r) {
-    return transformEvent(r)
-  })
-  return results
+  return results.map(transformEvent)
 }
 
-function transformEvent (i) {
-  var endDate = i.endDate ? new Date(i.endDate) : false
-  i.upcoming = new Date(i.startDate) > new Date()
-  if(endDate) {
-    i.ongoing = !i.upcoming && endDate > new Date()
+function transformEvent (event) {
+  var endDate = event.endDate ? new Date(event.endDate) : false
+
+  event.upcoming = new Date(event.startDate) > new Date()
+  if (endDate) {
+    event.ongoing = !event.upcoming && endDate > new Date()
   }
   else {
-    i.ongoing = false
+    event.ongoing = false
   }
-  i.dateString = formatDate(i.startDate)
-  i.date = formatDateJSON(i.startDate)
-  i.icalDownloadLink = endpoint + '/events/addtocalendar/' + i._id
-  if(i.vanityUri) {
-    i.url = '/event/' + i.vanityUri
-    i.externalUrl = false
+  event.dateString = formatDate(event.startDate)
+  event.date = formatDateJSON(event.startDate)
+  event.icalDownloadLink = endpoint + '/events/addtocalendar/' + event._id
+  if (event.vanityUri) {
+    event.url = '/event/' + event.vanityUri
+    event.externalUrl = false
   }
   else {
-    i.externalUrl = true
+    event.externalUrl = true
     //TODO: Fix how we get and generate these URLs
     //    This method of building the URL gives 404s
-    //i.url = 'http://www.bandsintown.com/t/' + i.bandsInTownId
-    if(i.ctaUri) {
-      i.url = i.ctaUri;
+    //event.url = 'http://www.bandsintown.com/t/' + event.bandsInTownId
+    if (event.ctaUri) {
+      event.url = event.ctaUri
     }
   }
-  if(i.description && i.description.length > 0) {
-    i.descriptionHtml = marked(i.description)
+  if (event.description && event.description.length > 0) {
+    event.descriptionHtml = marked(event.description)
   }
   else {
-    i.descriptionHtml = ''
+    event.descriptionHtml = ''
   }
-  i.showCtaButton = i.ctaUri && (i.upcoming || i.ongoing)
-  if(i.artistDetails) {
-    i.artistDetails = i.artistDetails.map(transformWebsiteDetails)
+  event.showCtaButton = event.ctaUri && (event.upcoming || event.ongoing)
+  if (event.artistDetails) {
+    event.artistDetails = event.artistDetails.map(transformWebsiteDetails)
   }
   else {
-    i.artistDetails = []
+    event.artistDetails = []
   }
-  i.gallery = transformEventGallery(i)
-  i.hasGallery = i.gallery.length > 0
-  if(i.coverImageUri) {
-    i.coverImageLarge = i.coverImageUri + '?image_width=2048'
-    i.coverImageSmall = i.coverImageUri + '?image_width=512'
+  event.gallery = transformEventGallery(event)
+  event.hasGallery = event.gallery.length > 0
+  if (event.coverImageUri) {
+    event.coverImageLarge = event.coverImageUri + '?image_width=2048'
+    event.coverImageSmall = event.coverImageUri + '?image_width=512'
   }
-  if(i.posterImageUri) {
-    i.posterImageLarge = i.posterImageUri + '?image_width=2048'
-    i.posterImageSmall = i.posterImageUri + '?image_width=512'
+  if (event.posterImageUri) {
+    event.posterImageLarge = event.posterImageUri + '?image_width=2048'
+    event.posterImageSmall = event.posterImageUri + '?image_width=512'
   }
   var weekdays = {
     'Sat': 'urday',
@@ -84,15 +91,16 @@ function transformEvent (i) {
     'Thu': 'rsday',
     'Fri': 'day'
   }
-  i.localWeekdayLong = i.localWeekday + weekdays[i.localWeekday]
-  return i
+
+  event.localWeekdayLong = event.localWeekday + weekdays[event.localWeekday]
+  return event
 }
 
 function transformEventGallery (event) {
-  if(!event.galleryImages) {
+  if (!event.galleryImages) {
     return []
   }
-  return event.galleryImages.map(function (url) {
+  return event.galleryImages.map((url) => {
     return {
       thumbSrc: url + '?image_width=256',
       bigSrc: url
@@ -100,38 +108,83 @@ function transformEventGallery (event) {
   })
 }
 
-function transformHeaderEvent (obj) {
-  if(obj.results.length == 0) {
-    return false;
-  }
-  var header = obj.results[0]
-  return transformEvent(header)
-}
+function processHeaderEvent (args) {
+  processor(args, {
+    start: function () {
+      render('loading-view-black', args.node)
+    },
+    transform: function (args) {
+      const header = transformEvent(args.result.results[0])
 
-function transformUpcomingEvents (obj) {
-  obj.results = transformEvents(obj.results)
-  return obj
-}
-
-function transformPastEvents (obj){
-  obj.results = transformEvents(obj.results)
-  obj.results = obj.results.filter(function(el){
-    return !el.upcoming
-  })
-  obj.results = obj.results.sort(function (a, b) {
-    if(a.startDate == b.startDate) {
-      return 0
+      return {
+        event: header
+      }
     }
-    return a.startDate > b.startDate ? -1 : 1
   })
-  return obj
 }
 
-function transformEventsPage (obj) {
-  obj = obj || {}
-  obj.page = 1
-  obj.isSignedIn = isSignedIn()
-  return obj
+function processUpcomingEvents (args) {
+  processor(args, {
+    transform: function (args) {
+      var scope = {
+        results: transformEvents(args.result.results)
+      }
+
+      return scope
+    }
+  })
+}
+
+/**
+ * Procceses call for events at the bottom of the page
+ *
+ */
+function processPastEvents (args) {
+  console.log('args', args)
+  processor(args, {
+    transform: function (args) {
+      console.log('args', args)
+      const scope = {}
+
+      scope.results = transformEvents(args.result.results)
+      scope.results = scope.results.filter((el) => {
+        return !el.upcoming
+      })
+      scope.results = scope.results.sort((a, b) => {
+        if (a.startDate == b.startDate) {
+          return 0
+        }
+        return a.startDate > b.startDate ? -1 : 1
+      })
+      return scope
+    }
+  })
+}
+
+function processEventsPage (args) {
+  const scope = {}
+
+  scope.page = 1
+  scope.isSignedIn = isSignedIn()
+
+  renderContent(args.template, scope)
+
+  var qo = getUpcomingEventsQueryObject(window.location.search)
+
+  setPageTitle('Events')
+  loadUpcomingEvents(window.location.search)
+  initLocationAutoComplete()
+  var embedDiv = document.querySelector('[role=event-google-tracking]')
+
+  embedDiv.innerHTML = '<script type="text/javascript">'
+  + ' var google_conversion_id = 975131676;'
+  + 'var google_custom_params = window.google_tag_params;'
+  + 'var google_remarketing_only = true;'
+  + '</script>'
+  + '<script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js"></script>'
+  + '<noscript>'
+  + '<div style="display:inline;"><img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/975131676/?guid=ON&amp;script=0"/></div>'
+  + '</noscript>'
 }
 
 function transformEventsEmailOptin (obj) {
@@ -164,13 +217,14 @@ function transformEventsEmailOptin (obj) {
 
 function subscribeEventsOptIn (e, el) {
   var data = getTargetDataSet(el, true, true)
+
   data['emailOptIns[events]'] = true
-  update('self', null, data, function (err, obj) {
-    if (err) return window.alert(err.message)
+  update('self', null, data, (err, obj) => {
+    if (err) { return window.alert(err.message) }
     toasty('You are now subscribed to hear about Monstercat events')
 
     resetTargetInitialValues(el, obj)
-    loadSession(function (err, obj) {
+    loadSession((err, obj) => {
       loadSubSources(document.querySelector('[role=events-email-optin]'), true, true)
     })
   })
@@ -179,10 +233,11 @@ function subscribeEventsOptIn (e, el) {
 function signUpForEventEmail (e, el) {
   var data = getTargetDataSet(el, true, true)
   var qs = {}
-  if(data && data.placeNameFull && data.placeNameFull.length > 0) {
+
+  if (data && data.placeNameFull && data.placeNameFull.length > 0) {
     qs.location = data.placeNameFull
   }
-  if(data.email && data.email.length > 0) {
+  if (data.email && data.email.length > 0) {
     qs.email = data.email
   }
   qs.promotions = 1
@@ -197,7 +252,8 @@ function getUpcomingEventsQueryObject (options) {
     skip: (page - 1) * limit,
     page: page
   }
-  if(options.hasOwnProperty('featured')) {
+
+  if (options.hasOwnProperty('featured')) {
     qo.featured = options.featured
   }
   return qo
@@ -208,30 +264,35 @@ function getUpcomingEventsQueryString (options) {
 }
 
 function loadUpcomingEvents (options) {
-  //Append a new table of upcoming events with source being the next limit/skip the elements
-  var div = document.createElement('div')
-  var tel = getTemplateEl('events-table-container')
+  //Append a new table of upcoming events with source
+  //being the next limit/skip the elements
   var upcomingQS = getUpcomingEventsQueryString(options)
-  render(div, tel.textContent, {
+
+  var div = document.createElement('div')
+  var container = findNode('[role="events-tables"]')
+
+  render('events-table-container', div, {
     upcomingQueryString: upcomingQS
   })
-  var container = document.querySelector('[role="events-tables"]')
+
   container.appendChild(div)
-  loadSubSources(div)
+  //loadSubSources(div)
 }
 
 function loadMoreUpcomingEvents (e, el) {
   var button = getLoadMoreEventsEl()
   var att = button.getAttribute('current-page')
   var page = parseInt(att) + 1
+
   loadUpcomingEvents({page: page})
   button.setAttribute('current-page', page)
 }
 
 function loadAndAppendFeaturedEvents () {
   var url = endpoint + '/events/upcoming?featured=1&skip=0&limit=20'
+
   loadCache(url, function (err, result) {
-    if(err) {
+    if (err) {
       checkNoFeaturedMessage()
       return console.error(err)
     }
@@ -245,8 +306,10 @@ function loadAndAppendFeaturedEvents () {
       event = transformEvent(event)
       var html = Mustache.render("{{>upcoming-event-tr}}", event, mustacheTemplates)
       var table = document.createElement('table')
+
       table.innerHTML = html
       var featuredTr = table.querySelector('tr')
+
       return featuredTr
     })
 
@@ -255,6 +318,7 @@ function loadAndAppendFeaturedEvents () {
       var newDate = new Date(newTr.getAttribute('data-date'))
       var checkDate
       var trAfterThis
+
       i = 0
       do {
         trAfterThis = allTrs[i]
@@ -274,7 +338,7 @@ function toggleUpcoming (){
   var button = getLoadMoreEventsEl()
 
   document.querySelector('[role=events-tables]').classList.toggle('events--filtered', el.checked)
-  if(el.checked) {
+  if (el.checked) {
     loadAndAppendFeaturedEvents()
     button.classList.toggle('hide', true)
   }
@@ -292,6 +356,7 @@ function completedEventsEmailOptin () {
 function completedUpcomingEvents (source, obj) {
   var button = getLoadMoreEventsEl()
   var shown = (obj.data.skip) + (obj.data.results.length)
+
   toggleUpcoming.hideLoadMore = shown >= obj.data.total
   button.classList.toggle('hide', toggleUpcoming.hideLoadMore)
   loadAndAppendFeaturedEvents()
@@ -299,6 +364,7 @@ function completedUpcomingEvents (source, obj) {
 
 function completedEventPage (source, obj) {
   var title = obj.data.name + ' in ' + obj.data.location + ' @ ' + obj.data.venue
+
   setPageTitle(title)
   var meta = {
     'og:title': title,
@@ -307,32 +373,16 @@ function completedEventPage (source, obj) {
     'og:url': location.toString(),
     'og:image': obj.data.posterImageUri
   }
+
   setMetaData(meta)
   pageIsReady()
   initLocationAutoComplete()
 }
 
-function completedEventsPage (source, obj) {
-  var qo = getUpcomingEventsQueryObject(window.location.search)
-  var title = 'Events'
-  setPageTitle(title)
-  loadUpcomingEvents(window.location.search)
-  initLocationAutoComplete()
-  var embedDiv = document.querySelector('[role=event-google-tracking]')
-  embedDiv.innerHTML = '<script type="text/javascript">'
-  + ' var google_conversion_id = 975131676;'
-  + 'var google_custom_params = window.google_tag_params;'
-  + 'var google_remarketing_only = true;'
-  + '</script>'
-  + '<script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js"></script>'
-  + '<noscript>'
-  + '<div style="display:inline;"><img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/975131676/?guid=ON&amp;script=0"/></div>'
-  + '</noscript>'
-}
-
 function checkNoFeaturedMessage () {
   var numFeatured = document.querySelectorAll('[role=events-tables] tr.featured').length
   var hide = numFeatured > 0 || !getFeaturedToggleEl().checked
+
   document.querySelector('.events-no-featured-message').classList.toggle('hide', hide)
   document.querySelector('[role=events-tables]').classList.toggle('events--filtered-empty', !hide)
 }

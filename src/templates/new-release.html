@@ -5,7 +5,11 @@
         data-process="processReleasePage"
         >
 {{#if loading}}
+<<<<<<< HEAD
     {{>loading-view-black}}
+=======
+    {{> loading-view-black}}
+>>>>>>> 1227c48... New Deon in events pages
 {{else}}
     {{#if error}}
         {{> error}}
@@ -33,7 +37,11 @@
                     {{>album-release-dates}}
                     </p>
                     <ul class="list--inline list--tool-tip">
+<<<<<<< HEAD
                     {{#each ../releaseArtistsLimited}}<li class="mr-2">
+=======
+                    {{#releaseArtistsLimited}}<li class="mr-2">
+>>>>>>> 1227c48... New Deon in events pages
                             <div class="artist-circle">
                                 <a href="{{artistPageLink}}"
                                 label="Artist Image"
@@ -55,7 +63,11 @@
                                     {{name}}
                                 </a></h6>
                                 <ul class="mt-1 text nowrap list--inline{{^socials}} hide{{/socials}}">
+<<<<<<< HEAD
                                     {{#each socials}}<li class="mr-2">
+=======
+                                    {{#socials}}<li class="mr-2">
+>>>>>>> 1227c48... New Deon in events pages
                                         <a href="{{link}}"
                                         target="_blank"
                                         title="{{label}}"
@@ -66,10 +78,17 @@
                                         kpi="artist-{{platform}}">
                                             <i class="fa fa-{{icon}}"></i>
                                         </a>
+<<<<<<< HEAD
                                     </li>{{/each}}
                                 </ul>
                             </div>
                         </li>{{/each}}
+=======
+                                    </li>{{/socials}}
+                                </ul>
+                            </div>
+                        </li>{{/releaseArtistsLimited}}
+>>>>>>> 1227c48... New Deon in events pages
                     </ul>
                 </div>
             </div>
@@ -100,6 +119,7 @@
                             </li>
                             {{/streamable}}
                             {{^inEarlyAccess}}
+<<<<<<< HEAD
                                 {{#releaseDate}}
                                 <li class="mb-1">
                                     <a href="{{downloadLink}}"
@@ -117,6 +137,21 @@
                                     </a>
                                 </li>
                                 {{/releaseDate}}
+                                <li class="mb-1">
+                                    <a href="{{downloadLink}}"
+                                    target="_blank"
+                                    class="button button--icon button--icon-rg button--gold mb-0"
+                                    action="accessDownloadOrModal"
+                                    title="Download Track"
+                                    track-title="{{title}}"
+                                    click-action="Click Download Gold"
+                                    click-category="Release Links"
+                                    ab-test="{{activeTest}}"
+                                    kpi="download-release">
+                                    Download with Gold
+                                    <i class="fa fa-cloud-download"></i>
+                                    </a>
+                                </li>
                             {{/inEarlyAccess}}
                             {{#inEarlyAccess}}
                                 {{^hasGoldAccess}}
@@ -178,7 +213,7 @@
                                         <td class="longer-width">
                                           <div class="scroll-container"
                                                onmouseenter="scrollTrackTitle(this)" onmouseleave="removeScrollTrackTitle(this)">
-                                            <span class="scroll-title artists">{{title}}//{{releaseId}}</span>
+                                            <span class="scroll-title artists">{{title}}</span>
                                           </div>
                                           <div class="scroll-container col-xs-visible col-md-hidden"
                                                onmouseenter="scrollTrackTitle(this)" onmouseleave="removeScrollTrackTitle(this)">
@@ -231,6 +266,23 @@
                  data-source="https://shop.monstercat.com/collections/website-featured/products.json">
             </div>
             {{/if}}
+
+            {{#if artistsEvents}}
+                {{#if artistIds}}
+                    <div data-target-template="release-events"
+                         data-source="$endpoint/events/upcoming?websiteDetailsIds={{artistIds}}">
+                    </div>
+                {{/if}}
+            {{/if}}
+
+            {{#if merch}}
+            <div data-target-template="release-merch"
+                 class="mt-4 mb-2"
+                 data-no-cors
+                 data-source="https://shop.monstercat.com/collections/website-featured/products.json">
+            </div>
+            {{/if}}
+
             {{#unless hasGoldAccess}}
                 {{#if gold}}
                     <div class="container mt-2 position-relative">
@@ -263,7 +315,10 @@
 <script type="text/template"
         data-template="release-merch"
         data-process="processReleaseMerch">
+<<<<<<< HEAD
 {{#if products.length}}
+=======
+>>>>>>> 1227c48... New Deon in events pages
 <div class="merch">
     <div class="container latest">
         <header class="flex top-cta">
@@ -283,7 +338,10 @@
         {{>merch-list}}
     </div>
 </div>
+<<<<<<< HEAD
 {{/if}}
+=======
+>>>>>>> 1227c48... New Deon in events pages
 </script>
 
 <script type="text/template" data-partial data-template="gold-panel">

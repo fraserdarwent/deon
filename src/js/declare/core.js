@@ -390,40 +390,58 @@ function loadNodeSource (node, matches) {
  * to rewrite stuff.
  *
  * @param {Object} args Arguments that the calling function got
- * @param {Object} methods Map of functions to call based on the state of the request.
+ * @param {Object} methods Map of functions to call based on the
+                   state of the request.
  * @example
  * function myPageProcessor () {
  *  processor(arguments, {
+ *   start: function () { findNode('.loading').style.display = 'block') },
  *   success: function () { alert('XHR finished without erro'); },
  *   start: function () { console.log('loading...'); },
  *   error: function (args) { console.error('Error occured', args.error) }
  *  })
  * }
  */
-function processor (args, methods) {
-  methods = methods || {}
-  if (methods[args.state] === false)
+function processor (args, meths) {
+  const methods = meths || {}
+
+  if (methods[args.state] === false) {
     return
+  }
 
-  if (methods[args.state])
-    return methods[args.state](args)
+  if (methods[args.state]) {
+    methods[args.state](args)
+    return
+  }
 
-  if (args.state == 'start')
-    renderLoading()
+  if (args.state == 'start') {
+    render('loading-view', args.node)
+    return
+  }
 
   //The ajax is done, and either succeeded or failed
   if (args.state == 'finish') {
-    //Oh no an error!
     if (args.err) {
-      if (methods.error)
-        return methods.error(args)
+      if (methods.error) {
+        methods.error(args)
+        return
+      }
 
-      renderContent('error', {err: args.err})
+      render('error', args.template, {err: args.err})
     }
-    if (methods.success)
-      return methods.success(args)
+    if (methods.success) {
+      methods.success(args)
+      return
+    }
 
-    return renderContent(args.node, {err: args.err, data: args.body})
+    var scope = {err: args.err, data: args.result}
+
+    if (methods.transform) {
+      scope = methods.transform(args)
+    }
+
+    render(args.template, args.node, scope)
+    return
   }
 }
 
@@ -435,9 +453,11 @@ function processor (args, methods) {
  * returns {String}
  */
 function objectToQueryString (obj) {
-  return Object.keys(obj).map(function (key) {
-    return encodeURIComponent(key) + '=' + encodeURIComponent(obj[key])
-  }).join("&")
+  return Object.keys(obj)
+    .map((key) => {
+      return encodeURIComponent(key) + '=' + encodeURIComponent(obj[key])
+    })
+    .join("&")
 }
 
 /**

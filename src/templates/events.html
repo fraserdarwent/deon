@@ -1,80 +1,68 @@
 <script type="text/template"
         data-route="^event\/(.*)"
         data-title="Event"
-        transform="transformEventPage"
-        completed="completedEventPage"
+        data-process="processEventPage"
+        data-template="page-event"
         data-source="$endpoint/event/$1">
-    {{#loading}}
-    {{>loading-view}}
-    {{/loading}}
-    {{#error}}
-    <div class="container panel">
-        <p>{{message}}</p>
-    </div>
-    {{/error}}
-    {{#data}}
+  <div class="event-page-header">
+    <div class="top-banner top-banner-events">
+      {{>event-header}}
+      <div class="container cl-white">
+        {{#artistDetails.length}}
+        <header class="flex top-cta ">
+            <div class="col-xs-12">
+                <h2 class="line-top">Artists</h2>
+            </div>
+        </header>
+        <ul class="art-list artist-list art-list--full-width">
+          {{#artistDetails}}
+          <li>
+              <a class="silent" href="/artist/{{vanityUri}}" title="{{name}}">
+                  {{#image}}
+                  <div class="image-wrapper">
+                      <img src="/img/artist.jpg" class="preload" />
+                      <img src="{{image}}"/>
+                  </div>
+                  {{/image}}
+                  {{^image}}
+                  <div class="no-art">
+                      <label>No image.</label>
+                  </div>
+                  {{/image}}
+                  <div class="hover-wrapper">
+                      <label class="title one-line-ellipsis">{{name}}</label>
+                  </div>
+              </a>
+          </li>
+          {{/artistDetails}}
+        </ul>
+        {{/artistDetails.length}}
 
-    <div class="event-page-header">
-      <div class="top-banner top-banner-events">
-        {{>event-header}}
-        <div class="container cl-white">
-          {{#artistDetails.length}}
-          <header class="flex top-cta ">
-              <div class="col-xs-12">
-                  <h2 class="line-top">Artists</h2>
-              </div>
-          </header>
-          <ul class="art-list artist-list art-list--full-width">
-            {{#artistDetails}}
-            <li>
-                <a class="silent" href="/artist/{{vanityUri}}" title="{{name}}">
-                    {{#image}}
-                    <div class="image-wrapper">
-                        <img src="/img/artist.jpg" class="preload" />
-                        <img src="{{image}}"/>
-                    </div>
-                    {{/image}}
-                    {{^image}}
-                    <div class="no-art">
-                        <label>No image.</label>
-                    </div>
-                    {{/image}}
-                    <div class="hover-wrapper">
-                        <label class="title one-line-ellipsis">{{name}}</label>
-                    </div>
-                </a>
-            </li>
-            {{/artistDetails}}
-          </ul>
-          {{/artistDetails.length}}
-
-          <div class="back-to-events">
-            <a class="button button--white button--icon button--icon-left" href="/events" target="_BLANK">
-                <i class="fa fa-chevron-left"></i>
-                Back to Events
-            </a>
-          </div>
+        <div class="back-to-events">
+          <a class="button button--white button--icon button--icon-left" href="/events" target="_BLANK">
+              <i class="fa fa-chevron-left"></i>
+              Back to Events
+          </a>
         </div>
       </div>
     </div>
+  </div>
 
-    {{>events-email-optin}}
+  {{>events-email-optin}}
 
-    {{#hasGallery}}
-    <div class="container event-gallery">
-      <ul class="art-list picture-gallery clearfix">
-        {{#gallery}}
-          <li>
-            <div style="background-image: url({{thumbSrc}});" action="openGalleryModal" big-src="{{bigSrc}}"></div>
-          </li>
-        {{/gallery}}
-      </ul>
-    </div>
-    {{/hasGallery}}
+  {{#hasGallery}}
+  <div class="container event-gallery">
+    <ul class="art-list picture-gallery clearfix">
+      {{#gallery}}
+        <li>
+          <div style="background-image: url({{thumbSrc}});" action="openGalleryModal" big-src="{{bigSrc}}"></div>
+        </li>
+      {{/gallery}}
+    </ul>
+  </div>
+  {{/hasGallery}}
 
-    {{>event-sponsor}}
-
-    {{/data}}
+  {{>event-sponsor}}
 </script>
 
 <script type="text/template"
@@ -93,83 +81,64 @@
 
 <script type="text/template"
         data-route="^events\/?(\?.+)?$"
-        transform="transformEventsPage"
-        completed="completedEventsPage">
-    {{#data}}
-      <div data-source="$endpoint/events/header?limit=1" template="event-header"></div>
-      <section role="upcoming-events">
-        <div class="container latest">
-          <header class="flex top-cta">
-            <div class="col-xs-12 col-sm-6">
-                <h2 class="line-top">Upcoming Events</h2>
-            </div>
-            <div class="col-xs-12 col-sm-6 toggle-wrapper">
-                <span class="toggle-label">All Events</span>
-                <div class="toggle">
-                  <input type="checkbox" role="upcoming-toggle" action="toggleUpcoming" class="check">
-                  <span class="switch"></span>
-                  <span class="track"></span>
-                </div>
-                <span class="toggle-label">Monstercat</span>
-            </div>
-          </header>
-          <div role="events-tables" class="events-tables">
-            <div class="events-no-featured-message shadow hide">
-              <a href="https://www.monstercat.com/tickets" target="_BLANK" class="blue">Sign-up</a>
-              for information on upcoming Monstercat events.</div>
+        data-process="processEventsPage"
+        data-template="page-events"
+        >
+    <div data-source="$endpoint/events/header?limit=1" data-target-template="events-header"></div>
+    <section role="upcoming-events">
+      <div class="container latest">
+        <header class="flex top-cta">
+          <div class="col-xs-12 col-sm-6">
+              <h2 class="line-top">Upcoming Events</h2>
           </div>
-          <button action="loadMoreUpcomingEvents" current-page="{{page}}" class="button button--load-events button--cta hide">Load More</button>
+          <div class="col-xs-12 col-sm-6 toggle-wrapper">
+              <span class="toggle-label">All Events</span>
+              <div class="toggle">
+                <input type="checkbox" role="upcoming-toggle" action="toggleUpcoming" class="check">
+                <span class="switch"></span>
+                <span class="track"></span>
+              </div>
+              <span class="toggle-label">Monstercat</span>
+          </div>
+        </header>
+        <div role="events-tables" class="events-tables">
+          <div class="events-no-featured-message shadow hide">
+            <a href="https://www.monstercat.com/tickets" target="_BLANK" class="blue">Sign-up</a>
+            for information on upcoming Monstercat events.</div>
         </div>
-      </section>
-      {{>events-email-optin}}
-      <section data-source="$endpoint/events/past?featured=1&limit=100" class="events-past" template="events-past"></section>
-    {{/data}}
-    {{>event-sponsor}}
+        <button action="loadMoreUpcomingEvents" current-page="{{page}}" class="button button--load-events button--cta hide">Load More</button>
+      </div>
+    </section>
+    {{>events-email-optin}}
+    <section data-source="$endpoint/events/past?featured=1&limit=100" class="events-past" data-target-template="events-past"></section>
+  {{>event-sponsor}}
     <div role="event-google-tracking"></div>
 </script>
 
 <script type="text/template"
-        data-template="event-header"
-        transform="transformHeaderEvent">
-    {{#loading}}
-    {{>loading-view-black}}
-    {{/loading}}
-    {{#error}}
-    <div class="container panel">
-      <p>{{message}}</p>
-    </div>
-    {{/error}}
-    {{#data}}
-    <div class="top-banner top-banner-events">
+        data-template="events-header"
+        data-process="processHeaderEvent">
+  <div class="top-banner top-banner-events">
+    {{#event}}
       {{>event-header}}
-    </div>
-    {{/data}}
+    {{/event}}
+  </div>
 </script>
 
 <script type="text/template"
         data-template="events-table-container">
-<div data-source="$endpoint/events/upcoming?{{upcomingQueryString}}" template="events-table"></div>
+  <div data-source="$endpoint/events/upcoming?{{upcomingQueryString}}" data-target-template="events-table"></div>
 </script>
 
 <script type="text/template"
         data-template="events-table"
-        transform="transformUpcomingEvents"
-        completed="completedUpcomingEvents">
-  {{#loading}}
-  {{>loading-view}}
-  {{/loading}}
-  {{#error}}
-  <div class="container panel">
-    <p>{{message}}</p>
-  </div>
-  {{/error}}
-  {{#data}}
-      <table class="events" role="upcoming-table">
-      {{#results}}
-        {{>upcoming-event-tr}}
-      {{/results}}
-      </table>
-  {{/data}}
+        data-process="processUpcomingEvents"
+        >
+<table class="events" role="upcoming-table">
+{{#each results}}
+  {{>upcoming-event-tr}}
+{{/each}}
+</table>
 </script>
 
 <script type="text/template"
@@ -184,12 +153,13 @@
     <td class="title">
       <div>
         <span class="name">
-          {{#url}}
-          <a ab-test="{{activeTest}}" kpi="{{#externalUrl}}event-external{{/externalUrl}}{{^externalUrl}}event-internal{{/externalUrl}}" class="silent{{#externalUrl}} external{{/externalUrl}}" href="{{url}}" {{#externalUrl}} target="_blank" {{/externalUrl}}>
-            {{name}}{{#externalUrl}} <small class="fa fa-external-link"></small>{{/externalUrl}}
+          {{#if url}}
+          <a ab-test="{{activeTest}}" kpi="{{#externalUrl}}event-external{{/externalUrl}}{{^externalUrl}}event-internal{{/externalUrl}}" class="silent{{#externalUrl}} external{{/externalUrl}}" href="{{url}}" {{#if externalUrl}} target="_blank" {{/if}}>
+            {{name}}{{#if externalUrl}} <small class="fa fa-external-link"></small>{{/if}}
           </a>
-          {{/url}}
-          {{^url}}{{name}}{{/url}}
+          {{else}}
+            {{name}}
+          {{/if}}
         </span>
         <span class="time">{{localWeekdayLong}}</span>
       </div>
@@ -223,16 +193,7 @@
 
 <script type="text/template"
         data-template="events-past"
-        transform="transformPastEvents">
-  {{#loading}}
-  {{>loading-view}}
-  {{/loading}}
-  {{#error}}
-  <div class="container panel">
-    <p>{{message}}</p>
-  </div>
-  {{/error}}
-  {{#data}}
+        data-process="processPastEvents">
   <div class="past-events">
     <div class="container">
       <header class="flex top-cta">
@@ -241,36 +202,36 @@
         </div>
       </header>
       <ul class="art-list art-list--full-width artist-list event-list">
-      {{#results}}
+      {{#each results}}
       <li>
-        <a class="silent" href="{{url}}" {{#externalUrl}}target="_blank" {{/externalUrl}} title="{{name}}">
-            {{#coverImageUri}}
+        <a class="silent" href="{{url}}" {{#if externalUrl}}target="_blank" {{/if}} title="{{name}}">
+            {{#if coverImageUri}}
             <div class="image-wrapper">
                 <img src="/img/event.jpg" class="preload" />
                 <img src="{{coverImageSmall}}"/>
             </div>
-            {{/coverImageUri}}
-            {{^coverImageUri}}
+            {{else}}
             <div class="image-wrapper">
                 <img src="/img/event.jpg" class="preload"/>
                 <img src="/img/event.jpg"/>
             </div>
-            {{/coverImageUri}}
+            {{/if}}
             <div class="hover-wrapper">
                 <label class="title one-line-ellipsis">{{name}}</label>
                 <label class="city one-line-ellipsis">{{location}}</label>
             </div>
         </a>
         </li>
-      {{/results}}
+      {{/each}}
       </ul>
     </div>
   </div>
-  {{/data}}
 </script>
 
 <script type="text/template"
-        data-partial data-template="event-header">
+        data-partial
+        data-template="event-header"
+        >
   <div class="banner">
       <div class="banner" style="background-image:url({{coverImageLarge}})">
           <div class="banner-shade"></div>
@@ -278,24 +239,25 @@
       </div>
   </div>
   <div class="container flex">
-    {{#posterImageUri}}
+    {{#if posterImageUri}}
     <div class="col-xs-12 col-sm-12 col-md-3 featured-artwork">
-        {{#single}}
+        {{#if single}}
         <img class="shadow responsive" src="{{posterImageSmall}}"/>
-        {{/single}}
-        {{^single}}
+        {{else}}
         <a class="silent" href="{{url}}">
             <img class="shadow responsive" src="{{posterImageSmall}}"/>
         </a>
-        {{/single}}
+        {{/if}}
     </div>
     <div class="col-xs-12 col-sm-12 col-md-9 cl-white featured-details featured-details--event">
-    {{/posterImageUri}}
-    {{^posterImageUri}}
+    {{else}}
     <div class="col-xs-12 col-sm-12 cl-white featured-details featured-details--event">
-    {{/posterImageUri}}
-      {{#upcoming}}<span class="tag">Upcoming Event</span>{{/upcoming}}
-      {{^upcoming}}<span class="tag">Past Event</span>{{/upcoming}}
+    {{/if}}
+      {{#if upcoming}}
+        <span class="tag">Upcoming Event</span>
+      {{else}}
+        <span class="tag">Past Event</span>
+      {{/if}}
       <a class="silent no-hover" href="{{url}}">
           <h1 class="title uppercase">{{name}}</h1>
       </a>
@@ -307,9 +269,9 @@
       </p>
       <p class="description">{{ description }}</p>
       <a class="button button--cta" role="view-event" href="{{url}}">View</a>
-      {{#showCtaButton}}
+      {{#if showCtaButton}}
         <a class="button button--cta button--icon" target="_blank" href="{{ctaUri}}">{{ctaLabel}} <i class="fa fa-external-link"></i></a>
-      {{/showCtaButton}}
+      {{/if}}
     </div>
   </div>
 </script>
