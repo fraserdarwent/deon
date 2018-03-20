@@ -1,15 +1,19 @@
 function toast (opts) {
-  var container = findNode('[role="toasts"]')
-  if (!container) return
-  var div = document.createElement('div')
-  var template = findNode('[data-template="toast"]')
-  if (!template) return
-  render(div, template.textContent, opts)
-  var el = div.firstElementChild
+  const container = findNode('[role="toasts"]')
+
+  if (!container) {
+    return
+  }
+  const div = document.createElement('div')
+
+  render('toast', div, opts)
+  const el = div.firstElementChild
+  const defaultShowTime = 3000
+
   container.appendChild(el)
-  setTimeout(function () {
+  setTimeout(() => {
     container.removeChild(el)
-  }, opts.time || 3000)
+  }, opts.time || defaultShowTime)
 }
 
 function toasty (obj, time) {
@@ -26,14 +30,19 @@ function toasty (obj, time) {
       time: time
     })
   }
-  toast(obj)
+  return toast(obj)
+}
+
+function renderModal (name, scope) {
+  const modalContainer = findNode('[role="modals"] [role="container"]')
+
+  render(name, modalContainer, scope)
 }
 
 function openModal (name, data) {
   const modalsEl  = findNode('[role="modals"]')
-  const modalContainer = modalsEl.querySelector('[role="container"]')
 
-  render(name, modalContainer, data)
+  renderModal(name, data)
   findNode('body').classList.add('showing-modal')
   modalsEl.classList.add('open')
 }

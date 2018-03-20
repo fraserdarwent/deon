@@ -79,41 +79,49 @@ function removeFromPlaylist (e, el) {
 }
 
 function openAddToPlaylist (e, el) {
-  openModal('add-to-playlist-modal', {
-    trackId:   el.getAttribute('track-id'),
-    releaseId: el.getAttribute('release-id'),
-  })
-}
+  const template = 'add-to-playlist-modal'
+  const trackId = el.dataset.trackId
+  const releaseId = el.dataset.releaseId
 
-function transformAddToPlaylist (obj, done) {
+  openModal(template, {
+    loading: true
+  })
+
   loadCache(endpoint + '/playlist', (err, playlists) => {
     if (err) {
+      renderModal(template, {
+        error: err,
+        loading: false
+      })
       done(err)
+
       return
     }
-
-    done(null, {
-      trackId: obj.trackId,
-      releaseId: obj.releaseId,
-      results: playlists.results
+    renderModal(template, {
+      trackId: trackId,
+      releaseId: releaseId,
+      results: playlists.results,
+      loading: false
     })
   }, true)
 }
 
 function addToPlaylist (e, el) {
-  el = findParentWith(el, '[action=addToPlaylist]')
-  var id = el.getAttribute('playlist-id')
+  const playlistId = el.dataset.playlistId
+  const trackId = el.dataset.trackId
+  const releaseId = el.dataset.releaseId
 
-  if (!id)
+  if (!playlistId) {
     return
 
   if (actionier.isOn(el))
     return
 
-  var url = endpoint + '/playlist/' + id
-  var item = {
-    trackId: el.getAttribute('track-id'),
-    releaseId: el.getAttribute('release-id')
+  const url = endpoint + '/playlist/' + playlistId
+
+  const item = {
+    trackId: trackId,
+    releaseId: releaseId
   }
 
   if (!item.releaseId || !item.trackId) {
@@ -128,11 +136,11 @@ function addToPlaylist (e, el) {
       toasty(new Error(err.message))
       return
     }
-    var tracks = obj.tracks
+    const tracks = obj.tracks
 
     index = tracks.length
     tracks.splice(index, 0, item)
-    update('playlist', id, {tracks: tracks}, (err, obj, xhr) => {
+    update('playlist', playlistId, {tracks: tracks}, (err, obj, xhr) => {
       actionier.off(el)
       if (err) {
         toasty(new Error(err))

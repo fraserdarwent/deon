@@ -51,6 +51,11 @@ function request (opts, done) {
     opts.data = JSON.stringify(opts.data)
   }
 
+  if (opts.headers['Content-Type'] == 'application/json'
+    && typeof opts.data == 'object') {
+    opts.data = JSON.stringify(opts.data)
+  }
+
   var xhr = new XMLHttpRequest();
   xhr.onreadystatechange = function () {
     if (xhr.readyState != 4) return;
@@ -88,6 +93,13 @@ function request (opts, done) {
   return xhr;
 }
 
+/**
+ * XHR request for JSON requests
+ *
+ * @param {Object|String} opts Optinos or the URL. If URL
+ * instead of object it defaults to GET withCredentials
+ * @params {requestCallback} done
+ */
 function requestJSON (opts, done) {
   if (typeof opts == 'string') {
     opts = {
@@ -102,6 +114,54 @@ function requestJSON (opts, done) {
   opts.headers['Accept'] = 'application/json'
   opts.headers['Content-Type'] = 'application/json'
   request(opts, done)
+}
+
+/**
+ * Request wrapper that uses local caching to not
+ * make multiple requests to the same URL
+ *
+ * @param {String} source The URL to get from
+ * @param {requestCallback} done
+ * @param {Boolean} reset
+ */
+function loadCache (source, done, reset) {
+  let _ = loadCache._
+
+  if (!_) {
+    _ = {}
+    loadCache._ = _
+  }
+  const cached = cache(source)
+
+  if (!reset && cached) {
+    done(null, cached)
+    return
+  }
+  let callbacks = _[source]
+  let doit = false
+
+  if (!callbacks) {
+    callbacks = []
+    _[source] = callbacks
+    doit = true
+  }
+  callbacks.push(done)
+  if (doit == false) {
+    return
+  }
+  requestJSON({
+    url: source,
+    withCredentials: true
+  }, (err, obj, xhr) => {
+    if (obj) {
+      cache(source, Object.assign({}, obj))
+    }
+
+    callbacks.forEach((fn) => {
+      fn(err, obj)
+    })
+    delete _[source]
+  })
 }
 
 /*

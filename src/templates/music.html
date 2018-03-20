@@ -179,7 +179,7 @@
 
 <script type="text/template"
         data-partial data-template="track-buttons">
-{{#showDownloadLink}}
+{{#if showDownloadLink}}
 <a class="silent button--mobile"
    target="_blank"
    title="Download Track"
@@ -193,8 +193,8 @@
    href="{{downloadLink}}">
     <i class="fa fa-download"></i>
 </a>
-{{/showDownloadLink}}
-{{#streamable}}
+{{/if}}
+{{#if streamable}}
 <a class="silent button--mobile"
    target="_blank"
     onclick="openTrackLicensing(event)"
@@ -207,70 +207,18 @@
     <i class="fa fa-copyright"></i>
     <span class="col-xs-hidden">License</span>
 </a>
-{{/streamable}}
-{{#canPlaylist}}
+{{/if}}
+{{#if canPlaylist}}
 <a class="silent button--mobile"
    target="_blank"
     onclick="openAddToPlaylist(event, this)"
-    release-id="{{releaseId}}"
     title="Add to Playlist"
-    track-id="{{_id}}">
+    data-release-id="{{releaseId}}"
+    data-track-id="{{_id}}">
     <i class="fa fa-plus"></i>
     <span class="col-xs-hidden">Add to Playlist</span>
 </a>
-{{/canPlaylist}}
-</script>
-
-<script type="text/template"
-        data-template="release-tracks"
-        transform="transformReleaseTracks"
-        completed="completedReleaseTracks">
-    <div class="panel panel--mobile">
-        <table>
-            <thead>
-                <tr>
-                    <th class="shrink">#</th>
-                    <th class="shrink nohpad"></th>
-                    <th>Title</th>
-                    <th>Artists</th>
-                    <th class="col-xs-hidden col-md-visible">BPM</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {{#loading}}
-                <tr><td class="loading-table" colspan="10"><i class="fa fa-spin fa-refresh"></i></td></tr>
-                {{/loading}}
-                {{#error}}
-                <tr><td colspan="5"><p>{{message}}</p></td></tr>
-                {{/error}}
-                {{#data}}
-                {{#results}}
-                <tr dblc-action="playSongDblC">
-                    <td class="shrink">{{trackNumber}}.</td>
-                    <td class="shrink nohpad">
-                      {{>play-song}}
-                    </td>
-                    {{>trackCells}}
-                    <td class="push-right">
-                        {{>track-buttons}}
-                    </td>
-                {{/data}}
-            </tbody>
-        </table>
-        {{#hiddenTracks}}
-        <br />
-        <p>This release contains <strong>{{hiddenTracks}} more songs</strong> that will be available when it is fully released. <a href="/gold">Monstercat Gold</a> subscribers will be able to stream them 20hrs early.</p>
-        {{/hiddenTracks}}
-    </div>
-    {{#data}}
-    {{#shopifyEmbeds}}
-    <div class="panel">
-        <h2>Buy {{name}} Merch</h2>
-        <div role="shopify-embed" collection-id="{{shopifyCollectionId}}"></div>
-    </div>
-    {{/shopifyEmbeds}}
-    {{/data}}
+{{/if}}
 </script>
 
 <script type="text/template"
