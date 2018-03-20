@@ -116,8 +116,6 @@ document.addEventListener("DOMContentLoaded", function (e) {
   })
 })
 
-startState();
-
 //requestDetect.credentialDomains.push(endhost)
 
 var releaseTypes = {

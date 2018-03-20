@@ -64,7 +64,7 @@
 <script type="text/template"
         data-title="My Playlists"
         data-source="$endpoint/playlist?fields=name,public"
-        data-process="processPlaylists"
+        data-process="processPlaylistsPage"
         data-route="^playlists"
         data-template="playlists-page"
         >
@@ -121,50 +121,44 @@
 <script type="text/template"
         data-route="^playlist\/(.*)"
         data-source="$endpoint/playlist/$1?fields=name,public,userId"
-        completed="completedPlaylist"
-        transform="transformPlaylist">
+        data-process="processPlaylistPage"
+        data-template="playlist-page"
+        >
     <div class="container">
-        {{#loading}}
-        {{>loading-view}}
-        {{/loading}}
-        {{#error}}
-        <p>{{message}}</p>
-        {{/error}}
-        {{#data}}
         <h1 playlist-id="{{_id}}">{{name}}</h1>
         <div class="panel">
             <div class="options pad-vertical push-right">
-                {{#canPublic}}
+                {{#if canPublic}}
                 <label>
                     <input
                         type="checkbox"
                         onclick="togglePlaylistPublic(event, this)"
                         playlist-id="{{_id}}"
-                        {{#public}}checked{{/public}} />
+                        {{#if playlist.public}}checked{{/if}} />
                     Public
                 </label>
                 <button onclick="reorderPlaylistFromInputs(event, this)"
                         trigger="reorderPlaylistFromInputs">
                         <i class="fa fa-fw fa-save" role="save-playlist-order"></i>
                         Save Order</button>
-                {{/canPublic}}
+                {{/if}}
                  <button class="faux button--mobile">
                     <i class="fa fa-fw fa-play"
                        onclick="playSongs(event, this)"
                        role="play-playlist"></i>
                 </button>
-               {{#downloadUrl}}
+               {{#if downloadUrl}}
                 <a class="silent button--mobile"
                    title="Download Playlist"
                    onclick="canDownloadOrModal(event, this)"
                    href="{{downloadUrl}}"><i class="fa fa-fw fa-download"></i> Download</a>
-                {{/downloadUrl}}
-                {{#downloadLinks}}
+                {{/if}}
+                {{#each downloadLinks}}
                 <a class="silent button--mobile"
                    title="Download {{hover}}"
                    onclick="canDownloadOrModal(event, this)"
                    href="{{url}}"><i class="fa fa-fw fa-download"></i> {{label}}</a>
-                {{/downloadLinks}}
+                {{/each}}
 
             </div>
             <table class="drag-sortable one-line" role="playlist-tracks">
@@ -224,7 +218,6 @@
                 {{/pagePlaceholders}}
             </table>
         </div>
-        {{/data}}
     </div>
 </script>
 

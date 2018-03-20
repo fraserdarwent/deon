@@ -178,8 +178,7 @@ function isMyPlaylist (playlist) {
 /**
  * Processor for showing your list of playlists
  */
-function processPlaylists (args) {
-  console.log('args', args)
+function processPlaylistsPage (args) {
   processor(args, {
     start: function start (args) {
       renderContent(args.template, {
@@ -200,6 +199,7 @@ function processPlaylists (args) {
   })
 }
 
+<<<<<<< HEAD
 function transformPlaylist (obj) {
   if (isMyPlaylist(obj)) {
     obj.canPublic = {
@@ -231,31 +231,71 @@ function transformPlaylist (obj) {
           hover: 'Tracks ' + frm + ' to ' + to,
           url: endpoint + '/playlist/' + obj._id + '/download?' + objectToQueryString(opts)
         })
+function processPlaylistPage (args) {
+  console.log('args', args)
+  processor(args, {
+    success: function (args) {
+      const playlist = args.result
+      const scope = {
+        playlist: playlist
       }
+      const tracksPerPage = 50
+
+      if (isMyPlaylist(playlist)) {
+        scope.canPublic = {
+          _id: playlist._id,
+          public: playlist.public
+        }
+      }
+      if (isSignedIn()) {
+        const opts = {
+          method: 'download',
+          type: getMyPreferedDownloadOption()
+        }
+
+        if (playlist.tracks.length < tracksPerPage) {
+          scope.downloadUrl = endpoint + '/playlist/' + playlist._id + '/download?' + objectToQueryString(opts)
+        }
+        else {
+          scope.downloadLinks = []
+          const numPages = Math.ceil(playlist.tracks.length / tracksPerPage)
+
+          for (var page = 1; page <= numPages; page++) {
+            opts.page = page
+            var frm = (page - 1) * tracksPerPage + 1
+            var to = Math.min(playlist.tracks.length, frm + tracksPerPage - 1)
+
+            scope.downloadLinks.push({
+              label: ((page == 1) ? 'Download ' : '') + 'Part ' + page,
+              hover: 'Tracks ' + frm + ' to ' + to,
+              url: endpoint + '/playlist/' + playlist._id + '/download?' + objectToQueryString(opts)
+            })
+          }
+        }
+      }
+
+      var numLoadingPages = Math.ceil(playlist.tracks.length / PLAYLIST_PAGE_LIMIT)
+
+      scope.pagePlaceholders = []
+      for (var i = 1; i <= numLoadingPages; i++) {
+        const trackPlaceholders = []
+
+        for (var j = 0; j < PLAYLIST_PAGE_LIMIT; j++) {
+          trackPlaceholders.push({
+            index: j,
+            number: ((i - 1) * PLAYLIST_PAGE_LIMIT) + j + 1,
+            title: createLoadingPlaceHolder(20, 40),
+            artists: createLoadingPlaceHolder(20, 40),
+            release: createLoadingPlaceHolder(15, 25),
+            genre: createLoadingPlaceHolder(10, 18),
+            page: i
+          })
+        }
+        scope.pagePlaceholders.push({tracks: trackPlaceholders, page: i})
+      }
+      renderContent(args.template, scope)
     }
-  }
-
-  var numLoadingPages = Math.ceil(obj.tracks.length / PLAYLIST_PAGE_LIMIT)
-
-  obj.pagePlaceholders = []
-  for (var i = 1; i <= numLoadingPages; i++) {
-    const trackPlaceholders = []
-
-    for (var j = 0; j < PLAYLIST_PAGE_LIMIT; j++) {
-      trackPlaceholders.push({
-        index: j,
-        number: ((i - 1) * PLAYLIST_PAGE_LIMIT) + j + 1,
-        title: createLoadingPlaceHolder(20, 40),
-        artists: createLoadingPlaceHolder(20, 40),
-        release: createLoadingPlaceHolder(15, 25),
-        genre: createLoadingPlaceHolder(10, 18),
-        page: i
-      })
-    }
-    obj.pagePlaceholders.push({tracks: trackPlaceholders, page: i})
-  }
-
-  return obj
+  })
 }
 
 function transformPlaylistTracks (obj, done) {

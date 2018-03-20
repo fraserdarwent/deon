@@ -509,7 +509,6 @@ function processor (args, meths) {
       scope = methods.transform(args)
     }
 
-    console.log('scope', scope)
     render(args.template, args.node, scope)
     return
   }
