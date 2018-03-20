@@ -503,12 +503,13 @@ function processor (args, meths) {
       return
     }
 
-    var scope = {err: args.err, data: args.result}
+    var scope = {err: args.err, data: args.result, loading: false}
 
     if (methods.transform) {
       scope = methods.transform(args)
     }
 
+    console.log('scope', scope)
     render(args.template, args.node, scope)
     return
   }

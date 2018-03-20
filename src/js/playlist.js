@@ -175,6 +175,31 @@ function isMyPlaylist (playlist) {
   return playlist.userId == session.user._id
 }
 
+/**
+ * Processor for showing your list of playlists
+ */
+function processPlaylists (args) {
+  console.log('args', args)
+  processor(args, {
+    start: function start (args) {
+      renderContent(args.template, {
+        loading: true
+      })
+    },
+    error: function error (args) {
+      render(args.template, args.node, {
+        error: args.err,
+        loading: false
+      })
+    },
+    success: function (args) {
+      renderContent(args.template, {
+        data: args.result
+      })
+    }
+  })
+}
+
 function transformPlaylist (obj) {
   if (isMyPlaylist(obj)) {
     obj.canPublic = {

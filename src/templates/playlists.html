@@ -1,21 +1,6 @@
 <script type="text/template"
-        data-template="select-playlist">
-    {{#loading}}
-    <option disabled checked>Loading...</option>
-    {{/loading}}
-    {{#error}}
-    {{/error}}
-    {{#data}}
-    <option value="" checked>Add to Playlist</option>
-    {{#results}}
-    <option value="{{_id}}">{{name}}</option>
-    {{/results}}
-    {{/data}}
-</script>
-
-<script type="text/template"
         data-template="add-to-playlist-modal"
-        transform="transformAddToPlaylist">
+        >
     <div class="modal">
         <div class="panel pointer-events">
             <h2 class="mv-0">Add to Playlist</h2>
@@ -78,7 +63,11 @@
 
 <script type="text/template"
         data-title="My Playlists"
-        data-route="^playlists">
+        data-source="$endpoint/playlist?fields=name,public"
+        data-process="processPlaylists"
+        data-route="^playlists"
+        data-template="playlists-page"
+        >
     <div class="container">
         <h1>My Playlists</h1>
         <div class="panel">
@@ -87,52 +76,46 @@
                     Create Playlist
                 </button>
             </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody
-                    data-source="$endpoint/playlist?fields=name,public"
-                    template="playlists">
-                </tbody>
-            </table>
+            {{#if loading}}
+                {{>loading-view}}
+            {{/if}}
+            {{#if error}}
+                {{>error-view}}
+            {{/if}}
+            {{#data}}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each results}}
+                            <tr>
+                                <td><a href="/playlist/{{_id}}">{{name}}</a></td>
+                                <td class="push-right text right">
+                                    <button class="faux button--mobile"
+                                            onclick="renamePlaylist(event, this)"
+                                            playlist-id="{{_id}}">
+                                        <i class="fa fa-pencil"></i>
+                                    </button>
+                                    <button class="faux button--mobile"
+                                            onclick="destroyPlaylist(event, this)"
+                                            playlist-id="{{_id}}">
+                                        <i class="fa fa-trash-o"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        {{/each}}
+                        {{#unless results.length}}
+                            <tr><td colspan="2">No Playlists.</td></tr>
+                        {{/unless}}
+                    </tbody>
+                </table>
+            {{/data}}
         </div>
     </div>
-</script>
-
-<script type="text/template"
-        data-template="playlists">
-    {{#loading}}
-    {{>loading-table-view}}
-    {{/loading}}
-    {{#error}}
-    <tr><td colspan="2">{{message}}</td></tr>
-    {{/error}}
-    {{#data}}
-    {{#results}}
-    <tr>
-        <td><a href="/playlist/{{_id}}">{{name}}</a></td>
-        <td class="push-right text right">
-            <button class="faux button--mobile"
-                    onclick="renamePlaylist(event, this)"
-                    playlist-id="{{_id}}">
-                <i class="fa fa-pencil"></i>
-            </button>
-            <button class="faux button--mobile"
-                    onclick="destroyPlaylist(event, this)"
-                    playlist-id="{{_id}}">
-                <i class="fa fa-trash-o"></i>
-            </button>
-        </td>
-    </tr>
-    {{/results}}
-    {{^results}}
-    <tr><td colspan="2">No Playlists.</td></tr>
-    {{/results}}
-    {{/data}}
 </script>
 
 <script type="text/template"
