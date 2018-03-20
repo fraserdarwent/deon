@@ -89,8 +89,6 @@ function copyCrediting (e, el){
 
 function openTrackLicensing (e) {
   const el = findParentWith(e.target, '[data-track-id]')
-  console.log('el', el);
-  console.log('e.target', e.target)
   const trackId = el.dataset.trackId
   const releaseId = el.dataset.releaseId
 
@@ -108,15 +106,7 @@ function openTrackLicensing (e) {
     data.loading = false
     data.signedIn = isSignedIn()
 
-    console.log('err,data', err, data)
     openModal('track-licensing-modal', data)
-  })
-}
-
-function openReleaseLicensing (e, el) {
-  openModal('release-licensing-modal', {
-    releaseId: el.getAttribute('release-id'),
-    signedIn: isSignedIn()
   })
 }
 
