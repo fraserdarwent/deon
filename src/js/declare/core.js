@@ -89,6 +89,15 @@ function request (opts, done) {
 }
 
 function requestJSON (opts, done) {
+  if (typeof opts == 'string') {
+    opts = {
+      method: 'GET',
+      withCredentials: true,
+      url: opts,
+      headers: {}
+    }
+  }
+
   opts.headers = opts.headers || {}
   opts.headers['Accept'] = 'application/json'
   opts.headers['Content-Type'] = 'application/json'

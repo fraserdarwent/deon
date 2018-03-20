@@ -197,13 +197,13 @@
 {{#streamable}}
 <a class="silent button--mobile"
    target="_blank"
-    action="openTrackLicensing"
-    release-id="{{releaseId}}"
+    onclick="openTrackLicensing(event)"
+    data-release-id="{{releaseId}}"
     {{#activeTest}}
     ab-test="{{activeTest}}"
     kpi="open-track-licensing"
     {{/activeTest}}
-    track-id="{{_id}}">
+    data-track-id="{{_id}}">
     <i class="fa fa-copyright"></i>
     <span class="col-xs-hidden">License</span>
 </a>

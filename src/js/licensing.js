@@ -87,11 +87,29 @@ function copyCrediting (e, el){
   toasty('Crediting copied to clipboard.')
 }
 
-function openTrackLicensing (e, el) {
+function openTrackLicensing (e) {
+  const el = findParentWith(e.target, '[data-track-id]')
+  console.log('el', el);
+  console.log('e.target', e.target)
+  const trackId = el.dataset.trackId
+  const releaseId = el.dataset.releaseId
+
   openModal('track-licensing-modal', {
-    trackId:   el.getAttribute('track-id'),
-    releaseId: el.getAttribute('release-id'),
-    signedIn: isSignedIn()
+    trackId: trackId,
+    releaseId: releaseId,
+    signedIn: isSignedIn(),
+    loading: true
+  })
+
+  loadReleaseAndTrack({
+    trackId: trackId,
+    releaseId: releaseId
+  }, (err, data) => {
+    data.loading = false
+    data.signedIn = isSignedIn()
+
+    console.log('err,data', err, data)
+    openModal('track-licensing-modal', data)
   })
 }
 

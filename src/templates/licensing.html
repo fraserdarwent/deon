@@ -275,7 +275,7 @@
 <script type="text/template"
         data-partial data-template="licensing-modal-main">
   <div class="section content-creators flex-buttons">
-      <a class="button button-cta button-cta--mobile" href="/sync" action="closeModal">
+      <a class="button button-cta button-cta--mobile" href="/sync" onclick="closeModal(event)">
         <span class="title">Commercial</span>
         <span class="subtitle">Movies, TV Shows</span>
       </a>
@@ -290,35 +290,35 @@
     <div class="modal modal--licensing-track modal--licensing">
         <div class="panel pointer-events">
             <h1>License This Track</h1>
-            {{#loading}}
-            {{>loading-inner-view}}
-            {{/loading}}
-            {{#error}}
-            <p>{{message}}</p>
-            {{/error}}
-            {{#data}}
-            {{>licensing-modal-main}}
-            <div class="section crediting">
-              <h3>Credit the Artists</h3>
-              <div class="flex">
-                <div class="col-xs-12 col-sm-6 flex-buttons">
-                  <button action="showCrediting" credit-type="youtube" class="button button-cta button-cta--mobile button--youtube">
-                    <span class="title">YouTube</span>
-                    <span class="subtitle">on Description</span>
-                  </button>
-                  <button action="showCrediting" credit-type="other" class="button button-cta button-cta--mobile">
-                    <span class="title">Other</span>
-                    <span class="subtitle">Facebook/Twitter</span>
-                  </button>
+            {{#if loading}}
+              {{>loading-inner-view}}
+            {{else}}
+              {{#if error}}
+                <p>{{message}}</p>
+              {{else}}
+                {{>licensing-modal-main}}
+                <div class="section crediting">
+                  <h3>Credit the Artists</h3>
+                  <div class="flex">
+                    <div class="col-xs-12 col-sm-6 flex-buttons">
+                      <button onclick="showCrediting(event, this)" credit-type="youtube" class="button button-cta button-cta--mobile button--youtube">
+                        <span class="title">YouTube</span>
+                        <span class="subtitle">in Description</span>
+                      </button>
+                      <button onclick="showCrediting(event, this)" credit-type="other" class="button button-cta button-cta--mobile">
+                        <span class="title">Other</span>
+                        <span class="subtitle">Facebook/Twitter</span>
+                      </button>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 flex-buttons">
+                      <textarea onclick="copyCrediting(event,this)" class="copycredits hide" credit-type="youtube">{{track.copycredit}}</textarea>
+                      <textarea onclick="copyCrediting(event, this)" class="copycredits hide" credit-type="other">{{track.copycreditOther}}</textarea>
+                    </div>
+                  </div>
                 </div>
-                <div class="col-xs-12 col-sm-6 flex-buttons">
-                  <textarea action="copyCrediting" class="copycredits hide" credit-type="youtube">{{track.copycredit}}</textarea>
-                  <textarea action="copyCrediting" class="copycredits hide" credit-type="other">{{track.copycreditOther}}</textarea>
-                </div>
-              </div>
-            </div>
-            {{/data}}
-            <button class="button--close faux" action="closeModal">
+              {{/if}}
+            {{/if}}
+            <button class="button--close faux" onclick="closeModal(event)">
                 <i class="fa fa-remove"></i>
             </button>
         </div>

@@ -30,19 +30,12 @@ function toasty (obj, time) {
 }
 
 function openModal (name, data) {
-  var el         = getTemplateEl(name)
-  var opts       = getElementSourceOptions(el)
-  var container  = findNode('[role="modals"]')
-  opts.container = container.querySelector('[role="container"]')
-  opts.data      = data
-  if (opts.source) {
-    loadSource(opts)
-  }
-  else {
-    renderTemplateOptions(opts)
-  }
+  const modalsEl  = findNode('[role="modals"]')
+  const modalContainer = modalsEl.querySelector('[role="container"]')
+
+  render(name, modalContainer, data)
   findNode('body').classList.add('showing-modal')
-  container.classList.add('open')
+  modalsEl.classList.add('open')
 }
 
 function closeModal () {

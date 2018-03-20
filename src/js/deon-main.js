@@ -481,9 +481,9 @@ function getTwitterLinkUsername (url) {
  *   trackId
  */
 function loadReleaseAndTrack (obj, done) {
-  loadCache(endpoint + '/catalog/track/' + obj.trackId, function(err, track) {
+  requestJSON(endpoint + '/catalog/track/' + obj.trackId, function(err, track) {
     if (err) return done(err);
-    loadCache(endpoint + '/catalog/release/' + obj.releaseId, function(err, release) {
+    requestJSON(endpoint + '/catalog/release/' + obj.releaseId, function(err, release) {
       if (err) return done(err)
       var title = track.title + ' by ' + track.artistsTitle;
       if (track.title != release.title) {
