@@ -398,14 +398,13 @@ function dummyMethod () {
  * @arg {Node} parent The node to find children with the attribute.
  */
 function loadNodeSources (parent) {
-  if (!parent)
-  { return }
-  var nodes = findNodes('[data-source]', parent)
+  if (!parent) {
+    return
+  }
+  const nodes = findNodes('[data-source]', parent)
 
   for (var i = 0; i < nodes.length; i++) {
-    var node = nodes[i]
-
-    loadNodeSource(node)
+    loadNodeSource(nodes[i])
   }
 }
 
@@ -461,7 +460,7 @@ function loadNodeSource (node, matches) {
   })
   var cors = !node.hasAttribute('data-no-cors')
 
-  requestCached({
+  requestJSON({
     url: source,
     cors: cors,
     delay: parseInt(node.getAttribute('data-delay'))

@@ -231,8 +231,8 @@
     {{#data}}
         {{#each results}}
         <tr role="playlist-track"
-            track-id="{{_id}}"
-            release-id="{{releaseId}}"
+            data-track-id="{{_id}}"
+            data-release-id="{{releaseId}}"
             {{#edit}}
             draggable="true"
             ondrop="playlistDrop(event)"
@@ -243,13 +243,12 @@
             <td class="shrink">
                 {{#edit}}
                 <input  type="text"
-                        action-enter="reorderPlaylistFromInputs"
-                        action-enter="reorderPlaylistFromInputs"
+                        onenter="reorderPlaylistFromInputs"
                         onfocus="playlistTrackOrderFocus(event, this)"
                         onblur="playlistTrackOrderBlur(event, this)"
                         trigger-target="reorderPlaylistFromInputs"
-                        track-id="{{_id}}"
-                        release-id="{{releaseId}}"
+                        data-track-id="{{_id}}"
+                        data-release-id="{{releaseId}}"
                         track-title="{{title}}"
                         name="trackOrder[]"
                         tabIndex="{{trackNumber}}"
@@ -267,8 +266,8 @@
                 {{>track-buttons}}
                 {{#edit}}
                 <button class="faux button--mobile"
-                        onclick="removeFromPlaylist(event, this)"
-                        playlist-position="{{index}}">
+                        onclick="clickRemoveFromPlaylist(event, this)"
+                        data-playlist-position="{{index}}">
                     <i class="fa fa-trash-o"></i>
                 </button>
                 {{/edit}}

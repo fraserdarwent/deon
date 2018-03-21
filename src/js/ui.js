@@ -33,6 +33,15 @@ function toasty (obj, time) {
   return toast(obj)
 }
 
+function terror (err) {
+  if (err) {
+    toasty(new Error(err))
+    return true
+  }
+
+  return false
+}
+
 function renderModal (name, scope) {
   const modalContainer = findNode('[role="modals"] [role="container"]')
 

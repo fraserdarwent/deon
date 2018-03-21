@@ -393,13 +393,39 @@ function hookValueSelects (selects) {
   })
 }
 
+function bindOnEnter () {
+  const els = document.querySelectorAll('[onenter]')
+  console.log('els', els);
+
+  for (var i = 0; i < els.length; i++) {
+    const node = els[i]
+    const name = node.getAttribute('onenter')
+    const fn = window[name]
+
+    if (!fn) {
+      console.log('not a function: ' + name)
+    }
+
+    function callback (e) {
+      console.log('e.keyCode', e.keyCode)
+      if (e.keyCode == 13) {
+        console.log('DO IT')
+        fn(e, this)
+      }
+    }
+
+    node.removeEventListener('keydown', callback) //To avoid double calling
+    node.addEventListener('keydown', callback)
+  }
+}
+
 var actionier = {
   on: function (el) {
     el.disabled = true
     el.classList.toggle('on', true)
   },
   off: function (el) {
-    el.disabled = true
+    el.disabled = false
     el.classList.toggle('on', false)
   },
   isOn: function (el) {
