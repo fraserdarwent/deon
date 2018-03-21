@@ -125,7 +125,7 @@
         data-template="playlist-page"
         >
     <div class="container">
-        <h1 playlist-id="{{_id}}">{{name}}</h1>
+        <h1 playlist-id="{{_id}}">{{playlist.name}}</h1>
         <div class="panel">
             <div class="options pad-vertical push-right">
                 {{#if canPublic}}
@@ -223,61 +223,62 @@
 
 <script type="text/template"
         data-template="playlist-tracks"
-        transform="transformPlaylistTracks"
-        completed="completedPlaylistTracks">
-    {{#error}}
-    <tr><td colspan="6">{{message}}</td></tr>
-    {{/error}}
+        data-process="processPlaylistTracks"
+        completed="updateControls">
+    {{#loading}}
+        {{>loading-table-view}}
+    {{/loading}}
     {{#data}}
-    {{#results}}
-    <tr role="playlist-track"
-        track-id="{{_id}}"
-        release-id="{{releaseId}}"
-        {{#edit}}
-        draggable="true"
-        ondrop="playlistDrop(event)"
-        ondragover="playlistAllowDrop(event)"
-        ondragleave="playlistDragLeave(event)"
-        ondragstart="playlistDragStart(event, '{{_id}}', '{{releaseId}}')"
-        {{/edit}}>
-        <td class="shrink">
+        {{#each results}}
+        <tr role="playlist-track"
+            track-id="{{_id}}"
+            release-id="{{releaseId}}"
             {{#edit}}
-            <input  type="text"
-                    action-enter="reorderPlaylistFromInputs"
-                    onfocus="playlistTrackOrderFocus(event, this)"
-                    onblur="playlistTrackOrderBlur(event, this)"
-                    trigger-target="reorderPlaylistFromInputs"
-                    track-id="{{_id}}"
-                    release-id="{{releaseId}}"
-                    track-title="{{title}}"
-                    name="trackOrder[]"
-                    tabIndex="{{trackNumber}}"
-                    value="{{trackNumber}}" size="2" />
-            {{/edit}}
-            {{#noEdit}}
-            {{trackNumber}}.
-            {{/noEdit}}
-        </td>
-        <td class="shrink nohpad">
-          {{>play-song}}
-        </td>
-        {{>trackCellsOneLine}}
-        <td class="push-right">
-            {{>track-buttons}}
-            {{#edit}}
-            <button class="faux button--mobile"
-                    onclick="removeFromPlaylist(event, this)"
-                    playlist-position="{{index}}">
-                <i class="fa fa-trash-o"></i>
-            </button>
-            {{/edit}}
-        </td>
-    </tr>
-    {{/results}}
-    {{^results}}
-    <tr>
-        <td colspan="10">No Results.</td>
-    </tr>
-    {{/results}}
+            draggable="true"
+            ondrop="playlistDrop(event)"
+            ondragover="playlistAllowDrop(event)"
+            ondragleave="playlistDragLeave(event)"
+            ondragstart="playlistDragStart(event, '{{_id}}', '{{releaseId}}')"
+            {{/edit}}>
+            <td class="shrink">
+                {{#edit}}
+                <input  type="text"
+                        action-enter="reorderPlaylistFromInputs"
+                        action-enter="reorderPlaylistFromInputs"
+                        onfocus="playlistTrackOrderFocus(event, this)"
+                        onblur="playlistTrackOrderBlur(event, this)"
+                        trigger-target="reorderPlaylistFromInputs"
+                        track-id="{{_id}}"
+                        release-id="{{releaseId}}"
+                        track-title="{{title}}"
+                        name="trackOrder[]"
+                        tabIndex="{{trackNumber}}"
+                        value="{{trackNumber}}" size="2" />
+                {{/edit}}
+                {{#noEdit}}
+                {{trackNumber}}.
+                {{/noEdit}}
+            </td>
+            <td class="shrink nohpad">
+              {{>play-song}}
+            </td>
+            {{>track-cells-one-line}}
+            <td class="push-right">
+                {{>track-buttons}}
+                {{#edit}}
+                <button class="faux button--mobile"
+                        onclick="removeFromPlaylist(event, this)"
+                        playlist-position="{{index}}">
+                    <i class="fa fa-trash-o"></i>
+                </button>
+                {{/edit}}
+            </td>
+        </tr>
+        {{/each}}
+        {{#unless results.length}}
+            <tr>
+                <td colspan="10">No Results.</td>
+            </tr>
+        {{/unless}}
     {{/data}}
 </script>

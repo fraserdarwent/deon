@@ -199,38 +199,6 @@ function processPlaylistsPage (args) {
   })
 }
 
-<<<<<<< HEAD
-function transformPlaylist (obj) {
-  if (isMyPlaylist(obj)) {
-    obj.canPublic = {
-      _id:    obj._id,
-      public: obj.public
-    }
-  }
-  if (isSignedIn()) {
-    var opts = {
-      method: 'download',
-      type: getMyPreferedDownloadOption()
-    }
-
-    if (obj.tracks.length < PLAYLIST_DOWNLOAD_LIMIT) {
-      obj.downloadUrl = endpoint + '/playlist/' + obj._id + '/download?' + objectToQueryString(opts)
-    }
-    else {
-      obj.downloadLinks = []
-      var tracksPerPage = PLAYLIST_DOWNLOAD_LIMIT
-      var numPages = Math.ceil(obj.tracks.length / tracksPerPage)
-
-      for (var page = 1; page <= numPages; page++) {
-        opts.page = page
-        var frm = (page - 1) * tracksPerPage + 1
-        var to = Math.min(obj.tracks.length, frm + tracksPerPage - 1)
-
-        obj.downloadLinks.push({
-          label: ((page == 1) ? 'Download ' : '') + 'Part ' + page,
-          hover: 'Tracks ' + frm + ' to ' + to,
-          url: endpoint + '/playlist/' + obj._id + '/download?' + objectToQueryString(opts)
-        })
 function processPlaylistPage (args) {
   console.log('args', args)
   processor(args, {
@@ -253,7 +221,7 @@ function processPlaylistPage (args) {
           type: getMyPreferedDownloadOption()
         }
 
-        if (playlist.tracks.length < tracksPerPage) {
+        if (playlist.tracks.length < PLAYLIST_DOWNLOAD_LIMIT) {
           scope.downloadUrl = endpoint + '/playlist/' + playlist._id + '/download?' + objectToQueryString(opts)
         }
         else {
@@ -293,42 +261,56 @@ function processPlaylistPage (args) {
         }
         scope.pagePlaceholders.push({tracks: trackPlaceholders, page: i})
       }
+      cache('page:playlist', scope)
       renderContent(args.template, scope)
     }
   })
 }
 
-function transformPlaylistTracks (obj, done) {
-  var id = document.querySelector('[playlist-id]').getAttribute('playlist-id')
-  var url = endpoint + '/playlist/' + id + '?fields=name,public,userId'
-  var playlist = cache(url)
+function processPlaylistTracks (args) {
+  processor(args, {
+    start: function (args) {
+      render(args.template, args.node, {loading: true})
+    },
+    success: function (args) {
+      const playlist = cache('page:playlist').playlist
 
-  var trackAtlas = toAtlas(obj.results, '_id')
+      console.log('args.matches', args.matches)
 
-  obj.results = obj.results.map((item, index, arr) => {
-    var track = mapTrack(item)
+      const result = args.result
+      const data = {}
 
-    track.index = index + obj.skip
-    track.trackNumber = index + 1 + obj.skip
-    track.playlistId = id
-    track.canRemove = isMyPlaylist(obj) ? { index: track.index } : undefined
-    if (isMyPlaylist(playlist)) {
-      track.edit = {
-        releaseId: track.releaseId,
-        _id: track._id,
-        title: track.title,
-        trackNumber: track.trackNumber,
-        index: track.index
-      }
-    } else {
-      track.noEdit = {
-        trackNumber: track.trackNumber
-      }
+      const trackAtlas = toAtlas(result.results, '_id')
+
+      data.results = result.results.map((item, index, arr) => {
+        const track = mapTrack(item)
+
+        track.index = index
+        track.trackNumber = index + 1
+        track.playlistId = playlist._id
+        track.canRemove = isMyPlaylist(playlist) ? { index: track.index } : undefined
+        if (isMyPlaylist(playlist)) {
+          track.edit = {
+            releaseId: track.releaseId,
+            _id: track._id,
+            title: track.title,
+            trackNumber: track.trackNumber,
+            index: track.index
+          }
+        } else {
+          track.noEdit = {
+            trackNumber: track.trackNumber
+          }
+        }
+
+        return track
+      })
+
+      render(args.template, args.node, {
+        data: data
+      })
     }
-
-    return track
   })
-  done(null, obj)
 }
 
 function completedPlaylistTracks (source, obj) {
