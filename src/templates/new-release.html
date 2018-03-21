@@ -5,11 +5,7 @@
         data-process="processReleasePage"
         >
 {{#if loading}}
-<<<<<<< HEAD
     {{>loading-view-black}}
-=======
-    {{> loading-view-black}}
->>>>>>> 1227c48... New Deon in events pages
 {{else}}
     {{#if error}}
         {{> error}}
@@ -37,11 +33,7 @@
                     {{>album-release-dates}}
                     </p>
                     <ul class="list--inline list--tool-tip">
-<<<<<<< HEAD
                     {{#each ../releaseArtistsLimited}}<li class="mr-2">
-=======
-                    {{#releaseArtistsLimited}}<li class="mr-2">
->>>>>>> 1227c48... New Deon in events pages
                             <div class="artist-circle">
                                 <a href="{{artistPageLink}}"
                                 label="Artist Image"
@@ -63,11 +55,7 @@
                                     {{name}}
                                 </a></h6>
                                 <ul class="mt-1 text nowrap list--inline{{^socials}} hide{{/socials}}">
-<<<<<<< HEAD
                                     {{#each socials}}<li class="mr-2">
-=======
-                                    {{#socials}}<li class="mr-2">
->>>>>>> 1227c48... New Deon in events pages
                                         <a href="{{link}}"
                                         target="_blank"
                                         title="{{label}}"
@@ -78,17 +66,10 @@
                                         kpi="artist-{{platform}}">
                                             <i class="fa fa-{{icon}}"></i>
                                         </a>
-<<<<<<< HEAD
                                     </li>{{/each}}
                                 </ul>
                             </div>
                         </li>{{/each}}
-=======
-                                    </li>{{/socials}}
-                                </ul>
-                            </div>
-                        </li>{{/releaseArtistsLimited}}
->>>>>>> 1227c48... New Deon in events pages
                     </ul>
                 </div>
             </div>
@@ -119,7 +100,6 @@
                             </li>
                             {{/streamable}}
                             {{^inEarlyAccess}}
-<<<<<<< HEAD
                                 {{#releaseDate}}
                                 <li class="mb-1">
                                     <a href="{{downloadLink}}"
@@ -315,10 +295,7 @@
 <script type="text/template"
         data-template="release-merch"
         data-process="processReleaseMerch">
-<<<<<<< HEAD
 {{#if products.length}}
-=======
->>>>>>> 1227c48... New Deon in events pages
 <div class="merch">
     <div class="container latest">
         <header class="flex top-cta">
@@ -338,10 +315,7 @@
         {{>merch-list}}
     </div>
 </div>
-<<<<<<< HEAD
 {{/if}}
-=======
->>>>>>> 1227c48... New Deon in events pages
 </script>
 
 <script type="text/template" data-partial data-template="gold-panel">

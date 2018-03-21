@@ -101,14 +101,14 @@
     <span class="scroll-title">{{title}}{{>early-access-msg}}{{>unlicensable}}</span>
   </div>
 </td>
-{{#playlistId}}
+{{#if playlistId}}
 <td class="longer-width">
   <div class="scroll-container"
        onmouseover="scrollTrackTitle(this)" onmouseleave="removeScrollTrackTitle(this)">
     <a href="/release/{{releaseId}}" class="scroll-title">{{release.title}}</a>
   </div>
 </td>
-{{/playlistId}}
+{{/if}}
 <td class="longer-width">
     {{>artists-csv-list}}
 </td>

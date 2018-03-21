@@ -124,6 +124,14 @@ function getAllTracksArtistsUsers (tracks) {
 function processReleaseMerch (obj) {
   processor(obj, {
     success: function (args) {
+      if (!args.result) {
+        console.log('no result')
+        render(args.template, args.node, {
+          loading: false
+        })
+        return
+      }
+
       const maxProducts = 8
       const result = args.result
       const scope = {
