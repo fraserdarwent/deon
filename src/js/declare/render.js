@@ -6,7 +6,7 @@
  * @returns {Element}
  */
 function getTemplate (name) {
-  return findNode('[data-template="'+name+'"]');
+  return findNode('[data-template="' + name + '"]')
 }
 
 /**
@@ -15,12 +15,13 @@ function getTemplate (name) {
  * @returns {Element[]}
  */
 function getPartials () {
-  var els = findNodes('[data-partial]');
-  var obj = {};
-  for(var i=0; i<els.length; i++) {
-    obj[els[i].getAttribute('data-template')] = els[i].textContent;
+  var els = findNodes('[data-partial]')
+  var obj = {}
+
+  for (var i = 0; i < els.length; i++) {
+    obj[els[i].getAttribute('data-template')] = els[i].textContent
   }
-  return obj;
+  return obj
 }
 
 /**
@@ -36,26 +37,30 @@ function getPartials () {
  * @returns {Element}
  */
 function render (name, el, scope, partials) {
-  if (typeof(el) == 'string') {
+  if (typeof (el) == 'string') {
     el = document.querySelector(el)
   }
-  var tmpl = getTemplate(name);
+  var tmpl = getTemplate(name)
+
   partials = partials || render.defaultPartials
-  if (!tmpl) return;
-  el = el || cloneNodeAsElement(tmpl, tmpl.getAttribute('data-tagname') || 'div');
+  if (!tmpl) {
+    return false
+  }
+  el = el || cloneNodeAsElement(tmpl, tmpl.getAttribute('data-tagname') || 'div')
 
   if (window.Mustache && window.Mustache.render) {
-    el.innerHTML = Mustache.render(tmpl.textContent, scope, partials);
+    el.innerHTML = Mustache.render(tmpl.textContent, scope, partials)
   }
-  else if(window.Handlebars) {
+  else if (window.Handlebars) {
     var template = Handlebars.compile(tmpl.textContent)
+
     el.innerHTML = template(scope)
   }
   else {
-    el.innerHTML = tmpl.textContent;
+    el.innerHTML = tmpl.textContent
   }
   loadNodeSources(el)
-  return el;
+  return el
 }
 render.defaultPartials = {}
 
@@ -66,12 +71,12 @@ render.defaultPartials = {}
 function registerPartials () {
   var partials = getPartials()
 
-  if(window.Handlebars) {
-    for(var key in partials) {
+  if (window.Handlebars) {
+    for (var key in partials) {
       Handlebars.registerPartial(key, partials[key])
     }
   }
-  else if(window.Mustache) {
+  else if (window.Mustache) {
     render.defaultPartials = partials
   }
 }

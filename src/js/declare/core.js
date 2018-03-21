@@ -21,20 +21,22 @@
  */
 function request (opts, done) {
   if (typeof opts.url != "string") {
-    console.warn("Request URL not provided.");
-    return done(Error("URL not provided."));
+    console.warn("Request URL not provided.")
+    return done(Error("URL not provided."))
   }
   var delay = opts.delay || 0
   var start = Date.now()
   var fn = done
+
   if (opts.delay > 0) {
     fn = function () {
       var now = Date.now()
       var delta = now - start
+
       if (delta > delay)
-        done.apply(null, arguments)
+      { done.apply(null, arguments) }
       else
-        setTimeout(done.bind(null, arguments), delay - delta)
+      { setTimeout(done.bind(null, arguments), delay - delta) }
     }
   }
 
@@ -45,8 +47,8 @@ function request (opts, done) {
   //Assume if no headers set and that we're sending an obj that it's JSON
   if (opts.data && typeof opts.data == 'object'
     && !(opts.data instanceof FormData)
-    && !opts.headers['Accept']) {
-    opts.headers['Accept'] = 'application/json'
+    && !opts.headers.Accept) {
+    opts.headers.Accept = 'application/json'
     opts.headers['Content-Type'] = 'application/json'
     opts.data = JSON.stringify(opts.data)
   }
@@ -56,14 +58,16 @@ function request (opts, done) {
     opts.data = JSON.stringify(opts.data)
   }
 
-  var xhr = new XMLHttpRequest();
+  var xhr = new XMLHttpRequest()
+
   xhr.onreadystatechange = function () {
-    if (xhr.readyState != 4) return;
-    var obj, err;
+    if (xhr.readyState != 4) { return }
+    var obj, err
     var responseContentType = xhr.getResponseHeader("Content-Type")
+
     if (responseContentType && responseContentType.indexOf('application/json') >= 0) {
       try {
-        obj = JSON.parse(xhr.responseText);
+        obj = JSON.parse(xhr.responseText)
       } catch (e) {
         console.warn(e)
         err = e
@@ -72,25 +76,25 @@ function request (opts, done) {
       obj = xhr.responseText
     }
     if (xhr.status >= 200 && xhr.status < 300) {
-      return fn(err, obj, xhr);
+      return fn(err, obj, xhr)
     }
-    err = Error("A connection error occured.");
+    err = Error("A connection error occured.")
     if (typeof obj == 'object' && typeof obj.message != 'undefined') {
       err.message = obj.message
     } else if (typeof obj != 'undefined' && !!xhr.responseText) {
       err.message = xhr.responseText
     }
-    fn(err, null, xhr);
+    fn(err, null, xhr)
   }
   xhr.open(opts.method || "GET", opts.url)
   if (typeof opts.headers == "object") {
     for (var key in opts.headers) {
-      xhr.setRequestHeader(key, opts.headers[key]);
+      xhr.setRequestHeader(key, opts.headers[key])
     }
   }
-  xhr.withCredentials = !!opts.withCredentials || !!opts.cors;
-  xhr.send(opts.data);
-  return xhr;
+  xhr.withCredentials = !!opts.withCredentials || !!opts.cors
+  xhr.send(opts.data)
+  return xhr
 }
 
 /**
@@ -111,7 +115,7 @@ function requestJSON (opts, done) {
   }
 
   opts.headers = opts.headers || {}
-  opts.headers['Accept'] = 'application/json'
+  opts.headers.Accept = 'application/json'
   opts.headers['Content-Type'] = 'application/json'
   request(opts, done)
 }
@@ -171,20 +175,21 @@ function loadCache (source, done, reset) {
  * @param {Object} obj    The value to set
  */
 function cache (source, obj) {
-  var _ = cache._;
+  var _ = cache._
   // Clear the cache if not exist or no args.
+
   if (!_ || !arguments.length) {
-    _ = {};
-    cache._ = _;
+    _ = {}
+    cache._ = _
   }
   // Return nothing if no args.
-  if (!arguments.length) return;
+  if (!arguments.length) { return }
   // Assign value if provided.
   if (source && obj) {
-    _[source] = obj;
+    _[source] = obj
   }
   // Return value on set or get.
-  return _[source];
+  return _[source]
 }
 
 /**
@@ -199,20 +204,21 @@ function cache (source, obj) {
 function requestCached (opts, done) {
   var key = opts.method + '_' + opts.url
   var cached = cache(key)
+
   if (cached) {
-    return done(null, cached.body, cached.xhr);
+    return done(null, cached.body, cached.xhr)
   }
-  else {
-    request(opts, function (err, body, xhr) {
-      if (!err) {
-        cache(key, {
-          body: body,
-          xhr: xhr
-        });
-      }
-      done(err, body, xhr);
-    });
-  }
+
+  request(opts, function (err, body, xhr) {
+    if (!err) {
+      cache(key, {
+        body: body,
+        xhr: xhr
+      })
+    }
+    done(err, body, xhr)
+  })
+
 }
 
 /**
@@ -236,16 +242,17 @@ function requestCached (opts, done) {
  */
 function requestChain (arr, done, results) {
   if (!(results instanceof Array))
-    results = []
+  { results = [] }
   if (!arr.length)
-    return done(null, results)
+  { return done(null, results) }
   results.push({})
   function requestChainDo (err, body, xhr) {
-    let result = results[results.length - 1]
+    const result = results[results.length - 1]
+
     result.error = err
     result.body = body
     result.xhr = xhr
-    if (err) return done(err, results)
+    if (err) { return done(err, results) }
     requestChain(arr, done, results)
   }
   results[results.length - 1].xhr = request(arr.shift(), requestChainDo)
@@ -256,7 +263,7 @@ function requestChain (arr, done, results) {
  * @arg {[Object]} arr
  */
 function requestChainCancel (arr) {
-  arr.forEach((x)=> {
+  arr.forEach((x) => {
     x.xhr.abort()
   })
 }
@@ -281,6 +288,7 @@ function findNode (pattern, context) {
  */
 function findNodes (pattern, context) {
   var nodes = (context || document).querySelectorAll(pattern)
+
   return Array.prototype.slice.call(nodes)
 }
 
@@ -294,7 +302,7 @@ function findNodes (pattern, context) {
  */
 function matchNode (selector, node) {
   if (node && typeof node.matches == 'function')
-    return node.matches(selector)
+  { return node.matches(selector) }
   return false
 }
 
@@ -309,12 +317,13 @@ function matchNode (selector, node) {
  * @returns {Node}
  */
 function findParentWith (node, matcher, checkThis) {
-  if (arguments.length == 2) checkThis = true
+  if (arguments.length == 2) { checkThis = true }
   var check = typeof matcher == 'function' ? matcher : matchNode.bind(null, matcher)
-  if (checkThis && check(node)) return node
+
+  if (checkThis && check(node)) { return node }
   while (node) {
     node = node.parentNode
-    if (check(node)) return node
+    if (check(node)) { return node }
   }
   return undefined
 }
@@ -328,12 +337,14 @@ function findParentWith (node, matcher, checkThis) {
  * @returns {Element}
  */
 function cloneNodeAsElement (node, tagname) {
-  var el = document.createElement(tagname);
-  for (var i=0; i<node.attributes.length; i++) {
-    var o = node.attributes[i];
-    el.setAttribute(o.name, o.value);
+  var el = document.createElement(tagname)
+
+  for (var i = 0; i < node.attributes.length; i++) {
+    var o = node.attributes[i]
+
+    el.setAttribute(o.name, o.value)
   }
-  return el;
+  return el
 }
 
 /**
@@ -345,16 +356,17 @@ function cloneNodeAsElement (node, tagname) {
  * @returns {Object}
  */
 function getFromDotString (obj, str) {
-  if (!str) return undefined
-  var pieces = str.split('.');
-  var parent = obj;
-  var target;
-  for (var i=0; i<pieces.length; i++) {
-    target = parent[pieces[i]];
-    if (!target && i != pieces.length - 1) return undefined;
-    parent = target;
+  if (!str) { return undefined }
+  var pieces = str.split('.')
+  var parent = obj
+  var target
+
+  for (var i = 0; i < pieces.length; i++) {
+    target = parent[pieces[i]]
+    if (!target && i != pieces.length - 1) { return undefined }
+    parent = target
   }
-  return target;
+  return target
 }
 
 /**
@@ -366,9 +378,10 @@ function getFromDotString (obj, str) {
  * @returns {Function}
  */
 function getMethod (path, context) {
-  var fn = getFromDotString((context || window), path);
-  if (typeof fn != 'function') return undefined;
-  return fn;
+  var fn = getFromDotString((context || window), path)
+
+  if (typeof fn != 'function') { return undefined }
+  return fn
 }
 
 /**
@@ -386,11 +399,13 @@ function dummyMethod () {
  */
 function loadNodeSources (parent) {
   if (!parent)
-    return
-  var nodes = findNodes('[data-source]', parent);
-  for (var i=0; i<nodes.length; i++) {
-    var node = nodes[i];
-    loadNodeSource(node);
+  { return }
+  var nodes = findNodes('[data-source]', parent)
+
+  for (var i = 0; i < nodes.length; i++) {
+    var node = nodes[i]
+
+    loadNodeSource(node)
   }
 }
 
@@ -403,16 +418,18 @@ function loadNodeSources (parent) {
  * @arg {Matches} array The matching $ variables in the source that match the URL
  */
 function loadNodeSource (node, matches) {
-  if (!matches) matches = {}
+  if (!matches) { matches = {} }
   var source = node.getAttribute('data-source')
   var dataProcess = node.getAttribute('data-process')
   var targetTemplate = node.dataset.targetTemplate
   var process
+
   if (targetTemplate) {
     var target = getTemplate(targetTemplate)
+
     dataProcess = target.dataset.process
   }
-  process = getMethod(dataProcess) || dummyMethod;
+  process = getMethod(dataProcess) || dummyMethod
 
   var args = {
     state: 'start',
@@ -427,20 +444,23 @@ function loadNodeSource (node, matches) {
   process(args)
 
   if (!source) {
-    return;
+    return
   }
   source = source.replace(/\$([\w\.]+)/g, function (str, a) {
-    var match;
-    if(!isNaN(parseInt(a))) {
-      match = matches[parseInt(a)];
+    var match
+
+    if (!isNaN(parseInt(a))) {
+      match = matches[parseInt(a)]
     }
     if (!match) {
       var x = getFromDotString(window, a)
-      match = x != undefined ? x.toString() : a;
+
+      match = x != undefined ? x.toString() : a
     }
-    return match;
+    return match
   })
   var cors = !node.hasAttribute('data-no-cors')
+
   requestCached({
     url: source,
     cors: cors,
@@ -449,9 +469,9 @@ function loadNodeSource (node, matches) {
     args.state = 'finish'
     args.result = body
     args.xhr = xhr
-    process(args);
+    process(args)
     //loadNodeSources(node, matches);
-  });
+  })
 }
 
 /**
@@ -538,11 +558,14 @@ function objectToQueryString (obj) {
  */
 function queryStringToObject (str) {
   var obj = {}
-  if (!str) return obj
-  if (str[0] == "?") str = str.substr(1)
+
+  if (!str) { return obj }
+  if (str[0] == "?") { str = str.substr(1) }
   var arr = str.split("&")
+
   arr.forEach(function (el) {
     var a = el.split("=")
+
     obj[decodeURIComponent(a[0])] = decodeURIComponent(a[1])
   })
   return obj
