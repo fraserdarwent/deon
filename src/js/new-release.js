@@ -118,14 +118,13 @@ function getAllTracksArtistsUsers (tracks) {
 /**
  * Transforms merch products returned from shopify
  *
- * @param {Object} obj Result of request to shopify
+ * @param {Object} args Result of request to shopify
  * @returns {Object}
  */
-function processReleaseMerch (obj) {
-  processor(obj, {
+function processReleaseMerch (args) {
+  processor(args, {
     success: function (args) {
       if (!args.result) {
-        console.log('no result')
         render(args.template, args.node, {
           loading: false
         })
@@ -144,9 +143,7 @@ function processReleaseMerch (obj) {
         prod.utm = '?utm_source=website&utm_medium=release_page'
         return prod
       })
-      scope.activeTest = cache('page:release-page').activeTest
-      console.log('scope', scope)
-      console.log('args.template', args.template)
+      scope.activeTest = cache('page:release').activeTest
       render(args.template, args.node, scope)
     }
   })
@@ -192,11 +189,11 @@ function getArtistsTwitters (artists) {
  * @param {Object} obj Result of the request to get the release
  * @param {Function} done
  */
-function processReleasePage (obj) {
+function processReleasePage (args) {
   processor(args, {
     success: function (args) {
       const scope = {
-        release: mapRelease(obj.result)
+        release: mapRelease(args.result)
       }
 
       requestJSON({
@@ -288,7 +285,7 @@ function processReleasePage (obj) {
             onStarted: function () {
               scope.activeTest = 'release1FeatureOrder'
               cache('page:release', scope)
-              renderContent(obj.template, scope)
+              renderContent(args.template, scope)
             }
           })
           splittests.release1FeatureOrder.start()
@@ -326,11 +323,10 @@ function completedReleasePage () {
   */
 }
 
-function processMoreReleases (args) {
-  console.log('args', args)
+function processRelatedReleases (args) {
   processor(args, {
     success: function (args) {
-      const pageScope = cache('page:release-page')
+      const pageScope = cache('page:release')
       const maxReleases = 8
       const releases = args.result.results
         .map(mapRelease)
@@ -345,8 +341,6 @@ function processMoreReleases (args) {
         showArtistsList: pageScope.releaseArtistUsers.length <= maxFromArtists,
         artistsList: pageScope.releaseArtists
       }
-
-      console.log('scope', scope)
 
       render(args.template, args.node, scope)
     }

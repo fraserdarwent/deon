@@ -116,7 +116,7 @@ function requestJSON (opts, done) {
 
   opts.headers = opts.headers || {}
   opts.headers.Accept = 'application/json'
-  opts.headers['Content-Type'] = 'application/json'
+  //opts.headers['Content-Type'] = 'application/json'
   request(opts, done)
 }
 
@@ -464,7 +464,7 @@ function loadNodeSource (node, matches) {
     url: source,
     cors: cors,
     delay: parseInt(node.getAttribute('data-delay'))
-  }, function (err, body, xhr) {
+  }, (err, body, xhr) => {
     args.state = 'finish'
     args.result = body
     args.xhr = xhr

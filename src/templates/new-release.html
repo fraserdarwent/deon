@@ -226,7 +226,7 @@
 
         {{#each features}}
             {{#if moreFromArtists}}
-            <div data-target-template="more-from-artists"
+            <div data-target-template="related-releases"
                  data-source="{{../moreReleasesFetchUrl}}">
             </div>
             {{/if}}
@@ -349,8 +349,8 @@
 </script>
 
 <script type="text/template"
-        data-template="more-from-artists"
-        data-process="processMoreReleases">
+        data-template="related-releases"
+        data-process="processRelatedReleases">
 {{#if results.length}}
 <div class="container mt-4 mb-4">
     <h2 class="mb-1">
