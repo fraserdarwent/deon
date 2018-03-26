@@ -47,7 +47,9 @@ function readState () {
   var str = location.pathname.substr(1)
   var result = getRouteNode(str)
 
-  if (!result) { return }
+  if (!result) {
+    return
+  }
   var node = cloneNodeAsElement(result.node, 'div')
 
   node.innerHTML = result.node.textContent

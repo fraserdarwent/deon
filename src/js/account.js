@@ -137,33 +137,44 @@ function disableTwoFactor (e, el) {
   })
 }
 
-function mapAccount (o) {
-  o.countries = getAccountCountries(o.location)
-  if (!o.twoFactorId && !o.pendingTwoFactorId) {
-    o.enableTwoFactor = {
-      countries: CountryCallingCodes
+function processAccountPage (args) {
+  pageProcessor(args, {
+    transform: function (args) {
+      const scope = {}
+      const result = args.result
+      const account = result
+
+      scope.countries = getAccountCountries(account.location)
+      if (!account.twoFactorId && !account.pendingTwoFactorId) {
+        scope.enableTwoFactor = {
+          countries: CountryCallingCodes
+        }
+        scope.twoFactor = false
+      }
+      else if (account.pendingTwoFactorId) {
+        scope.confirmingTwoFactor = true
+        scope.twoFacotr = false
+      }
+      else if (account.twoFactorId) {
+        scope.twoFactor = true
+      }
+      if (account.birthday) {
+        const date = new Date(account.birthday)
+
+        scope.birthday_year = date.getUTCFullYear()
+        scope.birthday_day = ('0' + (date.getUTCDate()).toString()).substr(-2)
+        scope.birthday_month = ('0' + (date.getUTCMonth() + 1).toString()).substr(-2)
+      }
+      scope.hasGoldAccess = hasGoldAccess()
+      scope.endhost = endhost
+      scope.locationLegacy = isLegacyLocation()
+      scope.emailOptIns = transformEmailOptins(account.emailOptIns)
+      return scope
     }
-    o.twoFactor = false
-  }
-  else if (o.pendingTwoFactorId) {
-    o.confirmingTwoFactor = true
-    o.twoFacotr = false
-  }
-  else if (o.twoFactorId) {
-    o.twoFactor = true
-  }
-  if (o.birthday) {
-    var date = new Date(o.birthday);
-    o.birthday_year = date.getUTCFullYear();
-    o.birthday_day = ('0' + (date.getUTCDate()).toString()).substr(-2);
-    o.birthday_month = ('0' + (date.getUTCMonth() + 1).toString()).substr(-2);
-  }
-  o.hasGoldAccess = hasGoldAccess()
-  o.endhost = endhost
-  o.shopEmail = session.user.shopEmail ? session.user.shopEmail : session.user.email
-  o.locationLegacy = isLegacyLocation()
-  o.emailOptIns = transformEmailOptins(o.emailOptIns)
-  return o
+  })
+}
+
+function mapAccount (o) {
 }
 
 function transformAccountGold (o, done) {

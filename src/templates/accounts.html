@@ -100,7 +100,8 @@
 </script>
 
 <script type="text/template"
-        data-partial data-template="birthday-fields"
+        data-partial
+        data-template="birthday-fields"
         >
 <select name="birthday_month" class="birthday-month" value="{{birthday_month}}">
     <option value="01">Jan</option>
@@ -528,32 +529,29 @@
         data-route="^(account\/?$|account\/?\?(.*)$)"
         data-source="$endpoint/self"
         data-title="My Account"
-        completed="completedAccount"
-        transform="mapAccount">
+        data-process="processAccountPage"
+        data-template="account-page"
+        >
     <div class="container">
         <a href="/account/services" class="button button--cta pull-right ml-1">Subscriptions</a>
         {{#data}}
-            {{#hasGoldAccess}}
+            {{#if hasGoldAccess}}
                 <a href="/account/gold" class="button button--gold-dark pull-right button--icon">
                     My Gold Features
                     <i class="fa fa-chevron-right"></i>
                 </a>
-            {{/hasGoldAccess}}
-            {{^hasGoldAccess}}
+            {{else}}
                 <a href="/gold/buy" class="button button--gold-dark pull-right">Upgrade to Gold</a>
-            {{/hasGoldAccess}}
+            {{/if}}
         {{/data}}
         <h1>My Account</h1>
         <div class="flex sign-split">
 
             <div class="col-xs-12 col-md-6 panel">
                 <h2>Account</h2>
-                {{#loading}}
-                {{>/loading-view}}
-                {{/loading}}
                 {{#error}}
-                <p>{{message}}</p>
-                <p><a href="/signin?redirect=account">Sign in</a> to view this page.</a></p>
+                    <p>{{message}}</p>
+                    <p><a href="/signin?redirect=account">Sign in</a> to view this page.</a></p>
                 {{/error}}
                 {{#data}}
                 <table class="form mobile" trigger-target="saveAccount">

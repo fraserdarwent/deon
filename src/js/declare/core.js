@@ -491,6 +491,7 @@ function loadNodeSource (node, matches) {
  * }
  */
 function processor (args, meths) {
+  console.log('args', args)
   const methods = meths || {}
 
   if (methods[args.state] === false) {
@@ -525,8 +526,13 @@ function processor (args, meths) {
     var scope = {err: args.err, data: args.result, loading: false}
 
     if (methods.transform) {
-      scope = methods.transform(args)
+      console.log('transform!')
+      scope.data = methods.transform(args)
     }
+
+    console.log('args.template', args.template)
+    console.log('args.node', args.node)
+    console.log('scope', scope)
 
     render(args.template, args.node, scope)
     return

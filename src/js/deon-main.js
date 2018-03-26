@@ -806,13 +806,11 @@ function transformWebsiteDetails (wd) {
 }
 
 function processArtistPage (args) {
-  processor(args, {
-    success: function (args) {
-      console.log('args', args)
+  pageProcessor(args, {
+    transform: function (args) {
       var scope = {}
-
       scope = transformWebsiteDetails(args.result)
-      renderContent(args.template, scope)
+      return scope
     }
   })
 }
@@ -1455,6 +1453,18 @@ function renderLoading () {
 function renderContent (template, scope) {
   var content = findNode('[role=content]')
   render(template, content, scope)
+}
+
+/**
+ * Wrapper for the processor function that always makes the
+ * [role=content] node the node that gets rendered into
+ *
+ * @param {Object} args Arguments from declare's process steps
+ * @param {Object} meths Method overrides
+ */
+function pageProcessor (args, meths) {
+  args.node = findNode('[role=content]')
+  return processor(args, meths)
 }
 
 function renderHeaderMobile () {

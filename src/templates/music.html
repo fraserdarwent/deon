@@ -227,6 +227,7 @@
         data-process="processArtistPage"
         data-template="page-artist"
         data-source="$endpoint/catalog/artist/$1">
+{{#data}}
     <div class="bgbox">
         <div class="banner banner--scaled">
             <div class="banner" 
@@ -272,6 +273,7 @@
         </div>
         {{/if}}
     </div>
+{{/data}}
 </script>
 
 <script type="text/template"
