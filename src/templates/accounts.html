@@ -63,21 +63,21 @@
 
 <script type="text/template"
         data-route="^(signin|sign-in)"
-        transform="transformSignIn"
-        data-title="Sign In">
-    {{#data}}
+        data-process="processSignInPage"
+        data-title="Sign In"
+        data-template="sign-in-page"
+        >
     <div class="container">
-        {{^continueTo}}
-        <h1>Sign In</h1>
-        {{/continueTo}}
-        {{#continueTo}}
-        <div class="panel">
-            <h1>Sign In to Continue</h1>
-            <p>Sign in or create an account to continue {{>continueTo}}.</p>
-        </div>
-        {{/continueTo}}
+        {{#unless continueTo}}
+            <h1>Sign In</h1>
+        {{else}}
+            <div class="panel">
+                <h1>Sign In to Continue</h1>
+                <p>Sign in or create an account to continue {{>continueTo}}.</p>
+            </div>
+        {{/unless}}
         <div class="flex sign-split">
-            <form onsubmit="false" data-set="credentials" data-submit-action="submitSignIn" class="col-xs-12 col-md-6 panel">
+            <form onsubmit="submitSignIn(event, this)" class="col-xs-12 col-md-6 panel">
                 <h2>With Email</h2>
                 {{>sign-in-fields}}
                 <div class="button-group button-group--margin">
@@ -96,7 +96,6 @@
             </div>
         </div>
     </div>
-    {{/data}}
 </script>
 
 <script type="text/template"
@@ -154,7 +153,8 @@
 </script>
 
 <script type="text/template"
-        data-partial data-template="sign-in-fields"
+        data-partial
+        data-template="sign-in-fields"
         >
 <table class="form mobile">
     <tbody>
@@ -326,40 +326,39 @@
 <script type="text/template"
         data-route="^sign-up"
         data-title="Sign Up"
-        completed="completedSignUp"
-        transform="transformSignUp">
+        data-process="processSignUpPage"
+        data-template="sign-up-page"
+        >
     <div class="container">
-        {{#data}}
-            {{^continueTo}}
+        {{#unless continueTo}}
             <h1>Sign Up</h1>
-            {{/continueTo}}
-
-            {{#continueTo}}
+        {{else}}
             <div class="panel">
                 <h1>Sign Up to Continue</h1>
                 <p>Create an account or sign in to continue {{>continueTo}}.</p>
             </div>
-            {{/continueTo}}
+        {{/unless}}
         <div class="flex sign-split">
             <div class="col-xs-12 col-md-6 panel">
                 <h2>With Email</h2>
-                <table class="form mobile" data-set="credentials" trigger-target="signUp">
-                    {{>signup-fields}}
-                </table>
-                <div class="button-group">
-                    <button class="button--cta button--full" action="submitSignUp" trigger="signUp" data-set-target="credentials">Sign Up</button>
-                    or <a href="/signin?redirect={{redirectTo}}">sign in</a>
-                </div>
+                <form onsubmit="submitSignUp(event, this)">
+                    <table class="form mobile">
+                        {{>signup-fields}}
+                    </table>
+                    <div class="button-group">
+                        <button class="button--cta button--full">Sign Up</button>
+                        or <a href="/signin?redirect={{redirectTo}}">sign in</a>
+                    </div>
+                </form>
             </div>
             <div class="col-xs-12 col-md-6 panel">
                 <h2>With Social</h2>
                 <div class="button-group">
-                    <button class="button--social button--half button--fb" action="clickSignUpFacebook"><i class="fa fa-social-f"></i> Sign Up</button>
-                    <button class="button--social button--half button--g" action="clickSignUpGoogle"><i class="fa fa-social-g"></i> Sign Up</button>
+                    <button class="button--social button--half button--fb" onclick="clickSignUpFacebook(event)"><i class="fa fa-social-f"></i> Sign Up</button>
+                    <button class="button--social button--half button--g" onclick="clickSignUpGoogle(event)"><i class="fa fa-social-g"></i> Sign Up</button>
                 </div>
             </div>
         </div>
-        {{/data}}
     </div>
 </script>
 
@@ -554,84 +553,85 @@
                     <p><a href="/signin?redirect=account">Sign in</a> to view this page.</a></p>
                 {{/error}}
                 {{#data}}
-                <table class="form mobile" trigger-target="saveAccount">
-                    <tbody data-set="account">
-                        <tr>
-                            <th>Email</th>
-                            <td>{{email}}</td>
-                        </tr>
-                        <tr>
-                            <th>Display Name</th>
-                            <td><input type="text"
-                                       name="name"
-                                       value="{{name}}"
-                                       placeholder="Nickname"
-                                       data-set-target="account"
-                                       initial-value="{{name}}" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Full Name</th>
-                            <td><input type="text"
-                                       name="realName"
-                                       value="{{realName}}"
-                                       placeholder="Jon GQ Winter"
-                                       data-set-target="account"
-                                       initial-value="{{realName}}" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Location</th>
-                            <td>
-                                {{>location-autocomplete}}
-                                {{#locationLegacy}}
-                                    <p>Your country is currently <strong>{{location}}</strong>. Add your city above.</p>
-                                {{/locationLegacy}}
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Birthday</th>
-                            <td>
-                                {{>birthday-fields}}
-                            </td>
-                        </tr>
-                        <tr>
-                            <th valign="top">Email me about</th>
-                            <td>
-                                {{>account-email-optins}}
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Change Password</th>
-                            <td>
-                                <input type="password"
-                                       name="password"
-                                       placeholder="New Password">
-                                <button
-                                    class="faux password"
-                                    action="togglePassword"
-                                    toggle-target="password">
-                                    <i class="fa fa-eye-slash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="button-group button-group--margin">
-                    <button class="button--cta button--full"
-                            action="saveAccount"
-                            trigger="saveAccount"
-                            data-set-target="account">
-                        Save
-                    </button>
-                    <button class="button--danger button--full" action="signOut">Sign Out</button>
-                </div>
+                <form onsubmit="submitSaveAccount(event)">
+                    <table class="form mobile">
+                        <tbody data-set="account">
+                            <tr>
+                                <th>Email</th>
+                                <td>{{account.email}}</td>
+                            </tr>
+                            <tr>
+                                <th>Display Name</th>
+                                <td><input type="text"
+                                           name="name"
+                                           value="{{account.name}}"
+                                           placeholder="Nickname"
+                                           data-set-target="account"
+                                           initial-value="{{name}}" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Full Name</th>
+                                <td><input type="text"
+                                           name="realName"
+                                           value="{{account.realName}}"
+                                           placeholder="Jon GQ Winter"
+                                           data-set-target="account"
+                                           initial-value="{{realName}}" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Location</th>
+                                <td>
+                                    {{#account}}
+                                        {{>location-autocomplete}}
+                                    {{/account}}
+                                    {{#if locationLegacy}}
+                                        <p>Your country is currently <strong>{{account.location}}</strong>. Add your city above.</p>
+                                    {{/if}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Birthday</th>
+                                <td>
+                                    {{>birthday-fields}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th valign="top">Email me about</th>
+                                <td>
+                                    {{>account-email-optins}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Change Password</th>
+                                <td>
+                                    <input type="password"
+                                           name="password"
+                                           placeholder="New Password">
+                                    <button
+                                        class="faux password"
+                                        action="togglePassword"
+                                        toggle-target="password">
+                                        <i class="fa fa-eye-slash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="button-group button-group--margin">
+                        <button class="button--cta button--full">
+                            Save
+                        </button>
+                        <button class="button--danger button--full" type="button" onclick="signOut(event)">Sign Out</button>
+                    </div>
+                </form>
             </div>
             <div class="col-xs-12 col-md-6 panel">
                 <div id="settings">
                     <h2>Settings</h2>
                     <div data-source="$endpoint/self/settings"
-                         template="account-settings">
+                         data-target-template="account-settings">
                     </div>
                 </div>
                 <hr class="mt-4 mb-4" />
@@ -693,80 +693,74 @@
 
 <script type="text/template"
         data-template="account-settings"
-        transform="transformAccountSettings">
-    {{#loading}}
-    {{>loading-view}}
-    {{/loading}}
-    {{#error}}
-    <p>{{message}}</p>
-    {{/error}}
+        data-process="processAccountSettings">
     {{#data}}
-    <table class="form mobile">
-        <tbody data-set="settings">
-            <tr id="preferred-download">
-                <th>Preferred Download Format</th>
-                <td>
-                    <select name="preferredDownloadFormat"
-                            initial-value="{{preferredDownloadFormat}}">
-                        {{#downloadOptions}}
-                        <option value="{{value}}"
-                                {{#selected}}selected{{/selected}}>
-                            {{name}}
-                        </option>
-                        {{/downloadOptions}}
-                    </select>
-                    <span class="note">
-                    See more about MP3 quality
-                    <a href="http://wiki.hydrogenaud.io/index.php?title=LAME#Recommended_encoder_settings"
-                       target="_blank">here</a>.
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <th colspan="2">
-                    <label>
-                        <input type="checkbox"
-                               name="hideNonLicensableTracks"
-                               initial-value="{{hideNonLicensableTracks}}"
-                            {{#hideNonLicensableTracks}}checked{{/hideNonLicensableTracks}}/>
-                        Skip Non-licensable Tracks
-                    </label>
-                </th>
-            </tr>
-            <tr>
-                <th colspan="2">
-                    <label>
-                        <input type="checkbox"
-                               name="blockNonLicensableTracks"
-                               initial-value="{{blockNonLicensableTracks}}"
-                            {{#blockNonLicensableTracks}}checked{{/blockNonLicensableTracks}}/>
-                        Block Non-licensable Tracks
-                    </label>
-                </th>
-            </tr>
-            <tr>
-                <th colspan="2">
-                    <label>
-                        <input type="checkbox"
-                               name="playlistPublicByDefault"
-                               initial-value="{{playlistPublicByDefault}}"
-                            {{#playlistPublicByDefault}}checked{{/playlistPublicByDefault}}/>
-                        Make Playlists Public By Default
-                    </label>
-                </th>
-            </tr>
-        </tbody>
-    </table>
-    <div data-source="$endpoint/self/social-signins"
-         template="social-settings">
-    </div>
-    <div class="button-group">
-        <button class="button--cta button--full"
-                action="saveAccountSettings"
-                data-set-target="settings">
-            Update Settings
-        </button>
-    </div>
+    <form onsubmit="submitSaveAccountSettings(event, this)">
+        <table class="form mobile">
+            <tbody data-set="settings">
+                <tr id="preferred-download">
+                    <th>Preferred Download Format</th>
+                    <td>
+                        <select name="preferredDownloadFormat"
+                                initial-value="{{settings.preferredDownloadFormat}}">
+                            {{#each downloadOptions}}
+                            <option value="{{value}}"
+                                    {{#if selected}}selected{{/if}}>
+                                {{name}}
+                            </option>
+                            {{/each}}
+                        </select>
+                        <span class="note">
+                        See more about MP3 quality
+                        <a href="http://wiki.hydrogenaud.io/index.php?title=LAME#Recommended_encoder_settings"
+                           target="_blank">here</a>.
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <th colspan="2">
+                        <label>
+                            <input type="checkbox"
+                                   name="hideNonLicensableTracks"
+                                   initial-value="{{settingshideNonLicensableTracks}}"
+                                   {{#if settings.hideNonLicensableTracks}}checked{{/if}}/>
+                            Skip Non-licensable Tracks
+                        </label>
+                    </th>
+                </tr>
+                <tr>
+                    <th colspan="2">
+                        <label>
+                            <input type="checkbox"
+                                   name="blockNonLicensableTracks"
+                                   initial-value="{{settings.blockNonLicensableTracks}}"
+                                {{#if settings.blockNonLicensableTracks}}checked{{/if}}/>
+                            Block Non-licensable Tracks
+                        </label>
+                    </th>
+                </tr>
+                <tr>
+                    <th colspan="2">
+                        <label>
+                            <input type="checkbox"
+                                   name="playlistPublicByDefault"
+                                   initial-value="{{settings.playlistPublicByDefault}}"
+                                   {{#if settings.playlistPublicByDefault}}checked{{/if}}/>
+                            Make Playlists Public By Default
+                        </label>
+                    </th>
+                </tr>
+            </tbody>
+        </table>
+        <div data-source="$endpoint/self/social-signins"
+             data-target-template="social-settings">
+        </div>
+        <div class="button-group">
+            <button class="button--cta button--full">
+                Update Settings
+            </button>
+        </div>
+    </form>
     {{/data}}
 </script>
 
@@ -865,7 +859,7 @@
 
 <script type="text/template"
         data-template="social-settings"
-        transform="transformSocialSettings">
+        data-process="processSocialSettings">
     {{#data}}
         <div class="button-group">
         {{#facebookEnabled}}

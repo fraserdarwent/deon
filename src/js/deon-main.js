@@ -965,12 +965,6 @@ function processRosterYear (obj) {
 
 }
 
-function transformSocialSettings (obj) {
-  obj.facebookEnabled = !!obj.facebookId
-  obj.googleEnabled = !!obj.googleId
-  return obj
-}
-
 function getUserServicesScope (done) {
   var user = isSignedIn() ? session.user : {}
   var hasGold = !!user.goldService;

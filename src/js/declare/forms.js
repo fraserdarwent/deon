@@ -168,7 +168,7 @@ function submitForm (e, opts = {}) {
 
   //Default validate returns no errors
   if (!opts.validate) {
-    opts.validate = function () {
+    opts.validate = () => {
       return []
     }
   }
@@ -176,14 +176,14 @@ function submitForm (e, opts = {}) {
   //Default validate returns no errors
   //This validation occurs before the transformData function happens
   if (!opts.prevalidate) {
-    opts.prevalidate = function () {
+    opts.prevalidate = () => {
       return []
     }
   }
 
   //The default success function just makes a notification with given message
   if (!opts.success) {
-    opts.success = function () {
+    opts.success = () => {
       if (opts.successMsg) {
         notifySuccess(opts.successMsg)
       }
@@ -192,7 +192,7 @@ function submitForm (e, opts = {}) {
 
   //Default error adds to form and makes notification
   if (!opts.error) {
-    opts.error = function (err, form) {
+    opts.error = (err, form) => {
       formErrors(form, err)
       notifyError(err)
     }
@@ -200,23 +200,23 @@ function submitForm (e, opts = {}) {
 
   var form = e.target
 
-  if (form.disabled) {
+  if (actionier.isOn(form)) {
     return
   }
+
   var data = formToObject(form)
-  var errors = []
+  let errors = []
 
   opts.prevalidate(data, errors)
   if (typeof opts.transformData == 'function') {
     data = opts.transformData(data)
   }
-  opts.validate(data, errors)
+  errors = opts.validate(data, errors)
   formErrors(form, errors)
   if (errors.length) {
     return
   }
-  form.disabled = true
-  form.classList.toggle('submitting', true)
+
   var url
 
   if (typeof opts.url == 'function') {
@@ -225,24 +225,31 @@ function submitForm (e, opts = {}) {
   else {
     url = opts.url
   }
-  const ropts = {
-    url: url,
-    data: opts.formData ? objectToFormData(data) : data,
-    method: opts.method,
-    withCredentials: true
-  }
-  var button = findNode('button.ladda-button', form)
-  var l = Ladda.create(button)
 
-  l.start()
-  request(ropts, function (err, result) {
-    l.stop()
-    form.disabled = false
-    form.classList.toggle('submitting', false)
-    if (err) {
-      return opts.error(err, form)
+  function defaultAction () {
+    const ropts = {
+      url: url,
+      data: opts.formData ? objectToFormData(data) : data,
+      method: opts.method,
+      withCredentials: true
     }
-    opts.success(result, data)
+
+    actionier.on(form)
+    request(ropts, (err, result) => {
+      actionier.off(form)
+      if (err) {
+        opts.error(err, form)
+        return
+      }
+      opts.success(result, data)
+    })
+  }
+
+  const action = opts.action || defaultAction
+
+  action({
+    data: data,
+    form: form
   })
 }
 
@@ -282,4 +289,66 @@ function submitQueryForm (e, opts) {
   var url = opts.url || '/'
 
   go(url + '?' + objectToQueryString(qo))
+}
+
+/**
+ * Helper function that prepends a list of error messages to a form.
+ * It creates the error container if it doesn't exist
+ *
+ * @param {Object} form <form> object
+ * @param {Array[Object|String]} errs Array of errors
+ * @returns {Boolean} True if there are errors
+ */
+function formErrors (form, errs) {
+  var errDiv = form.querySelector('[role=form-errors]')
+
+  if (!errDiv) {
+    var div = document.createElement('div')
+
+    div.setAttribute("class", "errors-container hide")
+    div.setAttribute("role", "form-errors")
+    form.insertBefore(div, form.firstChild)
+    return formErrors(form, errs)
+  }
+
+  errs = errs || []
+  if (errs.constructor != Array) {
+    errs = [errs]
+  }
+  errs = errs.map((err) => {
+    if (typeof (err) == 'string') {
+      err = {
+        msg: err
+      }
+    }
+    else if (!err.hasOwnProperty('msg')) {
+      err = {
+        msg: err.toString()
+      }
+    }
+
+    return err
+  })
+  var messages = errs.map((err) => {
+    return err.msg
+  })
+
+  errDiv.innerHTML = messages.join("<br />")
+  errDiv.classList.toggle('hide', errs.length == 0)
+
+  return errs.length > 0
+}
+
+function makeFormControlFeedback (field) {
+  var parent = findParentWith(field, '.form-group', false)
+  var feedback = parent.querySelector('.form-control-feedback')
+
+  if (feedback == null) {
+    var div = document.createElement('div')
+
+    div.setAttribute("class", "form-control-feedback")
+    parent.appendChild(div, field)
+    feedback = parent.querySelector('.form-control-feedback')
+  }
+  return feedback
 }

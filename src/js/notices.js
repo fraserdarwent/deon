@@ -74,7 +74,7 @@ SiteNotice.prototype.getNoticeEl = function () {
 SiteNotice.prototype.render = function (scope) {
   var noticeEl = this.getNoticeEl()
 
-  render(noticeEl, getTemplateEl(this.template).textContent, scope)
+  render(noticeEl, this.template, scope)
   noticeEl.classList.toggle('hide', false)
   var height = noticeEl.getBoundingClientRect().height
 

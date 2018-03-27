@@ -117,6 +117,12 @@ function requestJSON (opts, done) {
   opts.headers = opts.headers || {}
   opts.headers.Accept = 'application/json'
   //opts.headers['Content-Type'] = 'application/json'
+
+  if (opts.data) {
+    opts.headers['Content-Type'] = 'application/json'
+    opts.data = JSON.stringify(opts.data)
+  }
+
   request(opts, done)
 }
 
@@ -491,7 +497,6 @@ function loadNodeSource (node, matches) {
  * }
  */
 function processor (args, meths) {
-  console.log('args', args)
   const methods = meths || {}
 
   if (methods[args.state] === false) {
@@ -526,13 +531,8 @@ function processor (args, meths) {
     var scope = {err: args.err, data: args.result, loading: false}
 
     if (methods.transform) {
-      console.log('transform!')
       scope.data = methods.transform(args)
     }
-
-    console.log('args.template', args.template)
-    console.log('args.node', args.node)
-    console.log('scope', scope)
 
     render(args.template, args.node, scope)
     return
@@ -574,4 +574,14 @@ function queryStringToObject (str) {
     obj[decodeURIComponent(a[0])] = decodeURIComponent(a[1])
   })
   return obj
+}
+
+/**
+ * Helper wrapper that gets query string object from what's
+ * what's in the current url
+ *
+ * @returns {Object}
+ */
+function searchStringToObject () {
+  return queryStringToObject(window.location.search)
 }
