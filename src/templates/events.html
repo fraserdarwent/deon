@@ -3,40 +3,43 @@
         data-title="Event"
         data-process="processEventPage"
         data-template="page-event"
-        data-source="$endpoint/event/$1">
+        data-source="$endpoint/event/$1"
+        data-template="event-page"
+        >
+{{#data}}
   <div class="event-page-header">
+    {{#event}}
     <div class="top-banner top-banner-events">
       {{>event-header}}
       <div class="container cl-white">
-        {{#artistDetails.length}}
+        {{#if artistDetails.length}}
         <header class="flex top-cta ">
             <div class="col-xs-12">
                 <h2 class="line-top">Artists</h2>
             </div>
         </header>
         <ul class="art-list artist-list art-list--full-width">
-          {{#artistDetails}}
+          {{#each artistDetails}}
           <li>
               <a class="silent" href="/artist/{{vanityUri}}" title="{{name}}">
-                  {{#image}}
-                  <div class="image-wrapper">
-                      <img src="/img/artist.jpg" class="preload" />
-                      <img src="{{image}}"/>
-                  </div>
-                  {{/image}}
-                  {{^image}}
-                  <div class="no-art">
-                      <label>No image.</label>
-                  </div>
-                  {{/image}}
+                  {{#if image}}
+                    <div class="image-wrapper">
+                        <img src="/img/artist.jpg" class="preload" />
+                        <img src="{{image}}"/>
+                    </div>
+                    {{else}}
+                    <div class="no-art">
+                        <label>No image.</label>
+                    </div>
+                  {{/if}}
                   <div class="hover-wrapper">
                       <label class="title one-line-ellipsis">{{name}}</label>
                   </div>
               </a>
           </li>
-          {{/artistDetails}}
+          {{/each}}
         </ul>
-        {{/artistDetails.length}}
+        {{/if}}
 
         <div class="back-to-events">
           <a class="button button--white button--icon button--icon-left" href="/events" target="_BLANK">
@@ -46,23 +49,28 @@
         </div>
       </div>
     </div>
+    {{/event}}
   </div>
 
   {{>events-email-optin}}
 
-  {{#hasGallery}}
-  <div class="container event-gallery">
-    <ul class="art-list picture-gallery clearfix">
-      {{#gallery}}
-        <li>
-          <div style="background-image: url({{thumbSrc}});" action="openGalleryModal" big-src="{{bigSrc}}"></div>
-        </li>
-      {{/gallery}}
-    </ul>
-  </div>
-  {{/hasGallery}}
 
-  {{>event-sponsor}}
+  {{#event}}
+    {{#if hasGallery}}
+    <div class="container event-gallery">
+      <ul class="art-list picture-gallery clearfix">
+        {{#each gallery}}
+          <li>
+            <div style="background-image: url({{thumbSrc}});" onclick="openGalleryModal(event, this)" big-src="{{bigSrc}}"></div>
+          </li>
+        {{/each}}
+      </ul>
+    </div>
+    {{/if}}
+
+    {{>event-sponsor}}
+  {{/event}}
+{{/data}}
 </script>
 
 <script type="text/template"
@@ -106,7 +114,7 @@
             <a href="https://www.monstercat.com/tickets" target="_BLANK" class="blue">Sign-up</a>
             for information on upcoming Monstercat events.</div>
         </div>
-        <button action="loadMoreUpcomingEvents" current-page="{{page}}" class="button button--load-events button--cta hide">Load More</button>
+        <button onclick="clickLoadMoreUpcomingEvents(event, this)" role="load-more-upcoming-events" current-page="{{page}}" class="button button--load-events button--cta hide">Load More</button>
       </div>
     </section>
     {{>events-email-optin}}
@@ -135,7 +143,7 @@
         data-process="processUpcomingEvents"
         >
 <table class="events" role="upcoming-table">
-{{#each results}}
+{{#each data.results}}
   {{>upcoming-event-tr}}
 {{/each}}
 </table>
@@ -183,7 +191,7 @@
                 </span>
             </a>
           {{/url}}
-          <a ab-test="{{activeTest}}" kpi="{{#externalUrl}}event-external{{/externalUrl}}{{^externalUrl}}event-ical{{/externalUrl}}" class="faux button--mobile" action="addToCalendar" title="Download iCal" target="_blank" href="{{icalDownloadLink}}">
+          <a ab-test="{{activeTest}}" kpi="{{#externalUrl}}event-external{{/externalUrl}}{{^externalUrl}}event-ical{{/externalUrl}}" class="faux button--mobile" onclick="addToCalendar(event, this)" title="Download iCal" target="_blank" href="{{icalDownloadLink}}">
               <i class="fa fa-calendar-plus-o"></i>
           </a>
       </div>
@@ -279,22 +287,24 @@
 
 <!-- This is if you aren't logged in -->
 <script type="text/template"
-        data-partial data-template="events-email-optin">
+        data-partial
+        data-template="events-email-optin">
 <div role="events-email-optin">
-{{#isSignedIn}}<div data-source="$endpoint/self" template="events-email-optin"></div>{{/isSignedIn}}
-{{^isSignedIn}}
-  <div class="container panel events-email events-email-signin">
-    <form onsubmit="false" data-set="credentials" data-submit-action="signUpForEventEmail" trigger-target="signUpForEventEmail">
-      <div class="form form-inline mobile">
-        <label class="email-me">Email me about Monstercat events.</label>
-        <input type="text" name="email" id="eventOptInEmail" placeholder="Email" />
-        {{>location-autocomplete}}
-        <input type="hidden" name="placeNameFull" value="" />
-        <button class="button--cta button--full subscribe" data-set-target="credentials" trigger="signUpForEventEmail" action="signUpForEventEmail">Subscribe</button>
-      </div>
-    </form>
-  </div>
-{{/isSignedIn}}
+  {{#if isSignedIn}}
+    <div data-source="$endpoint/self" template="events-email-optin"></div>
+  {{else}}
+    <div class="container panel events-email events-email-signin">
+      <form onsubmit="signUpForEventEmail(event, this)">
+        <div class="form form-inline mobile">
+          <label class="email-me">Email me about Monstercat events.</label>
+          <input type="text" name="email" id="eventOptInEmail" placeholder="Email" />
+          {{>location-autocomplete}}
+          <input type="hidden" name="placeNameFull" value="" />
+          <button class="button--cta button--full subscribe">Subscribe</button>
+        </div>
+      </form>
+    </div>
+  {{/if}}
 </div>
 </script>
 
@@ -314,7 +324,7 @@
 {{#data}}
   {{^fullyOptedIn}}
   <div class="container panel events-email">
-    <form onsubmit="false" data-set="credentials" data-submit-action="subscribeEventsOptIn">
+    <form onsubmit="subscribeEventsOptIn(event, this)">
       <div class="form form-inline mobile">
         <label class="email-me">Email me about Monstercat events.</label>
         <div class="form-block my-location">

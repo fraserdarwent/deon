@@ -1,15 +1,43 @@
+/*===============================
+=            HELPERS            =
+===============================*/
 function getFeaturedToggleEl () {
   return document.querySelector('[role="upcoming-toggle"]')
 }
 
 function getLoadMoreEventsEl () {
-  return document.querySelector('[action=loadMoreUpcomingEvents]')
+  return document.querySelector('[role="load-more-upcoming-events"]')
 }
 
+function openGalleryModal (e, el) {
+  openModal('gallery-modal', {
+    src: el.getAttribute('big-src')
+  })
+}
+
+
+function getUpcomingEventsQueryObject (options) {
+  var page = Math.max(1, parseInt(options.page) || 1)
+  var limit = 10
+  var qo = {
+    limit: limit,
+    skip: (page - 1) * limit,
+    page: page
+  }
+
+  if (options.hasOwnProperty('featured')) {
+    qo.featured = options.featured
+  }
+  return qo
+}
+
+/*==================================
+=            PROCESSORS            =
+==================================*/
 function processEventPage (args) {
-  processor(args, {
+  console.log('args', args)
+  pageProcessor(args, {
     transform: function (args) {
-      console.log('args', args)
       const scope = {
         event: transformEvent(args.result)
       }
@@ -23,12 +51,95 @@ function processEventPage (args) {
   })
 }
 
-function openGalleryModal (e, el) {
-  openModal('gallery-modal', {
-    src: el.getAttribute('big-src')
+function processHeaderEvent (args) {
+  processor(args, {
+    start: function () {
+      render('loading-view-black', args.node)
+    },
+    transform: function (args) {
+      const header = transformEvent(args.result.results[0])
+
+      return {
+        event: header
+      }
+    }
   })
 }
 
+function processUpcomingEvents (args) {
+  processor(args, {
+    transform: function (args) {
+      var scope = {
+        results: transformEvents(args.result.results)
+      }
+
+      return scope
+    },
+    completed: function (args) {
+      const result = args.result
+      var button = getLoadMoreEventsEl()
+      var shown = (result.skip) + (result.results.length)
+
+      toggleUpcoming.hideLoadMore = shown >= result.total
+      button.classList.toggle('hide', toggleUpcoming.hideLoadMore)
+      loadAndAppendFeaturedEvents()
+    }
+  })
+}
+
+/**
+ * Procceses call for events at the bottom of the page
+ *
+ */
+function processPastEvents (args) {
+  processor(args, {
+    transform: function (args) {
+      const scope = {}
+
+      scope.results = transformEvents(args.result.results)
+      scope.results = scope.results.filter((el) => {
+        return !el.upcoming
+      })
+      scope.results = scope.results.sort((a, b) => {
+        if (a.startDate == b.startDate) {
+          return 0
+        }
+        return a.startDate > b.startDate ? -1 : 1
+      })
+      return scope
+    }
+  })
+}
+
+function processEventsPage (args) {
+  const scope = {}
+
+  scope.page = 1
+  scope.isSignedIn = isSignedIn()
+
+  renderContent(args.template, scope)
+
+  var qo = getUpcomingEventsQueryObject(window.location.search)
+
+  setPageTitle('Events')
+  loadUpcomingEvents(window.location.search)
+  initLocationAutoComplete()
+  var embedDiv = document.querySelector('[role=event-google-tracking]')
+
+  embedDiv.innerHTML = '<script type="text/javascript">'
+  + ' var google_conversion_id = 975131676;'
+  + 'var google_custom_params = window.google_tag_params;'
+  + 'var google_remarketing_only = true;'
+  + '</script>'
+  + '<script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js"></script>'
+  + '<noscript>'
+  + '<div style="display:inline;"><img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/975131676/?guid=ON&amp;script=0"/></div>'
+  + '</noscript>'
+}
+
+/*====================================
+=            TRANSFORMERS            =
+====================================*/
 function transformEvents (results) {
   return results.map(transformEvent)
 }
@@ -108,85 +219,6 @@ function transformEventGallery (event) {
   })
 }
 
-function processHeaderEvent (args) {
-  processor(args, {
-    start: function () {
-      render('loading-view-black', args.node)
-    },
-    transform: function (args) {
-      const header = transformEvent(args.result.results[0])
-
-      return {
-        event: header
-      }
-    }
-  })
-}
-
-function processUpcomingEvents (args) {
-  processor(args, {
-    transform: function (args) {
-      var scope = {
-        results: transformEvents(args.result.results)
-      }
-
-      return scope
-    }
-  })
-}
-
-/**
- * Procceses call for events at the bottom of the page
- *
- */
-function processPastEvents (args) {
-  console.log('args', args)
-  processor(args, {
-    transform: function (args) {
-      console.log('args', args)
-      const scope = {}
-
-      scope.results = transformEvents(args.result.results)
-      scope.results = scope.results.filter((el) => {
-        return !el.upcoming
-      })
-      scope.results = scope.results.sort((a, b) => {
-        if (a.startDate == b.startDate) {
-          return 0
-        }
-        return a.startDate > b.startDate ? -1 : 1
-      })
-      return scope
-    }
-  })
-}
-
-function processEventsPage (args) {
-  const scope = {}
-
-  scope.page = 1
-  scope.isSignedIn = isSignedIn()
-
-  renderContent(args.template, scope)
-
-  var qo = getUpcomingEventsQueryObject(window.location.search)
-
-  setPageTitle('Events')
-  loadUpcomingEvents(window.location.search)
-  initLocationAutoComplete()
-  var embedDiv = document.querySelector('[role=event-google-tracking]')
-
-  embedDiv.innerHTML = '<script type="text/javascript">'
-  + ' var google_conversion_id = 975131676;'
-  + 'var google_custom_params = window.google_tag_params;'
-  + 'var google_remarketing_only = true;'
-  + '</script>'
-  + '<script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js"></script>'
-  + '<noscript>'
-  + '<div style="display:inline;"><img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/975131676/?guid=ON&amp;script=0"/></div>'
-  + '</noscript>'
-}
-
 function transformEventsEmailOptin (obj) {
   obj.isSignedIn = isSignedIn()
   if (obj.isSignedIn) {
@@ -244,20 +276,6 @@ function signUpForEventEmail (e, el) {
   return go('/sign-up?' + objectToQueryString(qs))
 }
 
-function getUpcomingEventsQueryObject (options) {
-  var page = Math.max(1, parseInt(options.page) || 1)
-  var limit = 10
-  var qo = {
-    limit: limit,
-    skip: (page - 1) * limit,
-    page: page
-  }
-
-  if (options.hasOwnProperty('featured')) {
-    qo.featured = options.featured
-  }
-  return qo
-}
 
 function getUpcomingEventsQueryString (options) {
   return objectToQueryString(getUpcomingEventsQueryObject(options))
@@ -279,10 +297,10 @@ function loadUpcomingEvents (options) {
   //loadSubSources(div)
 }
 
-function loadMoreUpcomingEvents (e, el) {
-  var button = getLoadMoreEventsEl()
-  var att = button.getAttribute('current-page')
-  var page = parseInt(att) + 1
+function clickLoadMoreUpcomingEvents (e, el) {
+  const button = getLoadMoreEventsEl()
+  const att = button.getAttribute('current-page')
+  const page = parseInt(att) + 1
 
   loadUpcomingEvents({page: page})
   button.setAttribute('current-page', page)
@@ -291,24 +309,23 @@ function loadMoreUpcomingEvents (e, el) {
 function loadAndAppendFeaturedEvents () {
   var url = endpoint + '/events/upcoming?featured=1&skip=0&limit=20'
 
-  loadCache(url, function (err, result) {
+  loadCache(url, (err, result) => {
     if (err) {
       checkNoFeaturedMessage()
       return console.error(err)
     }
 
     //Delete all the existing featured events
-    document.querySelectorAll('tr.featured').forEach(function (el) {
+    findNodes('tr.featured').forEach((el) => {
       el.parentNode.removeChild(el)
     })
 
-    var trsToAdd = result.results.map(function (event) {
-      event = transformEvent(event)
-      var html = Mustache.render("{{>upcoming-event-tr}}", event, mustacheTemplates)
-      var table = document.createElement('table')
+    var trsToAdd = result.results.map((evt) => {
+      const event = transformEvent(evt)
+      const table = document.createElement('table')
+      render('upcoming-event-tr', table, event)
 
-      table.innerHTML = html
-      var featuredTr = table.querySelector('tr')
+      const featuredTr = table.querySelector('tr')
 
       return featuredTr
     })
@@ -351,15 +368,6 @@ toggleUpcoming.hideLoadMore = true
 
 function completedEventsEmailOptin () {
   initLocationAutoComplete()
-}
-
-function completedUpcomingEvents (source, obj) {
-  var button = getLoadMoreEventsEl()
-  var shown = (obj.data.skip) + (obj.data.results.length)
-
-  toggleUpcoming.hideLoadMore = shown >= obj.data.total
-  button.classList.toggle('hide', toggleUpcoming.hideLoadMore)
-  loadAndAppendFeaturedEvents()
 }
 
 function completedEventPage (source, obj) {
