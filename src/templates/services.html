@@ -1,7 +1,9 @@
 <script type="text/template"
         data-route="^account\/services\/?(\?.*)?$"
-        completed="completedServices"
-        transform="transformServices">
+        data-template="account-services-page"
+        data-process="processServicesPage"
+        data-title="Account Services"
+        >
     {{#data}}
     <div class="container services">
         <a href="/account" class="button button--cta pull-right button--icon button--icon-left">
@@ -9,45 +11,48 @@
             My Account
         </a>
         <h1>Manage Services</h1>
-        {{#hasLegacy}}
+        {{#if hasLegacy}}
         <div class="panel">
             <p>
                 You have a legacy account. Please access your subscription from
                 <a target="_blank" href="http://connect.monstercat.com">Monstercat Connect</a>.
             </p>
         </div>
-        {{/hasLegacy}}
-        {{^hasLegacy}}
+        {{else}}
         <div class="flex">
             {{#user}}
             <div class="col-xs-12 col-lg-4 col-lg-last panel panel--dark">
                 {{#gold}}
                     <h1>Gold Membership</h1>
-                    <h2 class="pricing pricing--gold">{{#humble}}<span style="text-decoration: line-through; color: inherit; font-weight: normal;">$5/month</span> <i class="fa fa-arrow-right"></i> $0{{/humble}}{{^humble}}$5/month{{/humble}}</h2>
+                    <h2 class="pricing pricing--gold">
+                        {{#if humble}}
+                            <span style="text-decoration: line-through; color: inherit; font-weight: normal;">$5/month</span> <i class="fa fa-arrow-right"></i> $0
+                        {{else}}
+                            $5/month
+                        {{/if}}</h2>
                     <p>Monstercat Gold Membership allows you to download any of the music in FLAC, MP3, and WAV formats.</p>
-                    {{#permanent}}
+                    {{#if permanent}}
                         <p>You have Gold Membership.</p>
-                    {{/permanent}}
-                    {{#subscribed}}
+                    {{/if}}
+                    {{#if subscribed}}
                         {{>gold-subscription}}
-                    {{/subscribed}}
-                    {{^has}}
+                    {{/if}}
+                    {{#unless has}}
                     <br/>
                     <ul>
                         <li>Unlimited download and streaming access to the Monstercat catalog (800+ full songs)</li>
                         <li>Direct support via e-mail and on site.</li>
                     </ul>
-                    <div data-set="subscribe-gold" class="services-form" trigger-target="subscribeGold">
-                        <input type="text" name="trialCode" placeholder="{{#humble}}Humble Bundle Code{{/humble}}{{^humble}}Special Code (optional){{/humble}}" />
-                        <button class="button--gold"
-                                action="subscribeGold"
-                                trigger="subscribeGold"
-                                data-set-target="subscribe-gold">
-                            Subscribe
-                            <span class="working-spinner"><i class="fa fa-spin fa-cog"></i></span>
-                        </button>
+                    <div class="services-form">
+                        <form onsubmit="submitSubscribeGold(event, this)">
+                            <input type="text" name="trialCode" placeholder="{{#humble}}Humble Bundle Code{{/humble}}{{^humble}}Special Code (optional){{/humble}}" />
+                            <button class="button--gold">
+                                Subscribe
+                                <span class="working-spinner"><i class="fa fa-spin fa-cog"></i></span>
+                            </button>
+                        </form>
                     </div>
-                    {{/has}}
+                    {{/unless}}
                 {{/gold}}
             </div>
             {{/user}}
@@ -60,7 +65,7 @@
                 <p>Coming from <strong>Humble Bundle</strong>? <a href="/humble">Go here</a> to set up your license.</p>
                 <br />
                 <p>To prepay for 20 months go <a href="/account/services/buyout">here</a>.</p>
-                {{#user.isSignedIn}}
+                {{#if user.isSignedIn}}
                 <br/>
                 <table>
                     <thead>
@@ -75,12 +80,12 @@
                         </tr>
                     </thead>
                     <tbody data-source="$endpoint/self/whitelist"
-                        template="whitelist-licenses"
-                        role="whitelists"
-                        transform="transformWhitelists">
+                           data-target-template="licenses-rows"
+                           role="whitelists"
+                           >
                     </tbody>
                 </table>
-                {{/user.isSignedIn}}
+                {{/if}}
                 <div data-set="new-license" class="services-form" trigger-target="subscribeNewLicense">
                     {{>vendor-selector}}
                     <input type="text" name="identity" placeholder="Channel_ID" size="30" />
@@ -100,10 +105,10 @@
                     </button>
                     {{>channel-id-help-text}}
                 </div>
-                {{#user.isSignedIn}}
-                <br/>
-                <p>Have a YouTube dispute? Release claims <a href="/release-claim">here</a>.</p>
-                {{/user.isSignedIn}}
+                {{#if user.isSignedIn}}
+                    <br/>
+                    <p>Have a YouTube dispute? Release claims <a href="/release-claim">here</a>.</p>
+                {{/if}}
             </div>
         </div>
 
@@ -123,7 +128,7 @@
             </table>
             <div><span class="total-cost">$<span role="total-cost">0.00</span></span>/month</div>
             <br/>
-            {{#showSignUp}}
+            {{#if showSignUp}}
             <div id="sign-on" data-submit-action="checkoutSubscriptions" trigger-target="checkoutSubscriptions">
                 <div role="sign-on-errors"></div>
                 <div role="sign-on-fields" class="sign-on-fields">
@@ -131,7 +136,7 @@
                 </div>
             </div>
             <br />
-            {{/showSignUp}}
+            {{/if}}
             <div data-set="pay-method">
                {{>payment-method-recurring}}
                <button class="button--cta"
@@ -140,13 +145,14 @@
                 </button>
             </div>
         </div>
-        {{/hasLegacy}}
+        {{/if}}
     </div>
     {{/data}}
 </script>
 
 <script type="text/template"
-        data-partial data-template="services-sign-up"
+        data-partial
+        data-template="services-sign-up"
         data-template="services-sign-up"
         >
 <input type="hidden" name="signOnMethod" value="sign-up" />
@@ -181,21 +187,20 @@ Already have an account? <a class="switch-sign-on" onclick="servicesChangeSignOn
         data-template="gold-subscription"
         data-partial data-template="gold-subscription"
         transform="transformGoldSubscription">
-    {{^canceled}}
-    <label>Gold Subscription Active</label>
-    <p>You are subscribed for $5.00 USD a month</p>
-    <p>Your next invoice will be charged on {{nextBillingDate}}</p>
-    <br>
-    <button class="button--gold" action="clickUnsubscribeGold">Cancel Subscription</button>
-    {{/canceled}}
-    {{#canceled}}
-    <label>You have Gold Membership.</label>
-    <p>Your Gold Membership will expire on {{endDate}}</p>
-    <div data-set="subscribe-gold" class="services-form">
-        <input type="text" name="trialCode" placeholder="Special Code"/>
-        <button class="button--gold" action="subscribeGold" data-set-target="subscribe-gold">Re-Subscribe</button>
-    </div>
-    {{/canceled}}
+    {{#unless canceled}}
+        <label>Gold Subscription Active</label>
+        <p>You are subscribed for $5.00 USD a month</p>
+        <p>Your next invoice will be charged on {{nextBillingDate}}</p>
+        <br>
+        <button class="button--gold" onclick="clickUnsubscribeGold(event)">Cancel Subscription</button>
+    {{else}}
+        <label>You have Gold Membership.</label>
+        <p>Your Gold Membership will expire on {{endDate}}</p>
+        <div data-set="subscribe-gold" class="services-form">
+            <input type="text" name="trialCode" placeholder="Special Code"/>
+            <button class="button--gold" action="subscribeGold" data-set-target="subscribe-gold">Re-Subscribe</button>
+        </div>
+    {{/unless}}
 </script>
 
 <script type="text/template" data-partial data-template="payment-method">
@@ -243,8 +248,8 @@ Already have an account? <a class="switch-sign-on" onclick="servicesChangeSignOn
 </script>
 
 <script type="text/template"
-        data-template="whitelist-licenses"
-        transform="transformWhitelists">
+        data-template="licenses-rows"
+        data-process="processWhitelists">
     {{#loading}}
     <tr><td colspan="8"><i class="fa fa-refresh fa-spin"></i></td></tr>
     {{/loading}}

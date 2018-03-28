@@ -702,7 +702,7 @@ function removeSub (e, el) {
   updateTotalCheckoutCost()
 }
 
-function subscribeGold (e, el) {
+function submitSubscribeGold (e, el) {
   if (reachedMaxCartSubscriptions()) {
     recordSubscriptionEvent('Reached Max Cart Subscriptions', 'Gold');
     return window.alert(strings.cart5)
@@ -727,7 +727,7 @@ function subscribeGold (e, el) {
     ]
   }
 
-  var data = getTargetDataSet(el) || {}
+  var data = formToObject(e.target)
 
   var fin = function (opts) {
     if(isSignedIn() || transformServices.scope.onpageSignUp) {

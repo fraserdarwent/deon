@@ -52,7 +52,7 @@
     </div>
 </script>
 
-<script type="text/template" template-name="unsubscribe-gold-modal">
+<script type="text/template" data-template="unsubscribe-gold-modal">
   <div class="modal modal-sm">
     <div class="panel pointer-events">
       <form onsubmit="submitUnsubscribeGold(event)">
@@ -60,13 +60,13 @@
         <div class="modal-content">
           <p>Your feedback can help us improve Gold.</p>
           <div class="radio-list ml-2 mt-1">
-          {{#reasons}}
+          {{#each reasons}}
               <label class="radio">
                 <input value="{{.}}" type="radio" name="reason" />
                 <span></span>
                 {{.}}
               </label>
-          {{/reasons}}
+          {{/each}}
               <label>
                 <input value="other" type="radio" name="reason" />
                 <span></span>

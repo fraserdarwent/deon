@@ -53,9 +53,6 @@ document.addEventListener("DOMContentLoaded", function (e) {
     trackUser()
     renderHeader()
     renderHeaderMobile()
-    window.addEventListener("popstate", function popState (e) {
-      stateChange(location.pathname + location.search, e.state)
-    })
     document.addEventListener("click", interceptClick)
     //document.addEventListener("dblclick", interceptDoubleClick)
     //document.addEventListener("keypress", interceptKeyPress)
@@ -106,6 +103,9 @@ document.addEventListener("DOMContentLoaded", function (e) {
     recordPage()
     renderHeader()
     closeModal()
+    if (e.detail && e.detail.title) {
+      setPageTitle(e.detail.title)
+    }
     window.scrollTo(0,0)
     if (location.pathname == "/") {
       getStats()
@@ -965,75 +965,6 @@ function processRosterYear (obj) {
 
 }
 
-function getUserServicesScope (done) {
-  var user = isSignedIn() ? session.user : {}
-  var hasGold = !!user.goldService;
-  var opts = {
-    isSignedIn: isSignedIn(),
-    gold: {
-      has: hasGold,
-      permanent: hasGold && !user.currentGoldSubscription, //If you have gold and no sub then you have free/permanent gold
-      canSubscribe: !hasGold, //If you don't have it you can sub. If you DO have it, but you've canceled,  you can also sub
-      subscribed: hasGold && user.currentGoldSubscription, //A canceled subscription will set this to true
-      canceled: null, //We get this from the server below
-      endDate: null,
-      nextBillingDate: null
-    }
-  }
-  if (isLegacyUser()) {
-    opts = {hasLegacy: true}
-  }
-  var scope = {
-    user: opts,
-    qs: window.location.search
-  }
-
-  if (opts.isSignedIn && opts.gold.subscribed){
-    requestJSON({
-      method: 'GET',
-      url: endhost+ '/api/self/gold-subscription',
-      withCredentials: true
-    }, function (err, json){
-      var gold = transformGoldSubscription(json);
-      scope.user.gold = Object.assign(scope.user.gold, gold);
-      if (scope.user.gold.canceled){
-        scope.user.gold.canSubscribe = true;
-      }
-      done(err, scope);
-    });
-  }
-  else {
-    done(null, scope)
-  }
-}
-
-function transformServices (obj, done) {
-  getUserServicesScope(function (err, opts) {
-    if (err) {
-      return toasty(new Error(err.message));
-    }
-    var qo = queryStringToObject(window.location.search)
-
-    transformServices.scope =  {
-      user: opts.user,
-      qs: encodeURIComponent(window.location.search),
-      signUpRedirect: true,
-      onpageSignUp: false
-    }
-
-    if (qo.hasOwnProperty('humble')) {
-      transformServices.scope.user.humble = true
-    }
-
-    if (!isSignedIn()) {
-      transformServices.scope.onpageSignUp = true;
-      transformServices.scope.signUpRedirect = false;
-      transformServices.scope.showSignUp = transformServices.scope.onpageSignUp && !isSignedIn();
-    }
-    done(null, transformServices.scope);
-  });
-}
-
 function transformMusic () {
   var q    = queryStringToObject(window.location.search)
   q.fields = ['title', 'renderedArtists', 'releaseDate', 'preReleaseDate', 'coverUrl', 'catalogId'].join(',')
@@ -1168,28 +1099,6 @@ function scrollToHighlightHash () {
 
 function completedMarkdown (obj) {
   scrollToHighlightHash()
-}
-
-function transformWhitelists (obj) {
-  obj.results = obj.results.map(function (whitelist) {
-    whitelist.paid = whitelist.paidInFull ? 'PAID' : '$' + (whitelist.amountPaid / 100).toFixed(2)
-    whitelist.remaining = (whitelist.amountRemaining / 100).toFixed(2)
-    if (whitelist.availableUntil)
-      whitelist.nextBillingDate = formatDate(whitelist.availableUntil)
-    if (whitelist.subscriptionActive)
-      whitelist.cost = (whitelist.amount / 100).toFixed(2)
-    whitelist.monthlyCost = whitelist.amount
-    whitelist.canBuyOut = whitelist.paidInFull ? { _id: whitelist._id } : undefined
-    if (whitelist.whitelisted)
-      whitelist.licenseUrl = endpoint + '/self/whitelist-license/' + whitelist.identity
-    if (whitelist.subscriptionId && !whitelist.subscriptionActive && whitelist.amountRemaining > 0)
-      whitelist.resume = { _id: whitelist._id, amount: whitelist.monthlyCost }
-    if (whitelist.subscriptionActive)
-      whitelist.cancel = { _id: whitelist._id }
-    whitelist.vendorName = getVendorName(whitelist.vendor);
-    return whitelist
-  })
-  return obj
 }
 
 function transformReleaseTracks (obj, done) {
@@ -1444,8 +1353,13 @@ function renderLoading () {
   renderContent('loading-view')
 }
 
+function renderError (err) {
+  renderContent('error', {err: err})
+}
+
 function renderContent (template, scope) {
-  var content = findNode('[role=content]')
+  const content = findNode('[role=content]')
+
   render(template, content, scope)
 }
 
