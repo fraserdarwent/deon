@@ -46,37 +46,15 @@ function destroyPlaylist (e, el) {
   destroy('playlist', el.getAttribute('playlist-id'), simpleUpdate)
 }
 
-<<<<<<< HEAD
-function removeFromPlaylist (e, el) {
-  var pel   = document.querySelector('[playlist-id]')
-  var id    = pel ? pel.getAttribute('playlist-id') : ""
-  var url   = endpoint + '/playlist/' + id + '?fields=name,public,tracks,userId'
-  var index = parseInt(el.getAttribute('playlist-position'))
-=======
 function clickRemoveFromPlaylist (e, el) {
   const index = parseInt(el.dataset.playlistPosition)
-  const id = cache('page:playlist').playlist._id
->>>>>>> Playlist page
+  const id = cache(PAGE_PLAYLIST).playlist._id
 
   if (!id) {
     toasty(new Error(strings.error))
     return
   }
 
-<<<<<<< HEAD
-  loadCache(url, (err, obj) => {
-    if (err) {
-      toasty(new Error(err.message))
-      return
-    }
-
-    var tracks = obj.tracks
-
-    tracks.splice(index, 1)
-    update('playlist', id, {tracks: tracks}, (err, obj, xhr) => {
-      if (err) {
-        toasty(new Error(err))
-=======
   const url   = endpoint + '/playlist/' + id + '?fields=name,public,tracks,userId'
 
   loadCache(url, (err, obj) => {
@@ -89,7 +67,6 @@ function clickRemoveFromPlaylist (e, el) {
     tracks.splice(index, 1)
     update('playlist', id, {tracks: tracks}, (err, obj, xhr) => {
       if (terror(err)) {
->>>>>>> Playlist page
         return
       }
 
@@ -179,21 +156,13 @@ function togglePlaylistPublic (e, el) {
   if (actionier.isOn(el)) {
     return
   }
-  const playlistId = cache('page:playlist').playlist._id
+  const playlistId = cache(PAGE_PLAYLIST).playlist._id
 
   actionier.on(el)
 
   update('playlist', playlistId, {
     public: !!el.checked
   }, (err, obj) => {
-<<<<<<< HEAD
-    el.disabled = false
-    if (!err)
-      return
-
-    toasty(new Error(err.message))
-    el.checked = !el.checked
-=======
     actionier.off(el)
     if (terror(err)) {
       return
@@ -207,7 +176,6 @@ function togglePlaylistPublic (e, el) {
     else {
       toasty('Playlist is now private')
     }
->>>>>>> Playlist page
   })
 }
 
@@ -303,7 +271,7 @@ function processPlaylistPage (args) {
         }
         scope.pagePlaceholders.push({tracks: trackPlaceholders, page: i})
       }
-      cache('page:playlist', scope)
+      cache(PAGE_PLAYLIST, scope)
       renderContent(args.template, scope)
       setPageTitle(playlist.name + pageTitleGlue + 'Playlist')
       setMetaData({
@@ -313,6 +281,7 @@ function processPlaylistPage (args) {
       })
       appendSongMetaData(playlist.tracks)
       pageIsReady()
+      completedPlaylistTracks()
     }
   })
 }
@@ -323,7 +292,7 @@ function processPlaylistTracks (args) {
       render(args.template, args.node, {loading: true})
     },
     success: function (args) {
-      const playlist = cache('page:playlist').playlist
+      const playlist = cache(PAGE_PLAYLIST).playlist
       const result = args.result
       const data = {}
       const trackAtlas = toAtlas(result.results, '_id')
@@ -355,8 +324,10 @@ function processPlaylistTracks (args) {
       render(args.template, args.node, {
         data: data
       })
+    }
+  })
+}
 
-<<<<<<< HEAD
 function completedPlaylistTracks (source, obj) {
   updateControls()
 }
@@ -527,48 +498,6 @@ function reorderPlaylistFromInputs (e) {
           return 1
 
         return 0
-=======
-      bindOnEnter()
-    }
-  })
-}
-
-function reorderPlaylistFromInputs() {
-  const inputs = document.querySelectorAll('[name="trackOrder\\[\\]"')
-
-  //This is a kinda hacky way for not letting them accidentally delete all their tracks
-  //by spam clicking while the track list is reloading
-  if (inputs.length == 0) {
-    return
-  }
-  const trackOrdering = []
-  let trackEls = []
-  let changed = false
-
-  for (var i = 0; i < inputs.length; i++) {
-    var input = inputs[i]
-    var trackId = input.dataset.trackId
-    var releaseId = input.dataset.releaseId
-    var to = parseInt(input.value)
-    var from = i + 1
-    if(!changed) {
-      changed = to != from
-    }
-    trackOrdering.push({trackId: trackId, releaseId: releaseId, from: from, to: to})
-  }
-  if (!changed) {
-    return
-  }
-  trackOrdering.sort((a, b) => {
-    //If you change #1 to #6 and leave #6 at #6 then track 1 should be after #6
-    //If you move #7 to #3 and leave #3 unchanged, then #7 should be before #3
-    if(a.to == b.to) {
-      if(a.to > a.from) {
-        return 1
-      }
-      if(a.to < a.from) {
-        return -1
->>>>>>> Playlist page
       }
       return a.to > b.to ? 1 : -1
     })
@@ -605,7 +534,6 @@ function reorderPlaylistFromInputs() {
     for(var i = 0; i < tbodys.length; i++) {
       tracksTable.removeChild(tbodys[i])
     }
-<<<<<<< HEAD
 
     //Append the new tbody
     tracksTable.insertBefore(fragment, getPlaylisTracksTHead())
@@ -621,66 +549,32 @@ function reorderPlaylistFromInputs() {
 function resetPlaylistInputs() {
   var trackEls = document.querySelectorAll('[role="playlist-track"]')
 
-  for (var i = 0; i < trackEls.length; i++)
-=======
-    return a.to > b.to ? 1 : -1
-  })
-  trackEls = trackOrdering.map((item) => {
-    return document.querySelector('tr[role="playlist-track"][data-track-id="' + item.trackId + '"][data-release-id="' + item.releaseId + '"]')
-  })
-  const tracksNode = document.querySelector('[role="playlist-tracks"]')
-
-  tracksNode.innerHTML = ''
-  for (let i = 0; i < trackEls.length; i ++) {
-    tracksNode.insertBefore(trackEls[i], null)
-  }
-  resetPlaylistInputs()
-  savePlaylistOrder()
-}
-
-function resetPlaylistInputs() {
-  const trackEls = document.querySelectorAll('[role="playlist-track"]')
-
   for (var i = 0; i < trackEls.length; i++) {
->>>>>>> Playlist page
     trackEls[i].querySelector('input[name="trackOrder\[\]"]').value = (i + 1)
-
+  }
 }
 
 function savePlaylistOrder() {
-<<<<<<< HEAD
   var id = document.querySelector('[playlist-id]').getAttribute('playlist-id')
   var trackEls = document.querySelectorAll('[role="playlist-track"]')
   var trackSaves = []
 
-  for (var i = 0; i < trackEls.length; i++) {
-=======
-  const id = cache('page:playlist').playlist._id
+  const id = cache(PAGE_PLAYLIST).playlist._id
   const trackEls = document.querySelectorAll('[role="playlist-track"]')
   const trackSaves = []
 
   for (let i = 0; i < trackEls.length; i++) {
->>>>>>> Playlist page
     trackSaves.push({
       trackId: trackEls[i].dataset.trackId,
       releaseId: trackEls[i].dataset.releaseId
     })
   }
-<<<<<<< HEAD
-  var url   = endpoint + '/playlist/' + id + '?fields=name,public,tracks,userId'
-
-  update('playlist', id, {tracks: trackSaves}, (err, obj, xhr) => {
-    if (err)
-      return toasty(new Error(err))
-
-=======
   const url   = endpoint + '/playlist/' + id + '?fields=name,public,tracks,userId'
 
   update('playlist', id, {tracks: trackSaves}, (err, obj, xhr) => {
     if (terror(err)) {
       return
     }
->>>>>>> Playlist page
     cache(url, obj)
     toasty(strings.reorderedPlaylist)
   })

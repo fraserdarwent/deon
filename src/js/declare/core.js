@@ -496,19 +496,24 @@ function loadNodeSource (node, matches) {
  *  })
  * }
  */
-function processor (args, meths) {
-  const methods = meths || {}
+function processor (args, options) {
+  const opts = options || {}
 
-  if (methods[args.state] === false) {
+  if (opts[args.state] === false) {
     return
   }
 
-  if (methods[args.state]) {
-    methods[args.state](args)
+  if (opts[args.state]) {
+    opts[args.state](args)
     return
   }
 
   if (args.state == 'start') {
+    if (opts.hasLoadingView) {
+      render(args.template, args.node, {loading: true})
+      return
+    }
+
     render('loading-view', args.node)
     return
   }
@@ -516,28 +521,28 @@ function processor (args, meths) {
   //The ajax is done, and either succeeded or failed
   if (args.state == 'finish') {
     if (args.err) {
-      if (methods.error) {
-        methods.error(args)
+      if (opts.error) {
+        opts.error(args)
         return
       }
 
       render('error', args.template, {err: args.err})
     }
-    if (methods.success) {
-      methods.success(args)
+    if (opts.success) {
+      opts.success(args)
       return
     }
 
     var scope = {err: args.err, data: args.result, loading: false}
 
-    if (methods.transform) {
-      scope.data = methods.transform(args)
+    if (opts.transform) {
+      scope.data = opts.transform(args)
     }
 
     render(args.template, args.node, scope)
 
-    if (methods.completed) {
-      methods.completed(args)
+    if (opts.completed) {
+      opts.completed(args)
     }
     return
   }

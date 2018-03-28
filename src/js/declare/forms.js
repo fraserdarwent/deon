@@ -2,7 +2,9 @@ function FormDataDeclare (form) {
   //The good browsers already have this
   var fd = new FormData(form)
 
-  if (fd.entries) {
+  //Non-form nodes will use our custom code below
+  //to build a fake FormData-like object
+  if (fd.entries && form.nodeName == 'FORM') {
     return fd
   }
 
@@ -355,4 +357,23 @@ function makeFormControlFeedback (field) {
     feedback = parent.querySelector('.form-control-feedback')
   }
   return feedback
+}
+
+/**
+ * Wrapper for formToObject that can
+ * also take a querySelector
+ *
+ * @param {Object|String} nodeOrSel The node or selector to find the node
+ * @returns {Object}
+ */
+function getDataSet (nodeOrSel) {
+  let node
+  if (typeof nodeOrSel == 'string') {
+    node = findNode(nodeOrSel)
+  }
+  else {
+    node = nodeOrSel
+  }
+
+  return formToObject(node)
 }

@@ -143,7 +143,7 @@ function processReleaseMerch (args) {
         prod.utm = '?utm_source=website&utm_medium=release_page'
         return prod
       })
-      scope.activeTest = cache('page:release').activeTest
+      scope.activeTest = cache(PAGE_RELEASE).activeTest
       render(args.template, args.node, scope)
     }
   })
@@ -284,7 +284,7 @@ function processReleasePage (args) {
             },
             onStarted: function () {
               scope.activeTest = 'release1FeatureOrder'
-              cache('page:release', scope)
+              cache(PAGE_RELEASE, scope)
               renderContent(args.template, scope)
             }
           })
@@ -326,7 +326,7 @@ function completedReleasePage () {
 function processRelatedReleases (args) {
   processor(args, {
     success: function (args) {
-      const pageScope = cache('page:release')
+      const pageScope = cache(PAGE_RELEASE)
       const maxReleases = 8
       const releases = args.result.results
         .map(mapRelease)

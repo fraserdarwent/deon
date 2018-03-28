@@ -86,24 +86,23 @@
                     </tbody>
                 </table>
                 {{/if}}
-                <div data-set="new-license" class="services-form" trigger-target="subscribeNewLicense">
-                    {{>vendor-selector}}
-                    <input type="text" name="identity" placeholder="Channel_ID" size="30" />
-                    <button
-                        action="subscribeNewLicense"
-                        trigger="subscribeNewLicense"
-                        data-set-target="new-license">
-                        Subscribe
-                        <span class="working-spinner"><i class="fa fa-spin fa-cog"></i></span>
-                    </button>
-                    <span class="or">or</span>
-                    <button
-                        action="buyoutNewLicense"
-                        data-set-target="new-license">
-                        Prepay for 20 Months
-                        <span class="working-spinner"><i class="fa fa-spin fa-cog"></i></span>
-                    </button>
-                    {{>channel-id-help-text}}
+                <div class="services-form">
+                    <form onsubmit="submitSubscribeNewLicense(event, this)" role="subscribe-new-license">
+                        {{>vendor-selector}}
+                        <input type="text" name="identity" placeholder="Channel_ID" size="30" />
+                        <button>
+                            Subscribe
+                            <span class="working-spinner"><i class="fa fa-spin fa-cog"></i></span>
+                        </button>
+                        <span class="or">or</span>
+                        <button
+                            type="button"
+                            onclick="clickBuyoutNewLicense(event, this)">
+                            Prepay for 20 Months
+                            <span class="working-spinner"><i class="fa fa-spin fa-cog"></i></span>
+                        </button>
+                        {{>channel-id-help-text}}
+                    </form>
                 </div>
                 {{#if user.isSignedIn}}
                     <br/>
@@ -128,22 +127,23 @@
             </table>
             <div><span class="total-cost">$<span role="total-cost">0.00</span></span>/month</div>
             <br/>
-            {{#if showSignUp}}
-            <div id="sign-on" data-submit-action="checkoutSubscriptions" trigger-target="checkoutSubscriptions">
-                <div role="sign-on-errors"></div>
-                <div role="sign-on-fields" class="sign-on-fields">
-                    {{>services-sign-up}}
+            <form onsubmit="checkoutSubscriptions(event)">
+                {{#if showSignUp}}
+                    <div id="sign-on" data-submit-action="checkoutSubscriptions" trigger-target="checkoutSubscriptions">
+                        <div role="sign-on-errors"></div>
+                        <div role="sign-on-fields" class="sign-on-fields">
+                            {{>services-sign-up}}
+                        </div>
+                    </div>
+                <br />
+                {{/if}}
+                <div data-set="pay-method">
+                   {{>payment-method-recurring}}
+                   <button class="button--cta">
+                        Complete Purchase
+                    </button>
                 </div>
-            </div>
-            <br />
-            {{/if}}
-            <div data-set="pay-method">
-               {{>payment-method-recurring}}
-               <button class="button--cta"
-                       action="checkoutSubscriptions" data-set-target="pay-method" trigger="checkoutSubscriptions">
-                    Complete Purchase
-                </button>
-            </div>
+            </form>
         </div>
         {{/if}}
     </div>
@@ -416,9 +416,10 @@ Already have an account? <a class="switch-sign-on" onclick="servicesChangeSignOn
 
 <script type="text/template"
         data-route="^account\/services\/buyout\/?(\?.*)?$"
-        transform="transformBuyWhitelist"
-        completed="buyWhitelistComplete"
-        data-title="Purchase Whitelist">
+        data-process="processBuyWhitelistPage"
+        data-title="Purchase Whitelist"
+        data-template="buy-whitelist-page"
+        >
     <div class="container">
         {{#data}}
             <h1>Purchase Whitelist</h1>
@@ -426,7 +427,7 @@ Already have an account? <a class="switch-sign-on" onclick="servicesChangeSignOn
                 <p>Pre-pay your whitelist license for 20 months. All videos created with the
                     cleared Monstercat catalog during this time period will never
                     receive content-ID claims.</p>
-                <div data-set="new-license" trigger-target="buyNewLicense">
+                <form onsubmit="submitBuyLicense(event, this)" role="buy-new-licence">
                     <input type="hidden" name="amount" value="20000">
                     <table class="form mobile">
                         <tbody>
@@ -454,9 +455,9 @@ Already have an account? <a class="switch-sign-on" onclick="servicesChangeSignOn
                     </table>
                     {{>payment-method}}
                     <div class="button-group">
-                        <button class="button--full" trigger="buyNewLicense" action="buyNewLicense" data-set-target="new-license">Purchase Whitelisting</button>
+                        <button class="button--full">Purchase Whitelisting</button>
                     </div>
-                </div>
+                </form>
             </div>
 
         {{/data}}
@@ -465,32 +466,28 @@ Already have an account? <a class="switch-sign-on" onclick="servicesChangeSignOn
 
 <script type="text/template"
         data-route="^account\/services\/buyout\/(.+)$"
-        transform="transformBuyOut"
-        completed="completedBuyOut"
+        data-process="processServicesBuyoutPage"
         data-source="$endpoint/self/whitelist/$1"
-        data-title="Whitelist Prepay">
+        data-title="Whitelist Prepay"
+        data-template="services-buyout-page"
+        >
     <div class="container">
         <h1>Prepay for 20 Months of Whitelist</h1>
         <div class="panel">
             <p>Pre-pay the rest of your whitelist license. All videos created with the
                 cleared Monstercat catalog during this time period will never receive content-ID claims.</p>
-            {{#loading}}
-            <i class="fa fa-spin fa-refresh"></i>
-            {{/loading}}
-            {{#error}}
-            <p>{{message}}</p>
-            {{/error}}
             {{#data}}
-            <div data-set="buy-out-license" trigger-target="buyLicense">
+            <form onsubmit="submitBuyLicense(event, this)" role="buy-new-licence">
                 <input type="hidden" name="amount" value="{{amountRemaining}}"/>
                 <input type="hidden" name="id" value="{{_id}}"/>
+                <input type="hidden" name="vendor" value="{{vendor}}"/>
+                <input type="hidden" name="identity" value="{{identity}}"/>
                 <table class="form mobile">
                     <tbody>
                         <tr>
                             <th>Vendor</th>
                             <td>
                                 <input type="text"
-                                       name="vendor"
                                        value="{{vendor}}"
                                        disabled />
                             </td>
@@ -499,7 +496,6 @@ Already have an account? <a class="switch-sign-on" onclick="servicesChangeSignOn
                             <th>Identity</th>
                             <td>
                                 <input type="text"
-                                       name="identity"
                                        value="{{identity}}"
                                        disabled />
                             </td>
@@ -514,7 +510,7 @@ Already have an account? <a class="switch-sign-on" onclick="servicesChangeSignOn
                 </table>
                 {{>payment-method}}
                 <div class="button-group">
-                    <button class="button--full" trigger="buyLicense" action="buyLicenseAction" data-set-target="buy-out-license">Buy License</button>
+                    <button class="button--full">Buy License</button>
                 </div>
             </div>
             {{/data}}
