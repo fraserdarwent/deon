@@ -65,33 +65,69 @@ function submitSaveAccountSettings (e, el) {
   })
 }
 
-function saveAccount (e, el) {
-  throw new Error('Depecrated')
-  /*
-  var data = getTargetDataSet(el, true, true)
-  data = transformSubmittedAccountData(data);
-  if (!data) return
-  var wasLegacy = isLegacyLocation()
-  var errors = validateAccountData(data);
-  if (errors.length > 0) {
-    errors.forEach(function (err) {
-      toasty(new Error(err));
-    })
-    return
-  }
-  update('self', null, data, function (err, obj) {
-    if (err) return window.alert(err.message)
-    toasty(strings.accountUpdated)
-    document.querySelector('[name="password"]').value = ""
-    resetTargetInitialValues(el, obj)
-    loadSession(function (err, obj) {
-      if (wasLegacy && !isLegacyLocation()) {
-        reloadPage()
+function submitSaveRedditUsername (e, el) {
+  const data = formToObject(e.target)
+  const unsetUsername = !data.redditUsername
+
+  submitForm(e, {
+    method: 'PUT',
+    url: endpoint + '/self/update-reddit',
+    success: function (args) {
+      if (unsetUsername) {
+        toasty('Flair cleared')
       }
-      siteNotices.completeProfileNotice.start();
-    })
+      else {
+        toasty('Flair set')
+      }
+    }
   })
-  */
+}
+
+function submitJoinDiscord (e, el) {
+  const responseEl = findNode('[role=join-discord] [role=response]')
+
+  submitForm(e, {
+    method: "POST",
+    url: endpoint + "/self/discord/join",
+    started: function () {
+      render('discord-response', responseEl, {loading: true})
+    },
+    validate: function (data, errs) {
+      if (!data.discordId) {
+        errs.push('Please provide a Discord User ID')
+      }
+
+      return errs
+    },
+    success: function (result) {
+      var invites = result.invites
+      const scope = {}
+
+      if (!err && invites) {
+        if (invites.gold) {
+          scope.goldJoinUrl = "https://discord.gg/" + invites.gold
+        }
+        if (invites.licensee) {
+          scope.licenseeJoinUrl = "https://discord.gg/" + invites.licensee
+        }
+      }
+
+      render('discord-response', responseEl, {
+        data: scope
+      })
+    }
+  })
+}
+
+function submitVerifyInvite (e, el) {
+  submitForm(e, {
+    method: 'POST',
+    url: endhost + '/invite/complete',
+    success: function () {
+      toasty('Account verified, please sign in')
+      go('/signin')
+    }
+  })
 }
 
 function saveShopEmail (e, el) {
@@ -101,22 +137,6 @@ function saveShopEmail (e, el) {
     if (err) return window.alert(err.message)
     toasty(strings.shopEmailUpdated)
     session.user.shopEmail = data.shopEmail
-  })
-}
-function saveRedditUsername (e, el) {
-  var data = getTargetDataSet(el, false, true)
-  if (!data) {
-    data = {redditUsername: null}
-  }
-  requestJSON({
-    url: endpoint + '/self/update-reddit',
-    method: 'PUT',
-    data: data,
-    withCredentials: true
-  }, function (err, obj, xhr) {
-    if (err) return window.alert(err.message)
-    toasty('Flair set')
-    session.user.redditUsername = data.redditUsername
   })
 }
 
@@ -166,12 +186,15 @@ function disableTwoFactor (e, el) {
   })
 }
 
+/*==================================
+=            PROCESSORS            =
+==================================*/
+
 function processAccountPage (args) {
   pageProcessor(args, {
     transform: function (args) {
       const scope = {}
       const result = args.result
-      console.log('result', result);
       const account = result
 
       scope.countries = getAccountCountries(account.location)
@@ -198,18 +221,17 @@ function processAccountPage (args) {
       scope.hasGoldAccess = hasGoldAccess()
       scope.endhost = endhost
       scope.locationLegacy = isLegacyLocation()
-      console.log('account.emailOptIns', account.emailOptIns)
       scope.emailOptIns = transformEmailOptins(account.emailOptIns)
       scope.account = account
-      console.log('scope', scope)
       return scope
+    },
+    completed: function () {
+      scrollToHighlightHash()
+      hookValueSelects()
+      initLocationAutoComplete()
     }
   })
 }
-
-function mapAccount (o) {
-}
-
 
 function processSocialSettings (args) {
   processor(args, {
@@ -223,7 +245,8 @@ function processSocialSettings (args) {
   })
 }
 
-function transformAccountGold (o, done) {
+function processAccountGoldPage (args) {
+  renderContent(args.template, {loading: true})
   var thankyous = [
     "Very cool!",
     "Thank you!",
@@ -232,8 +255,7 @@ function transformAccountGold (o, done) {
     "That's awesome!",
     "Noice."
   ]
-  var obj = {
-    self: o,
+  let scope = {
     hasGoldAccess: hasGoldAccess(),
     hasFreeGold: hasFreeGold(),
     displayName: getSessionName(),
@@ -241,86 +263,45 @@ function transformAccountGold (o, done) {
     isSignedIn: isSignedIn()
   }
 
-  if (!obj.isSignedIn) {
-    return done(null, obj);
+  if (!scope.isSignedIn) {
+    renderContent(args.template, {loading: false, data: scope})
+    return
   }
-
-  requestJSON({
-    url: endpoint + '/self',
-    withCredentials: true
-  }, function (err, selfResult) {
-    if (err) {
-      return done(err);
-    }
-
-    obj.self = selfResult;
-
-    if (!obj.hasGoldAccess) {
-      return done(null, obj);
-    }
-
-    requestSelfShopCodes(function (err, result) {
+  setTimeout(function () {
+    requestJSON({
+      url: endpoint + '/self',
+      withCredentials: true
+    }, (err, selfResult) => {
       if (err) {
-        return done(err);
+        renderContent(args.template, {err: err})
+        return
       }
-      obj = Object.assign(obj, result);
-      done(null, obj);
-    });
-  });
-}
 
-function completedAccountGold () {
-  scrollToHighlightHash();
-  startCountdownTicks();
-}
+      scope.self = selfResult
 
-function transformEmailOptins (optinsArray) {
-    console.log('optinsArray', optinsArray);
-  if (!optinsArray) return {}
-  return optinsArray.reduce(function (atlas, value) {
-    atlas[value.type] = value.in
-    return atlas
-  }, {})
-}
+      if (!scope.hasGoldAccess) {
+        renderContent(args.template, {
+          loading: false,
+          data: scope
+        })
+        return
+      }
 
-function completedAccount () {
-  scrollToHighlightHash()
-  hookValueSelects();
-  initLocationAutoComplete()
-}
-
-function transformVerify (obj) {
-  obj.code = window.location.pathname.split('/')[2]
-  obj.isSignedIn = isSignedIn()
-  return obj
-}
-
-function completedVerify () {
-  initLocationAutoComplete()
-}
-
-function verifyInvite (e, el) {
-  var data = getTargetDataSet(el)
-
-  if (!data.googleMapsPlaceId) {
-    return alert('Location is required.')
-  }
-
-  if (!data.password) {
-    return alert('Password is required.')
-  }
-
-  requestJSON({
-    url: endhost + '/invite/complete',
-    method: 'POST',
-    data: data
-  }, function (err, result) {
-    if (err) {
-      return toasty(new Error(err))
-    }
-    toasty('Account verified, please sign in')
-    go('/signin')
-  })
+      requestSelfShopCodes((err, result) => {
+        if (err) {
+          renderContent(args.tempalte, {err: err})
+          return
+        }
+        scope = Object.assign(scope, result)
+        renderContent(args.template, {
+          loading: false,
+          data: scope
+        })
+        scrollToHighlightHash()
+        startCountdownTicks()
+      })
+    })
+  }, 1000)
 }
 
 function processAccountSettings (args) {
@@ -362,5 +343,30 @@ function processAccountSettings (args) {
       return scope
     }
   })
+}
+
+function processVerifyPage (args) {
+  processor(args, {
+    success: function (args) {
+      const obj = {}
+
+      obj.code = window.location.pathname.split('/')[2]
+      obj.isSignedIn = isSignedIn()
+      renderContent(args.template, {data: obj})
+      initLocationAutoComplete()
+    }
+  })
+}
+
+/*====================================
+=            TRANSFORMERS            =
+====================================*/
+
+function transformEmailOptins (optinsArray) {
+  if (!optinsArray) return {}
+  return optinsArray.reduce(function (atlas, value) {
+    atlas[value.type] = value.in
+    return atlas
+  }, {})
 }
 

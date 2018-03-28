@@ -1547,33 +1547,3 @@ getStats.translate = function (value) {
   }
   return value
 }
-
-function joinDiscord (e, el) {
-  var data = getTargetDataSet(el)
-  var parent = getDataSetTargetElement(el)
-  if (!data.discordId) return window.alert("Please provide a Discord User Id.")
-  var container = parent.querySelector('[role="response"]')
-  var template = getTemplateEl("joinDiscordResponse")
-  var div = document.createElement("div")
-  render(container, template.textContent, {loading: true})
-  el.disabled = true
-  el.classList.add("on")
-  requestJSON({
-    method:"POST", 
-    url: endpoint + "/self/discord/join", 
-    withCredentials: true, 
-    data: data
-  }, function (err, body, xhr) { 
-    el.disabled = false;
-    el.classList.remove("on");
-    var invites = body.invites;
-    if (!err && invites) {
-      if (invites.gold) body.goldJoinUrl = "https://discord.gg/" + invites.gold
-      if (invites.licensee) body.licenseeJoinUrl = "https://discord.gg/" + invites.licensee
-    }
-    render(container, template.textContent, {
-      error: err,
-      data: body 
-    })
-  });
-}

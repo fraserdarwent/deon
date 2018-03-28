@@ -535,6 +535,10 @@ function processor (args, meths) {
     }
 
     render(args.template, args.node, scope)
+
+    if (methods.completed) {
+      methods.completed(args)
+    }
     return
   }
 }

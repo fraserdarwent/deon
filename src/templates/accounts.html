@@ -1,62 +1,55 @@
 <script type="text/template"
     data-route="^verify\/(.*)"
     data-source="$endhost/invite/info/$1"
-    transform="transformVerify"
-    completed="completedVerify"
+    data-process="processVerifyPage"
     data-title="Verify"
+    data-template="verify-page"
     >
     <div class="container">
-        {{#loading}}
-        {{>loading-view}}
-        {{/loading}}
-        {{#error}}
-        <p>{{message}}</p>
-        {{/error}}
         {{#data}}
-        <h1>Complete Signup</h1>
-        {{^isSignedIn}}
-            <form onsubmit="false" data-set="verify" data-submit-action="verifyInvite" class="col-xs-12 col-md-6 panel">
-                <input type="hidden" name="code" value="{{code}}" />
-                <table class="form signup-verify">
-                    <tbody>
-                        <tr>
-                            <th>Real Name</th>
-                            <td>
-                                <input type="text"
-                                       name="realName"
-                                       placeholder=""
-                                       value="" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Password</th>
-                            <td>
-                                <input type="password"
-                                       name="password"
-                                       placeholder="a secret"/>
-                                <button
-                                    class="faux password"
-                                    action="togglePassword"
-                                    tabindex="999"
-                                    toggle-target="password">
-                                    <i class="fa fa-eye-slash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Location</th>
-                            <td>
-                                {{>location-autocomplete}}
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <button type="button button--cta">Submit</button>
-            </form>
-        {{/isSignedIn}}
-        {{#isSignedIn}}
-        <p>You are already signed in.</p>
-        {{/isSignedIn}}
+            <h1>Complete Signup</h1>
+            {{#unless isSignedIn}}
+                <form onsubmit="submitVerifyInvite(event, this)" class="col-xs-12 col-md-6 panel">
+                    <input type="hidden" name="code" value="{{code}}" />
+                    <table class="form signup-verify">
+                        <tbody>
+                            <tr>
+                                <th>Real Name</th>
+                                <td>
+                                    <input type="text"
+                                           name="realName"
+                                           placeholder=""
+                                           value="" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Password</th>
+                                <td>
+                                    <input type="password"
+                                           name="password"
+                                           placeholder="a secret"/>
+                                    <button
+                                        class="faux password"
+                                        action="togglePassword"
+                                        tabindex="999"
+                                        toggle-target="password">
+                                        <i class="fa fa-eye-slash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Location</th>
+                                <td>
+                                    {{>location-autocomplete}}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button type="button button--cta">Submit</button>
+                </form>
+            {{else}}
+            <p>You are already signed in.</p>
+            {{/unless}}
         {{/data}}
     </div>
 </script>
@@ -365,16 +358,16 @@
 <script type="text/template"
         data-route="^account\/gold\/?"
         data-title="My Gold Features"
-        transform="transformAccountGold"
-        completed="completedAccountGold"
+        data-process="processAccountGoldPage"
+        data-template="account-gold-page"
         >
     <div id="account-gold">
-        {{#loading}}
+        {{#if loading}}
             {{>loading-view}}
-        {{/loading}}
-        {{#error}}
+        {{/if}}
+        {{#err}}
             {{>error}}
-        {{/error}}
+        {{/err}}
         {{#data}}
             <div class="top-banner top-banner--no-margin top-banner--account-gold">
                 <div class="banner">
@@ -385,31 +378,28 @@
                 </div>
                 <div class="container flex">
                     <div class="col-xs-12 col-sm-12 col-md-12 cl-white featured-details">
-                        {{#isSignedIn}}
+                        {{#if isSignedIn}}
                             <a href="/account/services" class="button button--cta pull-right ml-1 mt-4">Subscriptions</a>
                             <a href="/account" class="button button--cta pull-right button--icon button--icon-left mt-4">
                                 <i class="fa fa-chevron-left"></i>
                                 My Account
                             </a>
                             <h1 class="title uppercase">My Gold Features</h1>
-                            {{#hasGoldAccess}}
+                            {{#if hasGoldAccess}}
                                 <p>Hey {{displayName}},
-                                    {{#hasFreeGold}}
-                                    you have a free Gold subscription.
-                                    {{/hasFreeGold}}
-                                    {{^hasFreeGold}}
-                                    you've been Gold for {{gold.months}} month<span class="s" num="{{gold.months}}"></span>. {{thankYou}}
-                                    {{/hasFreeGold}}</p>
-                            {{/hasGoldAccess}}
-                            {{^hasGoldAccess}}
+                                    {{#if hasFreeGold}}
+                                        you have a free Gold subscription.
+                                    {{else}}
+                                        you've been Gold for {{gold.months}} month<span class="s" num="{{gold.months}}"></span>. {{thankYou}}
+                                    {{/if}}</p>
+                            {{else}}
                                 <p>Hey {{displayName}}, to use these features you'll need to <a href="/gold/buy">get Gold</a>.</p>
-                            {{/hasGoldAccess}}
-                        {{/isSignedIn}}
-                        {{^isSignedIn}}
+                            {{/if}}
+                        {{else}}
                             <h1>Gold Features</h1>
                             <p>You aren't logged in. <a href="/sign-in">Sign in</a>.</p>
                             <p>Gold is a monthly subscription for supporting the artists, downloading music, early streaming, and more.</p>
-                        {{/isSignedIn}}
+                        {{/if}}
 
                         {{^hasGoldAccess}}
                             <br /><a href="/gold/buy" class="button button--gold button--icon">Get Gold  <i class="fa fa-chevron-right"></i></a>
@@ -422,10 +412,9 @@
                     </div>
                 </div>
             </div>
-            {{#hasGoldAccess}}
+            {{#if hasGoldAccess}}
             <div class="container">
-                <div class="flex flex-pt {{#hasGoldAccess}}{{/hasGoldAccess}}">
-                    {{#hasGoldAccess}}
+                <div class="flex flex-pt">
                     <div class="panel panel--daxrk rewards col-md-6 col-sm-12 col-xs-12">
                         <h2>Shop Discounts</h2>
                         <p>Each month you have Gold you get a new shop discount code. Stay subscribed for bigger discounts.</p>
@@ -448,78 +437,58 @@
                             </tr>
                         </table>
                     </div>
-                    {{/hasGoldAccess}}
-                    <div class="col-xs-12 {{#hasGoldAccess}}col-md-6{{/hasGoldAccess}}{{^hasGoldAccess}}col-md-12{{/hasGoldAccess}} panel" id="shop-codes">
+                    <div class="col-xs-12 col-md-6 panel" id="shop-codes">
                         <h2>Current Code</h2>
-                        {{#hasGoldAccess}}
-                                {{#currentCode}}
-                                <p class="code-description">
-                                    <input class="code" size="32" type="text" value="{{code}}" role="clipboard" />{{>copy-clipboard-button}}
-                                    gets you <span class="discount">{{discountText}}</span>.
-                                    <br /><small>{{#expires}}
-                                    Single use and expires on {{expiresFormatted}}.
-                                    {{/expires}}
-                                    {{^expires}}
-                                        Single use and does not expire.
-                                    {{/expires}}
-                                    Next code in <span role="countdown" to="{{nextCodeDate}}" day-label=" day/ days" show-days="1" show-hours="0" show-minutes="0" show-seconds="0"></span>.</small>
-                                </p>
-                                {{/currentCode}}
-                                <div class="button-group">
-                                    <a href="https://shop.monstercat.com/?utm_source=gold&utm_campaign=shop_discount" class="button button--cta button--icon" target="_blank">
-                                        Go to Shop
-                                        <i class="fa fa-external-link"></i>
-                                    </a>
-                                </div>
-                        {{/hasGoldAccess}}
-                        {{^hasGoldAccess}}
-                        <p>Get a discount code in the <a href="https://shop.monstercat.com">Monstercat Shop</a> every month that you have <a href="/gold">Gold</a>.</p>
+                        {{#currentCode}}
+                        <p class="code-description">
+                            <input class="code" size="32" type="text" value="{{code}}" role="clipboard" />{{>copy-clipboard-button}}
+                            gets you <span class="discount">{{discountText}}</span>.
+                            <br /><small>{{#expires}}
+                            Single use and expires on {{expiresFormatted}}.
+                            {{/expires}}
+                            {{^expires}}
+                                Single use and does not expire.
+                            {{/expires}}
+                            Next code in <span role="countdown" to="{{nextCodeDate}}" day-label=" day/ days" show-days="1" show-hours="0" show-minutes="0" show-seconds="0"></span>.</small>
+                        </p>
+                        {{/currentCode}}
                         <div class="button-group">
-                            <a href="/gold/buy" class="button">Get Monstercat Gold</a>
+                            <a href="https://shop.monstercat.com/?utm_source=gold&utm_campaign=shop_discount" class="button button--cta button--icon" target="_blank">
+                                Go to Shop
+                                <i class="fa fa-external-link"></i>
+                            </a>
                         </div>
-                        {{/hasGoldAccess}}
                     </div>
 
                 </div>
                 <div class="flex sign-split">
                     <div class="col-xs-12 col-md-6 panel" id="reddit">
                         <h2>/r/Monstercat Flair</h2>
-                        {{#hasGoldAccess}}
                             {{#self}}
                             <p>Put in your reddit username to get an exclusive <strong>Monstercat Gold</strong> flair on the <a href="https://www.reddit.com/r/monstercat">Monstercat Subreddit</a>.</p>
-                            <table class="form mobile" data-set="reddit-flair" trigger-target="saveRedditUsername">
-                                <tbody>
-                                    <tr>
-                                        <th>reddit username</th>
-                                        <td><input type="text" name="redditUsername" placeholder="Username" value="{{redditUsername}}" /></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <div class="button-group">
-                                <button class="button--full" action="saveRedditUsername" trigger="saveRedditUsername" data-set-target="reddit-flair">Save</button>
-                            </div>
+                            <form onsubmit="submitSaveRedditUsername(event, this)">
+                                <table class="form mobile" data-set="reddit-flair" trigger-target="saveRedditUsername">
+                                    <tbody>
+                                        <tr>
+                                            <th>reddit username</th>
+                                            <td><input type="text" name="redditUsername" placeholder="Username" value="{{redditUsername}}" /></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <div class="button-group">
+                                    <button class="button--full">Save</button>
+                                </div>
+                            </form>
                             {{/self}}
-                        {{/hasGoldAccess}}
-                        {{^hasGoldAccess}}
-                        <p>Get an exclusive <strong>Monstercat Gold</strong> flair on the <a href="https://www.reddit.com/r/monstercat">Monstercat Subreddit</a>.</p>
-                        <div class="button-group">
-                            <a href="/gold/buy" class="button">Get Monstercat Gold</a>
-                        </div>
-                        {{/hasGoldAccess}}
                     </div>
                     <div class="col-xs-12 col-md-6 panel">
                         <h2>Gold-only Discord Chat</h2>
                         <p>Join us on our <a href="https://discord.gg/j8N75GN">Discord server</a> in the exclusive Gold members only chat. Please join the server before using the form below.</p>
                         {{>join-gold-discord}}
-                        {{^hasGoldAccess}}
-                        <div class="button-group">
-                            <a href="/gold/buy" class="button">Get Monstercat Gold</a>
-                        </div>
-                        {{/hasGoldAccess}}
                     </div>
                 </div>
             </div>
-            {{/hasGoldAccess}}
+            {{/if}}
         {{/data}}
     </div>
 </script>
@@ -891,36 +860,29 @@
         data-partial
         data-template="join-gold-discord">
 {{#if hasGoldAccess}}
-<div data-set="discord-join-info" trigger-target="joinDiscord">
-    <table class="form mobile">
-        <tbody>
-            <tr>
-                <th>Discord Username & Identifier</th>
-                <td><input type="text" placeholder="Example#0000" name="discordId"/></td>
-            </tr>
-        </tbody>
-    </table>
-    <div class="button-group">
-        <button type="button"
-            class="action-toggle"
-            action="joinDiscord"
-            data-set-target="discord-join-info">
-            Join Discord
-            <i class="fa fa-spin fa-refresh fa-fw on"></i>
-        </button>
+<form onsubmit="submitJoinDiscord(event, this)" role="join-discord">
+    <div>
+        <table class="form mobile">
+            <tbody>
+                <tr>
+                    <th>Discord Username &amp; Identifier</th>
+                    <td><input type="text" placeholder="Example#0000" name="discordId"/></td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="button-group">
+            <button class="action-toggle">
+                Join Discord
+                <i class="fa fa-spin fa-refresh fa-fw on"></i>
+            </button>
+        </div>
+      <div role="response"></div>
     </div>
-  <div role="response"></div>
-</div>
 {{/if}}
 </script>
 
 <script type="text/template" data-template="joinDiscordResponse">
-{{#loading}}{{/loading}}
-{{#error}}
-<p class="error-box">{{message}}</p>
-{{/error}}
 {{#data}}
-<br/>
 <p class="success-box">
 Success please join the following channels with the links below:<br/><br/>
 {{#goldJoinUrl}}

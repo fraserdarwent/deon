@@ -185,7 +185,7 @@ function submitForm (e, opts = {}) {
   if (!opts.success) {
     opts.success = () => {
       if (opts.successMsg) {
-        notifySuccess(opts.successMsg)
+        toasty(opts.successMsg)
       }
     }
   }
@@ -194,7 +194,7 @@ function submitForm (e, opts = {}) {
   if (!opts.error) {
     opts.error = (err, form) => {
       formErrors(form, err)
-      notifyError(err)
+      toasty(err)
     }
   }
 
@@ -224,6 +224,10 @@ function submitForm (e, opts = {}) {
   }
   else {
     url = opts.url
+  }
+
+  if (typeof opts.started == 'function') {
+    opts.started(data)
   }
 
   function defaultAction () {
