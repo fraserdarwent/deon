@@ -345,7 +345,7 @@ function checkoutSubscriptions (e, el) {
 
 checkoutSubscriptions.paypal = function checkoutSubscriptionsStripe (data, subs) {
   var returnUrl = location.origin + '/account/services/processing?type='
-  var qo = queryStringToObject(window.location.search)
+  var qo = searchStringToObject()
 
   if (qo.ref == 'gold') {
     returnUrl += 'gold'
@@ -381,7 +381,7 @@ checkoutSubscriptions.paypal = function checkoutSubscriptionsStripe (data, subs)
 }
 
 checkoutSubscriptions.stripe = function checkoutSubscriptionsStripe (data, subs) {
-  var qo = queryStringToObject(window.location.search)
+  var qo = searchStringToObject()
   var handler = StripeCheckout.configure({
     key: STRIPE_PK,
     image: '/img/default.png',
@@ -479,7 +479,7 @@ function bindIdentityBlur () {
 function completedServices (source, obj) {
   var vendorSelect = findNode('select[name=vendor]')
   //if (!vendorSelect) return
-  var qp = queryStringToObject(window.location.search)
+  var qp = searchStringToObject()
 
   if (qp.vendor) {
     var vendor = qp.vendor.toLowerCase()
@@ -982,7 +982,7 @@ function transformCanceledPayment (obj) {
 
 function transformSubscribed (obj) {
   obj = obj || {}
-  var qo = queryStringToObject(window.location.search)
+  var qo = searchStringToObject()
 
   if (isSignedIn()) {
     //The ?type=gold should only be added for peopleing come from /gold/get

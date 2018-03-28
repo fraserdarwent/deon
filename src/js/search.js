@@ -6,10 +6,10 @@ function searchMobile(e, el, url) {
 }
 //TODO: Look at all of this duplicate code. Be the change you want to see in the code.
 function search (e, el, url) {
-  var data = getTargetDataSet(el, false, true) || {}
+  var data = getDataSet(el)
   var types = getSearchTypes()
   var searchType = getSearchType('all')
-  var q = queryStringToObject(window.location.search)
+  var q = searchStringToObject()
   if (!data.term && data.term !== 0) return
   data.term = data.term.toString()
   var searchTerm = data.term
@@ -105,7 +105,7 @@ function getSearchType (type) {
 }
 
 function transformSearch () {
-  var q    = queryStringToObject(window.location.search)
+  var q    = searchStringToObject()
   q.limit  = searchSnippetLimit
   q.skip   = parseInt(q.skip) || 0
   q.term = q.term || "" //Text search
@@ -144,7 +144,7 @@ function transformSearch () {
 function transformSearchPage (obj, type) {
   obj = obj || {}
   var query = {}
-  var q = queryStringToObject(window.location.search)
+  var q = searchStringToObject()
   var searchType = getSearchType(type)
   objSetPageQuery(query, q.page, {perPage: searchType.perPage})
   if(q.term && searchType.fuzzyFields) {
@@ -232,7 +232,7 @@ function getGlobalSearchInput() {
 
 function completedSearchPage (type) {
   var searchType = getSearchType(type)
-  var q = queryStringToObject(window.location.search)
+  var q = searchStringToObject()
   q.page = parseInt(q.page) || 1
   var title = searchType.title
   if(q.term) {

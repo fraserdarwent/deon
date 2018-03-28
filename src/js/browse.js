@@ -3,7 +3,7 @@ var browseUri = '/browse' // TODO 'music'
 
 function transformBrowseMusic (obj) {
   obj = obj || {}
-  var q    = queryStringToObject(window.location.search)
+  var q    = searchStringToObject()
   q.limit  = (q.pages || 0) * browseMusicLimit
   q.skip   = 0
   obj.query = objectToQueryString(q)
@@ -15,7 +15,7 @@ function mapFilterString (str) {
 }
 
 function completedBrowseFilters () {
-  var q = queryStringToObject(window.location.search)
+  var q = searchStringToObject()
   filterBrowseMusic.filters.forEach(function (filter) {
     var cel = document.querySelector('[role="filters-list-' + filter + '"]')
     if (!cel) return
@@ -158,7 +158,7 @@ function removeBrowseFilter (e, el) {
 }
 
 function getBrowseMusicQuery () {
-  return queryStringToObject(window.location.search)
+  return searchStringToObject()
 }
 
 function filterBrowseMusic (e, el) {

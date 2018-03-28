@@ -42,7 +42,7 @@ function completedMarkdownPost(){
   }
 }
 function transformBlogPagination(obj){
-  var q = queryStringToObject(window.location.search)
+  var q = searchStringToObject()
   q.page = parseInt(q.page) || 1
   obj.page = q.page
   return obj

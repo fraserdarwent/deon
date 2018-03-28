@@ -2,7 +2,7 @@ var catalogMusicLimit = 50
 
 function transformCatalogMusic (obj) {
   obj = obj || {}
-  var q    = queryStringToObject(window.location.search)
+  var q    = searchStringToObject()
   q.limit  = catalogMusicLimit
   q.skip   = (q.page-1 || 0) * catalogMusicLimit
   obj.query = objectToQueryString(q)
@@ -10,7 +10,7 @@ function transformCatalogMusic (obj) {
 }
 
 function transformCatalogFilters (obj) {
-  var q = queryStringToObject(window.location.search)
+  var q = searchStringToObject()
   obj.search = q.search
   return obj
 }
@@ -64,7 +64,7 @@ function transformMusicCatalogResults (obj, done){
 }
 
 function getSortableHeaders (sortBy, direction) {
-  var qo = queryStringToObject(window.location.search)
+  var qo = searchStringToObject()
 
   var headers =
   [ { label: 'Track'
@@ -98,7 +98,7 @@ function getSortableHeaders (sortBy, direction) {
   ]
 
   headers = headers.map(function (h) {
-    var qo = queryStringToObject(window.location.search)
+    var qo = searchStringToObject()
     h.active = qo.sortOn == h.field
     h.asc = qo.sortValue == 1
     h.desc = qo.sortValue == -1

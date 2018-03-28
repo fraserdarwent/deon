@@ -913,7 +913,7 @@ function processHomeMerch (opts) {
 function processRosterPage (args) {
   processor(args, {
     start: function (args) {
-      var q = queryStringToObject(window.location.search)
+      var q = searchStringToObject()
       var firstYear = 2011
       var thisYear = (new Date()).getFullYear()
       var arr = []
@@ -966,7 +966,7 @@ function processRosterYear (obj) {
 }
 
 function transformMusic () {
-  var q    = queryStringToObject(window.location.search)
+  var q    = searchStringToObject()
   q.fields = ['title', 'renderedArtists', 'releaseDate', 'preReleaseDate', 'coverUrl', 'catalogId'].join(',')
   objSetPageQuery(q, q.page, {perPage: 24})
   var fuzzy   = commaStringToObject(q.fuzzy)
@@ -1216,7 +1216,7 @@ function completedReleaseTracks (source, obj) {
 function completedMusic (source, obj) {
   if (obj.error) return
   var parts = []
-  var qs = queryStringToObject(window.location.search)
+  var qs = searchStringToObject()
   var filter = qs.filters
   if (qs.filters) {
     //TODO: better pluralization
@@ -1260,7 +1260,7 @@ function completedArtist (source, obj) {
 function completedMusic (source, obj) {
   if (obj.error) return
   var parts = []
-  var qs = queryStringToObject(window.location.search)
+  var qs = searchStringToObject()
   var filter = qs.filters
   if (qs.filters) {
     //TODO: better pluralization
@@ -1407,7 +1407,7 @@ function objSetPageQuery (obj, page, opts) {
 }
 
 function setPagination (obj, perPage) {
-  var q = queryStringToObject(window.location.search)
+  var q = searchStringToObject()
   q.page = parseInt(q.page) || 1
   //TODO: Calculate whether prev or next are required
   //based on current page and the numperpage

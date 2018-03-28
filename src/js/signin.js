@@ -145,7 +145,7 @@ function recoverPassword (e, el) {
 
 function transformPasswordReset (obj) {
   obj = obj || {}
-  var key = queryStringToObject(window.location.search).key
+  var key = searchStringToObject().key
 
   obj.missingKey = !key
   return obj
@@ -156,7 +156,7 @@ function updatePassword (e, el) {
 
   if (!data.password) { return window.alert(strings.passwordMissing) }
   if (data.password != data.confirmPassword) { return window.alert(strings.passwordDoesntMatch) }
-  data.code = queryStringToObject(window.location.search).key
+  data.code = searchStringToObject().key
   requestJSON({
     url: endhost + '/password/reset',
     method: 'POST',
@@ -211,7 +211,7 @@ function validateSignUp (data, errors) {
 
 
 function getRedirectTo () {
-  return queryStringToObject(window.location.search).redirect || "/"
+  return searchStringToObject().redirect || "/"
 }
 
 function getSignInContinueTo () {
@@ -279,7 +279,7 @@ function processSignUpPage (args) {
 }
 
 function mapConfirmSignup () {
-  var obj = queryStringToObject(window.location.search)
+  var obj = searchStringToObject()
 
   if (!Object.keys(obj).length) { return }
   obj.countries = getAccountCountries()

@@ -25,7 +25,7 @@
 </div>
 <header>
     <div class="col-xs-hidden col-md-visible scrub-container">
-        <div class="scrub" action="scrub">
+        <div class="scrub" onclick="scrub(event, this)">
             <div class="progress" role="scrub-progress"></div>
         </div>
     </div>
@@ -42,49 +42,47 @@
         <!-- Desktop Global Navigation -->
         <nav class="mcat-nav col-xs-hidden col-md-visible">
             <ul>
-                <li><a action="closeNav" href="/music" role="goto-music">Music</a></li>
-                <li><a action="closeNav" href="/artists">Artists</a></li>
-                <li><a action="closeNav" href="/events">Events</a></li>
-                <li><a action="closeNav" href="/blog">Blog</a></li>
-                <li><a action="closeNav" href="/cotw">Radio</a></li>
-                <li><a action="closeNav" href="/publishing">Publishing</a></li>
+                <li><a onclick="closeNav()" href="/music" role="goto-music">Music</a></li>
+                <li><a onclick="closeNav()" href="/artists">Artists</a></li>
+                <li><a onclick="closeNav()" href="/events">Events</a></li>
+                <li><a onclick="closeNav()" href="/blog">Blog</a></li>
+                <li><a onclick="closeNav()" href="/cotw">Radio</a></li>
+                <li><a onclick="closeNav()" href="/publishing">Publishing</a></li>
                 <li><a href="http://shop.monstercat.com">Shop</a></li>
-                <li><a action="closeNav" href="/contact">Contact</a></li>
+                <li><a onclick="closeNav()" href="/contact">Contact</a></li>
             </ul>
         </nav>
 
         <!-- Mobile Navigation -->
         <nav class="mcat-mobile-nav col-md-hidden">
-            <button action="toggleNav" role="nav-button" class="faux hamburger-icon" title="Menu">
+            <button onclick="toggleNav(event)" role="nav-button" class="faux hamburger-icon" title="Menu">
               <span class="line line-1"></span>
               <span class="line line-2"></span>
               <span class="line line-3"></span>
             </button>
             <ul role="nav">
-                <li class="global-search global-search--mobile"
-                     trigger-target="searchFormMobile"
-                     data-set="search-form-mobile">
-                    <button class="faux"
-                            action="searchMobile"
-                            trigger="searchFormMobile"
-                            data-set-target="search-form-mobile">
-                        <i class="fa fa-search"></i>
-                    </button>
-                    <input data-set-target="search-form-mobile"
-                           name="term"
-                           type="text"
-                           placeholder="Search"
-                           value=""/>
+                <li class="global-search global-search--mobile">
+                    <form onsubmit="searchMobile(event, this)">
+                        <button class="faux">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        <input data-set-target="search-form-mobile"
+                               name="term"
+                               type="text"
+                               placeholder="Search"
+                               value=""/>
+                    </form>
                 </li>
                 <li id="navigation-mobile">
                 </li>
-                <li><a action="closeNav" href="/music">Music</a></li>
-                <li><a action="closeNav" href="/artists">Artists</a></li>
-                <li><a action="closeNav" href="/events">Events</a></li>
-                <li><a action="closeNav" href="/blog">Blog</a></li>
-                <li><a action="closeNav" href="/podcast">Podcast</a></li>
+                <li><a onclick="closeNav()" href="/music">Music</a></li>
+                <li><a onclick="closeNav()" href="/artists">Artists</a></li>
+                <li><a onclick="closeNav()" href="/events">Events</a></li>
+                <li><a onclick="closeNav()" href="/blog">Blog</a></li>
+                <li><a onclick="closeNav()" href="/news">News</a></li>
+                <li><a onclick="closeNav()" href="/podcast">Podcast</a></li>
                 <li><a href="http://shop.monstercat.com">Shop</a></li>
-                <li><a action="closeNav" href="/contact">Contact</a></li>
+                <li><a onclick="closeNav()" href="/contact">Contact</a></li>
             </ul>
         </nav>
     </div>
@@ -95,20 +93,17 @@
         <div class="col-xs-hidden col-md-visible push-right navigation"
                 id="navigation">
         </div>
-        <div class="col-xs-hidden col-md-visible global-search"
-             trigger-target="searchForm"
-             data-set="search-form">
-            <button class="faux"
-                    action="search"
-                    trigger="searchForm"
-                    data-set-target="search-form">
-                <i class="fa fa-search"></i>
-            </button>
-            <input data-set-target="search-form"
-                   name="term"
-                   type="text"
-                   placeholder="Search"
-                   value=""/>
+        <div class="col-xs-hidden col-md-visible global-search">
+            <form onsubmit="search(event, this)">
+                <button class="faux">
+                    <i class="fa fa-search"></i>
+                </button>
+                <input data-set-target="search-form"
+                       name="term"
+                       type="text"
+                       placeholder="Search"
+                       value=""/>
+            </form>
         </div>
 
         <!-- Player -->
@@ -326,12 +321,12 @@
 <script type="text/template" data-template="navigation">
     {{#data}}
     {{#user}}
-    <a class="silent nav-item" action="closeNav" href="/playlists"><i class="fa fa-bars"></i>Playlists</a>
-    <a class="silent nav-item" action="closeNav" href="/account"><i class="fa fa-gear"></i>Account</a>
-    <a class="silent nav-item" action="closeNav" href="/account/services"><i class="fa fa-credit-card"></i>Services</a>
+    <a class="silent nav-item" onclick="closeNav()" href="/playlists"><i class="fa fa-bars"></i>Playlists</a>
+    <a class="silent nav-item" onclick="closeNav()" href="/account"><i class="fa fa-gear"></i>Account</a>
+    <a class="silent nav-item" onclick="closeNav()" href="/account/services"><i class="fa fa-credit-card"></i>Services</a>
     {{/user}}
     {{^user}}
-    <a class="silent nav-item" action="closeNav" href="/signin?redirect={{currentUrl}}"><i class="fa fa-sign-in"></i>Sign In</a>
+    <a class="silent nav-item" onclick="closeNav()" href="/signin?redirect={{currentUrl}}"><i class="fa fa-sign-in"></i>Sign In</a>
     {{/user}}
     {{/data}}
 </script>

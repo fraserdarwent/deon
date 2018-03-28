@@ -570,7 +570,7 @@ function queryStringToObject (str) {
 }
 
 function searchStringToObject () {
-  return queryStringToObject(window.location.search)
+  return searchStringToObject()
 }
 
 //Loads templates to be used with the {{>partial}} mustache feature
