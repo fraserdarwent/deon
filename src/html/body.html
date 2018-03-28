@@ -94,12 +94,11 @@
                 id="navigation">
         </div>
         <div class="col-xs-hidden col-md-visible global-search">
-            <form onsubmit="search(event, this)">
+            <form onsubmit="search(event, this)" class="d-inline" role="search-global">
                 <button class="faux">
                     <i class="fa fa-search"></i>
                 </button>
-                <input data-set-target="search-form"
-                       name="term"
+                <input name="term"
                        type="text"
                        placeholder="Search"
                        value=""/>

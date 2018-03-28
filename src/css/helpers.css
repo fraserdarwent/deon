@@ -304,6 +304,10 @@ td.push-right > * {
   display: block;
 }
 
+.d-inline {
+  display: inline;
+}
+
 /* Loading */
 .loading {
   display: flex;

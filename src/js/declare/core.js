@@ -509,7 +509,7 @@ function processor (args, options) {
   }
 
   if (args.state == 'start') {
-    if (opts.hasLoadingView) {
+    if (opts.hasLoading) {
       render(args.template, args.node, {loading: true})
       return
     }

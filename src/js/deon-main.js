@@ -1126,7 +1126,10 @@ function transformTracks (results, done) {
     track.index = index
     return track
   })
-  done(null, tracks)
+  if (typeof done == 'function') {
+    done(null, tracks)
+  }
+  return tracks
 }
 
 function appendSongMetaData (tracks) {
@@ -1411,8 +1414,8 @@ function setPagination (obj, perPage) {
   q.page = parseInt(q.page) || 1
   //TODO: Calculate whether prev or next are required
   //based on current page and the numperpage
-  var nq = cloneObject(q)
-  var pq  = cloneObject(q)
+  var nq = Object.assign({}, q)
+  var pq  = Object.assign({}, q)
   nq.page = nq.page + 1
   pq.page = pq.page - 1
   if (q.page * perPage < obj.total) {

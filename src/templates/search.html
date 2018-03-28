@@ -40,29 +40,20 @@
         {{/data}}
     </div>
     {{#data}}
-    {{>searchPagination}}
+        {{>search-pagination}}
     {{/data}}
 </script>
 
 <script type="text/template"
         data-route="^search\/songs(\?.*)?"
-        transform="transformSearchTracksPage"
-        completed="completedSearchTracks">
+        data-process="processSearchTracksPage"
+        data-template="search-tracks-page"
+        >
     <div class="container">
         <h1>Songs</h1>
-        {{#loading}}
-        <div class="panel panel--mobile">
-            <i class="fa fa-fw fa-spin fa-refresh"></i>
-        </div>
-        {{/loading}}
-        {{#error}}
-        <div class="panel">
-            <p>{{message}}</p>
-        </div>
-        {{/error}}
         {{#data}}
         <div data-source="$endpoint/catalog/browse?{{query}}"
-             template="search-tracks">
+             data-target-template="search-tracks">
         </div>
         {{/data}}
     </div>
@@ -70,23 +61,24 @@
 
 <script type="text/template"
         data-template="search-tracks"
-        transform="transformSearchTrackResults">
+        data-process="processSearchTrackResults"
+        >
     <div class="panel panel--mobile">
         {{#loading}}
-        <i class="fa fa-fw fa-spin fa-refresh"></i>
+            {{>loading-view}}
         {{/loading}}
         {{#error}}
-        <p>{{message}}</p>
+            {{>error}}
         {{/error}}
         {{#data}}
-        {{>searchTracksTable}}
-        {{^total}}
-        <p>No songs found.</p>
-        {{/total}}
+            {{>search-tracks-table}}
+            {{#unless results.length}}
+                <p>No songs found.</p>
+            {{/unless}}
         {{/data}}
     </div>
     {{#data}}
-    {{>searchPagination}}
+        {{>search-pagination}}
     {{/data}}
 </script>
 
@@ -132,7 +124,7 @@
         </div>
         {{#data}}
         {{#total}}
-        {{>searchPagination}}
+        {{>search-pagination}}
         {{/total}}
         {{/data}}
     </div>
@@ -141,8 +133,11 @@
 <script type="text/template"
         data-route="^search(\?.*)?"
         data-title="Search All"
+        data-template="search-page"
+        data-process="processSearchAllPage"
         completed="completedSearchAll"
-        transform="transformSearch">
+        transform="transformSearch"
+        >
     <div class="container search">
         <h1>Search</h1>
         {{#data}}
@@ -150,19 +145,19 @@
         <div class="panel panel--mobile">
             <h2>Songs</h2>
             <div data-source="$endpoint/catalog/browse?{{tracks.query}}"
-                 template="search-snippet-tracks">
+                 data-target-template="search-snippet-tracks">
             </div>
         </div>
         <div class="panel">
             <h2>Releases</h2>
             <div data-source="$endpoint/catalog/release?{{releases.query}}"
-                 template="search-snippet-releases">
+                 data-target-template="search-snippet-releases">
             </div>
         </div>
         <div class="panel">
             <h2>Artists</h2>
             <div data-source="$endpoint/catalog/artist?{{artists.query}}"
-                 template="search-snippet-artists">
+                 data-target-template="search-snippet-artists">
             </div>
         </div>
         {{/searches}}
@@ -218,28 +213,22 @@
 
 <script type="text/template"
         data-template="search-snippet-tracks"
-        transform="transformSearchSnippetTracks">
-    {{#loading}}
-    {{>loading-view}}
-    {{/loading}}
-    {{#error}}
-    <p>{{message}}</p>
-    {{/error}}
+        data-process="processSearchSnippetTracks">
     {{#data}}
-    {{>searchTracksTable}}
-    {{^total}}
-    <p>No songs found.</p>
-    {{/total}}
-    {{#more}}
-    <br/>
-    <a href="/search/songs?{{query}}">{{message}}</a>
-    {{/more}}
+        {{>search-tracks-table}}
+        {{#unless total}}
+            <p>No songs found.</p>
+        {{/unless}}
+        {{#more}}
+        <br/>
+        <a href="/search/songs?{{query}}">{{message}}</a>
+        {{/more}}
     {{/data}}
 </script>
 
 <script type="text/template"
-        data-partial data-template="searchTracksTable">
-    {{#results.length}}
+        data-partial data-template="search-tracks-table">
+    {{#if results.length}}
     <table>
         <thead>
             <tr>
@@ -253,20 +242,20 @@
             </tr>
         </thead>
         <tbody>
-            {{#results}}
-            <tr dblc-action="playSongDblC">
-                <td class="shrink">
-                  {{>play-song}}
-                </td>
-                {{>trackCells}}
-                <td class="push-right">
-                    {{>track-buttons}}
-                </td>
-            </tr>
-            {{/results}}
+            {{#each results}}
+                <tr dblc-action="playSongDblC">
+                    <td class="shrink">
+                      {{>play-song}}
+                    </td>
+                    {{>track-cells}}
+                    <td class="push-right">
+                        {{>track-buttons}}
+                    </td>
+                </tr>
+            {{/each}}
         </tbody>
     </table>
-    {{/results.length}}
+    {{/if}}
 </script>
 
 <script type="text/template"
@@ -314,18 +303,20 @@
 </script>
 
 <script type="text/template"
-        data-partial data-template="searchPagination">
-    {{#total}}
+        data-partial
+        data-template="search-pagination"
+        >
+    {{#if total}}
     <div class="container pagination pad-vertical text center">
-        {{#previous}}
+        {{#if previous}}
         <a href="?{{previous}}">Previous</a>
-        {{/previous}}
+        {{/if}}
         <label>{{showingFrom}} - {{showingTo}} of {{total}}</label>
-        {{#next}}
+        {{#if next}}
         <a href="?{{next}}">Next</a>
-        {{/next}}
+        {{/if}}
     </div>
-    {{/total}}
+    {{/if}}
 </script>
 
 <!-- END SEARCH -->

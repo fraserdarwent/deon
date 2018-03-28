@@ -116,7 +116,7 @@ function processServicesPage (args, done) {
 
 function processWhitelists (args) {
   processor(args, {
-    hasLoadingView: true,
+    hasLoading: true,
     transform: function (obj) {
       const result = obj.result
       const scope = {}
