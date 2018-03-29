@@ -43,7 +43,6 @@ preLoadImage('/img/artwork.jpg')
 preLoadImage('/img/artwork-merch.jpg')
 preLoadImage('/img/artist.jpg')
 
-
 document.addEventListener("DOMContentLoaded", function (e) {
   registerPartials()
   initSocials()
@@ -53,6 +52,7 @@ document.addEventListener("DOMContentLoaded", function (e) {
     trackUser()
     renderHeader()
     renderHeaderMobile()
+    startState()
     document.addEventListener("click", interceptClick)
     //document.addEventListener("dblclick", interceptDoubleClick)
     //document.addEventListener("keypress", interceptKeyPress)
@@ -990,6 +990,7 @@ function transformMusicReleases (obj) {
 }
 
 function transformReleases (obj) {
+  console.log('obj', obj)
   obj.results     = obj.results.sort(sortRelease).map(mapRelease)
   obj.showingFrom = (obj.skip || 0) + 1
   obj.showingTo   = obj.skip + obj.results.length

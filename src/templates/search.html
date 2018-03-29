@@ -1,22 +1,13 @@
 <script type="text/template"
         data-route="^search\/artists(\?.*)?"
-        transform="transformSearchArtistsPage"
-        completed="completedSearchArtists">
+        data-process="processSearchArtistsPage"
+        data-template="search-artists-page"
+        >
     <div class="container">
         <h1>Artists</h1>
-        {{#loading}}
-        <div class="panel">
-            <i class="fa fa-fw fa-spin fa-refresh"></i>
-        </div>
-        {{/loading}}
-        {{#error}}
-        <div class="panel">
-            <p>{{message}}</p>
-        </div>
-        {{/error}}
         {{#data}}
         <div data-source="$endpoint/catalog/artist?{{query}}"
-             template="search-artists">
+             data-target-template="search-artists">
         </div>
         {{/data}}
     </div>
@@ -24,19 +15,20 @@
 
 <script type="text/template"
         data-template="search-artists"
-        transform="transformSearchArtistsResults">
+        data-process="processSearchArtistsResults"
+        >
     <div class="panel">
         {{#loading}}
-        <i class="fa fa-fw fa-spin fa-refresh"></i>
+            {{>loading-view}}
         {{/loading}}
         {{#error}}
-        <p>{{message}}</p>
+            {{>error}}
         {{/error}}
         {{#data}}
-        {{>searchArtistsList}}
-        {{^total}}
-        <p>No artists found.</p>
-        {{/total}}
+            {{>search-artists-list}}
+            {{#unless total}}
+                <p>No artists found.</p>
+            {{/unless}}
         {{/data}}
     </div>
     {{#data}}
@@ -52,9 +44,9 @@
     <div class="container">
         <h1>Songs</h1>
         {{#data}}
-        <div data-source="$endpoint/catalog/browse?{{query}}"
-             data-target-template="search-tracks">
-        </div>
+            <div data-source="$endpoint/catalog/browse?{{query}}"
+                 data-target-template="search-tracks">
+            </div>
         {{/data}}
     </div>
 </script>
@@ -72,7 +64,7 @@
         {{/error}}
         {{#data}}
             {{>search-tracks-table}}
-            {{#unless results.length}}
+            {{#unless total}}
                 <p>No songs found.</p>
             {{/unless}}
         {{/data}}
@@ -84,48 +76,41 @@
 
 <script type="text/template"
         data-route="^search\/releases(\?.*)?"
-        transform="transformSearchReleasesPage"
-        completed="completedSearchReleases">
+        data-template="search-releases-page"
+        data-process="processSearchReleasesPage"
+        >
     <div class="container">
         <h1>Releases</h1>
-        {{#loading}}
-        <div class="panel">
-            <i class="fa fa-fw fa-spin fa-refresh"></i>
-        </div>
-        {{/loading}}
-        {{#error}}
-        <div class="panel">
-            <p>{{message}}</p>
-        </div>
-        {{/error}}
         {{#data}}
-        <div data-source="$endpoint/catalog/release?{{query}}"
-             template="search-releases"></div>
+            <div data-source="$endpoint/catalog/release?{{query}}"
+                 data-target-template="search-releases">
+            </div>
         {{/data}}
     </div>
 </script>
 
 <script type="text/template"
         data-template="search-releases"
-        transform="transformSearchReleaseResults">
+        data-process="processSearchReleaseResults"
+        >
         <div class="panel">
             {{#loading}}
-            <i class="fa fa-fw fa-spin fa-refresh"></i>
+                {{>loading-view}}
             {{/loading}}
             {{#error}}
-            <p>{{message}}</p>
+                {{>error}}
             {{/error}}
             {{#data}}
-            {{>searchReleasesList}}
-            {{^total}}
-            <p>No releases found.</p>
-            {{/total}}
+                {{>search-releases-list}}
+                {{^total}}
+                    <p>No releases found.</p>
+                {{/total}}
             {{/data}}
         </div>
         {{#data}}
-        {{#total}}
-        {{>search-pagination}}
-        {{/total}}
+            {{#if total}}
+                {{>search-pagination}}
+            {{/if}}
         {{/data}}
     </div>
 </script>
@@ -172,42 +157,34 @@
 
 <script type="text/template"
         data-template="search-snippet-releases"
-        transform="transformSearchSnippetReleases">
-    {{#loading}}
-    {{>loading-view}}
-    {{/loading}}
-    {{#error}}
-    <p>{{message}}</p>
-    {{/error}}
+        data-process="processSearchSnippetReleases">
     {{#data}}
-    {{>searchReleasesList}}
-    {{^total}}
-    <p>No releases found.</p>
-    {{/total}}
-    {{#more}}
-    <a href="/search/releases?{{query}}">{{message}}</a>
-    {{/more}}
+        {{>search-releases-list}}
+        {{#unless total}}
+            <p>No releases found.</p>
+        {{/unless}}
+        {{#more}}
+            <a href="/search/releases?{{query}}">{{message}}</a>
+        {{/more}}
     {{/data}}
 </script>
 
 <script type="text/template"
         data-template="search-snippet-artists"
-        transform="transformSearchSnippetArtists">
+        data-process="processSearchSnippetArtists"
+        >
     {{#loading}}
-    {{>loading-view}}
+        {{>loading-view}}
     {{/loading}}
-    {{#error}}
-    <p>{{message}}</p>
-    {{/error}}
     {{#data}}
-    {{>searchArtistsList}}
-    {{^total}}
-    <p>No artists found.</p>
-    {{/total}}
-    {{#more}}
-    <br/>
-    <a href="/search/artists?{{query}}">{{message}}</a>
-    {{/more}}
+        {{>search-artists-list}}
+        {{#unless total}}
+            <p>No artists were found.</p>
+        {{/unless}}
+        {{#more}}
+            <br/>
+            <a href="/search/artists?{{query}}">{{message}}</a>
+        {{/more}}
     {{/data}}
 </script>
 
@@ -227,7 +204,8 @@
 </script>
 
 <script type="text/template"
-        data-partial data-template="search-tracks-table">
+        data-partial
+        data-template="search-tracks-table">
     {{#if results.length}}
     <table>
         <thead>
@@ -259,9 +237,10 @@
 </script>
 
 <script type="text/template"
-        data-partial data-template="searchReleasesList">
+        data-partial
+        data-template="search-releases-list">
     <ul class="art-list art-list--full-width">
-        {{#results}}
+        {{#each results}}
         <li class="{{#inEarlyAccess}}in-early-access{{/inEarlyAccess}}">
             <a class="silent" href="/release/{{catalogId}}" title="{{title}} / {{artists}}">
                 <div class="image-wrapper">
@@ -273,32 +252,33 @@
                 <label class="artist one-line-ellipsis">{{artists}}</label>
             </a>
         </li>
-        {{/results}}
+        {{/each}}
     </ul>
 </script>
 
 
 <script type="text/template"
-        data-partial data-template="searchArtistsList">
+        data-partial
+        data-template="search-artists-list"
+        >
     <ul class="art-list art-list--full-width">
-        {{#results}}
+        {{#each results}}
         <li>
             <a class="silent" href="/artist/{{vanityUri}}" title="{{name}}">
-                {{#imageSmall}}
-                <div class="image-wrapper">
-                    <img src="/img/artist.jpg" class="preload" />
-                    <img src="{{imageSmall}}"/>
-                </div>
-                {{/imageSmall}}
-                {{^imageSmall}}
-                <div class="no-art">
-                    <label>No image.</label>
-                </div>
-                {{/imageSmall}}
+                {{#if imageSmall}}
+                    <div class="image-wrapper">
+                        <img src="/img/artist.jpg" class="preload" />
+                        <img src="{{imageSmall}}"/>
+                    </div>
+                {{else}}
+                    <div class="no-art">
+                        <label>No image.</label>
+                    </div>
+                {{/if}}
                 <label class="title one-line-ellipsis">{{name}}</label>
             </a>
         </li>
-        {{/results}}
+        {{/each}}
     </ul>
 </script>
 

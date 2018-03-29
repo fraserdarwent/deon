@@ -1,56 +1,19 @@
-var searchSnippetLimit = 8
+const searchSnippetLimit = 8
 
-function searchMobile(e, el, url) {
-  closeNav()
-  search(e, el, url)
-}
-//TODO: Look at all of this duplicate code. Be the change you want to see in the code.
-function search (e, el, url) {
-  var data = getDataSet(el)
-  var types = getSearchTypes()
-  var searchType = getSearchType('all')
-  var q = searchStringToObject()
-
-  if (!data.term && data.term !== 0) { return }
-  data.term = data.term.toString()
-  var searchTerm = data.term
-
-  for (var i in types) {
-    if (types[i].searchPrefix) {
-      var prefixes = [types[i].searchPrefix].concat(types[i].searchPrefixAliases)
-      var found  = false
-
-      for (var k = 0; k < prefixes.length; k++) {
-        var prefix = prefixes[k]
-
-        if (data.term.substr(0, prefix.length).toLowerCase() == prefix) {
-          searchType = types[i]
-          searchTerm = data.term.substr(prefix.length).trim()
-          found = true
-          break
-        }
-      }
-      if (found) {
-        break
-      }
-    }
-  }
-  var url = searchType.url
-
-  q.term = searchTerm
-  delete q.page
-  go(url + '?' + objectToQueryString(q))
-}
-
-function searchAll (e, el) {
-  search(e, el, '/search')
+/*===============================
+=            HELPERS            =
+===============================*/
+function getGlobalSearchInput() {
+  return document.querySelector('[role="search-global"] input[name="term"]')
 }
 
 function searchToFuzzy (search, fields) {
-  if (!search) { return }
-  var arr = []
+  if (!search) {
+    return ""
+  }
+  const arr = []
 
-  fields.forEach(function (field) {
+  fields.forEach((field) => {
     arr.push(field, search)
   })
   return arr.join(',')
@@ -110,6 +73,58 @@ function getSearchType (type) {
   return getSearchTypes()[type] || false
 }
 
+/*===============================
+=            ACTIONS            =
+===============================*/
+function searchMobile (e, el, url) {
+  closeNav()
+  search(e, el, url)
+}
+
+function search (e, el, url) {
+  var data = getDataSet(el)
+  var types = getSearchTypes()
+  var searchType = getSearchType('all')
+  var q = searchStringToObject()
+
+  if (!data.term && data.term !== 0) { return }
+  data.term = data.term.toString()
+  var searchTerm = data.term
+
+  for (var i in types) {
+    if (types[i].searchPrefix) {
+      var prefixes = [types[i].searchPrefix].concat(types[i].searchPrefixAliases)
+      var found  = false
+
+      for (var k = 0; k < prefixes.length; k++) {
+        var prefix = prefixes[k]
+
+        if (data.term.substr(0, prefix.length).toLowerCase() == prefix) {
+          searchType = types[i]
+          searchTerm = data.term.substr(prefix.length).trim()
+          found = true
+          break
+        }
+      }
+      if (found) {
+        break
+      }
+    }
+  }
+  const goUrl = searchType.url
+
+  q.term = searchTerm
+  delete q.page
+  go(goUrl + '?' + objectToQueryString(q))
+}
+
+function searchAll (e, el) {
+  search(e, el, '/search')
+}
+
+/*=================================
+=            PROCESSOR            =
+=================================*/
 function processSearchAllPage (args) {
   var q = searchStringToObject()
 
@@ -154,6 +169,127 @@ function processSearchAllPage (args) {
   completedSearchAll()
 }
 
+
+function processSearchPage (args, type) {
+  const data = transformSearchPage(args.result, type)
+
+  renderContent(args.template, {data: data})
+}
+
+function processSearchSnippetTracks (args) {
+  processor(args, {
+    transform: function (args) {
+      console.log('args', args)
+      const result = args.result
+      const data = Object.assign({}, result)
+      data.results = transformTracks(result.results)
+      data.more = transformSearchSnippet(result, 'song')
+      if (data.more) {
+        data.more.message = 'View All Songs Results'
+      }
+      return data
+    }
+  })
+}
+
+function processSearchSnippetReleases (args) {
+  processor(args, {
+    transform: function (args) {
+      const result = args.result
+      console.log('result', result)
+      const data = Object.assign({}, transformReleases(result))
+
+      data.more = transformSearchSnippet(result, 'album')
+      if (data.more) {
+        data.more.message = 'View All Album Results'
+      }
+      return data
+    }
+  })
+}
+
+function processSearchSnippetArtists (args) {
+  processor(args, {
+    transform: function (args) {
+      const result = args.result
+      const data = Object.assign({}, result)
+
+      data.results = result.results.map(transformWebsiteDetails)
+      data.more = transformSearchSnippet(result, 'artist')
+
+      if (data.more) {
+        data.more.message = 'View All Artists Results'
+      }
+      return data
+    }
+  })
+}
+
+function processSearchArtistsResults (args) {
+  processor(args, {
+    hasLoading: true,
+    transform: function (args) {
+      const type = getSearchType('artists')
+      const scope = Object.assign({}, args.result)
+
+      setPagination(scope, type.perPage)
+      scope.results = args.result.results.map(transformWebsiteDetails)
+      return scope
+    },
+  })
+}
+
+function processSearchTrackResults (args) {
+  processor(args, {
+    hasLoading: true,
+    transform: function (args) {
+      const result = args.result
+      const data = Object.assign({}, result)
+      const type = getSearchType('tracks')
+
+      setPagination(data, type.perPage)
+      data.results = transformTracks(result.results)
+      return data
+    }
+  })
+}
+
+
+function processSearchReleasesPage (obj) {
+  processSearchPage(obj, 'releases')
+  completedSearchReleases()
+}
+
+function processSearchTracksPage (obj) {
+  processSearchPage(obj, 'tracks')
+  completedSearchTracks()
+}
+
+function processSearchArtistsPage (obj) {
+  processSearchPage(obj, 'artists')
+  completedSearchArtists()
+}
+
+function processSearchReleaseResults (args) {
+  processor(args, {
+    hasLoading: true,
+    transform: function (args) {
+      const result = args.result
+      const data = Object.assign({}, result)
+      console.log('data', data);
+      const type = getSearchType('releases')
+
+      setPagination(data, type.perPage)
+      data.results = result.results.map(mapRelease)
+      return data
+    }
+  })
+}
+
+/*====================================
+=            TRANSFORMERS            =
+====================================*/
+
 /**
  * Generic transform for any type of search page
  *
@@ -161,11 +297,11 @@ function processSearchAllPage (args) {
  * @param {String} type Type of search, eg: releases, artists
  * @returns {Object} scope data
  */
-function transformSearchPage (obj, type) {
-  obj = obj || {}
-  var query = {}
-  var q = searchStringToObject()
-  var searchType = getSearchType(type)
+function transformSearchPage (object, type) {
+  const obj = object || {}
+  const query = {}
+  const q = searchStringToObject()
+  const searchType = getSearchType(type)
 
   objSetPageQuery(query, q.page, {perPage: searchType.perPage})
   if (q.term && searchType.fuzzyFields) {
@@ -181,7 +317,6 @@ function transformSearchPage (obj, type) {
 }
 
 function transformSearchSnippet (obj, type) {
-    console.log('obj', obj);
   var numMore = Math.max(obj.total - searchSnippetLimit, 0)
 
   if (numMore) {
@@ -196,85 +331,8 @@ function transformSearchSnippet (obj, type) {
   return obj
 }
 
-function transformSearchSnippetReleases (obj) {
-  return transformSearchSnippet(transformMusicReleases(obj), 'Release')
-}
-
 function transformSearchSnippetArtists (obj) {
   return transformSearchSnippet(transformSearchArtistsResults(obj), 'Artist')
-}
-
-function processSearchSnippetTracks (args) {
-  processor(args, {
-    transform: function (args) {
-      const result = args.result
-      let data = {}
-
-      data.results = transformTracks(result.results)
-      data.more = transformSearchSnippet(result, 'song')
-      if (data.more) {
-        data.more.message = 'View All Songs Results'
-      }
-      return data
-    }
-  })
-}
-
-function processsSearchPage (args, type) {
-  const data = transformSearchPage(args.result, type)
-
-  renderContent(args.template, {data: data})
-
-}
-
-function transformSearchReleasesPage (obj) {
-  return transformSearchPage(obj, 'releases')
-}
-
-function processSearchTracksPage (obj) {
-  return processsSearchPage(obj, 'tracks')
-}
-
-function transformSearchArtistsPage (obj) {
-  return transformSearchPage(obj, 'artists')
-}
-
-function transformSearchReleaseResults (obj) {
-  var type = getSearchType('releases')
-
-  setPagination(obj, type.perPage)
-  return transformReleases(obj)
-}
-
-function processSearchTrackResults (args) {
-  processor(args, {
-    hasLoading: true,
-    transform: function (args) {
-      const result = args.result
-      const data = Object.assign({}, result)
-      const type = getSearchType('tracks')
-
-      setPagination(data, type.perPage)
-      data.tracks = transformTracks(result.results)
-      console.log('data.tracks', data.tracks)
-      console.log('data', data)
-      return data
-    },
-    completed: completedSearchTracks
-  })
-
-}
-
-function transformSearchArtistsResults (obj, done) {
-  var type = getSearchType('artists')
-
-  setPagination(obj, type.perPage)
-  obj.results = obj.results.map(transformWebsiteDetails)
-  return obj
-}
-
-function getGlobalSearchInput() {
-  return document.querySelector('[role="search-global"] input[name="term"]')
 }
 
 function completedSearchPage (type) {
