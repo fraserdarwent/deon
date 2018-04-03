@@ -1,26 +1,17 @@
 <script type="text/template"
         data-route="^music"
         data-title="Music"
-        completed="completedMusic"
-        transform="transformMusic">
-    {{#data}}
+        data-template="releases-page"
+        data-process="processReleasesPage"
+        >
     <div data-source="$endpoint/catalog/release?{{query}}"
-         template="music-releases">
+         data-target-template="music-releases">
     </div>
-    {{/data}}
 </script>
 
 <script type="text/template"
         data-template="music-releases"
-        transform="transformMusicReleases">
-    {{#loading}}
-    {{>loading-view}}
-    {{/loading}}
-    {{#error}}
-    <div class="container panel">
-        <p>{{message}}</p>
-    </div>
-    {{/error}}
+        data-process="processMusicReleases">
     {{#data}}
     <div class="container">
         <header class="flex top-title">
@@ -40,24 +31,24 @@
         </header>
         <ul class="panel art-list">
             {{#results}}
-            {{>release-list-item}}
+                {{>release-list-item}}
             {{/results}}
         </ul>
     </div>
-    {{^total}}
-    <div class="container text center panel">No results found.</div>
-    {{/total}}
-    {{#total}}
+    {{#unless total}}
+        <div class="container text center panel">No results found.</div>
+    {{/unless}}
+    {{#if total}}
       <div class="container pagination pad-vertical text center">
-          {{#previous}}
+          {{#if previous}}
             <a href="?{{previous}}">Previous</a>
-          {{/previous}}
+          {{/if}}
           <label>{{showingFrom}} - {{showingTo}} of {{total}}</label>
-          {{#next}}
+          {{#if next}}
             <a href="?{{next}}">Next</a>
-          {{/next}}
+          {{/if}}
       </div>
-    {{/total}}
+    {{/if}}
     {{/data}}
 </script>
 

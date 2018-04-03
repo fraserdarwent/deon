@@ -58,6 +58,7 @@ function processHeaderEvent (args) {
     },
     transform: function (args) {
       const header = transformEvent(args.result.results[0])
+      console.log('header', header);
 
       return {
         event: header

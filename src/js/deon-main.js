@@ -932,9 +932,7 @@ function processRosterPage (args) {
         selectedYear: year
       }
 
-      console.log('scope', scope)
       renderContent(args.node.dataset.template, scope)
-      console.log('args.node.dataset.template', args.node.dataset.template);
     }
   })
 }
@@ -962,35 +960,46 @@ function processRosterYear (obj) {
 
     }
   })
-
 }
 
-function transformMusic () {
-  var q    = searchStringToObject()
-  q.fields = ['title', 'renderedArtists', 'releaseDate', 'preReleaseDate', 'coverUrl', 'catalogId'].join(',')
-  objSetPageQuery(q, q.page, {perPage: 24})
-  var fuzzy   = commaStringToObject(q.fuzzy)
-  var filters = commaStringToObject(q.filters)
-  var type    = filters.type || ""
-  var types = cloneObject(releaseTypesList)
+function processReleasesPage (args) {
+  pageProcessor(args, {
+    start: function (args) {
+      const q = searchStringToObject()
 
-  types.forEach(function (item) {
-    item.selected = type == item.value
+      q.fields = ['title', 'renderedArtists', 'releaseDate', 'preReleaseDate', 'coverUrl', 'catalogId'].join(',')
+      objSetPageQuery(q, q.page, {perPage: 24})
+      var fuzzy = commaStringToObject(q.fuzzy)
+      var filters = commaStringToObject(q.filters)
+      var type = filters.type || ""
+      var types = releaseTypesList
+
+      types.forEach(function (item) {
+        item.selected = type == item.value
+      })
+      renderContent(args.template, {
+        search: fuzzy.title || "",
+        types:  types,
+        query:  objectToQueryString(q)
+      })
+      completedReleasesPage()
+    },
   })
-  return {
-    search: fuzzy.title || "",
-    types:  types,
-    query:  objectToQueryString(q)
-  }
 }
 
-function transformMusicReleases (obj) {
-  setPagination(obj, 24)
-  return transformReleases(obj)
+
+function processMusicReleases (args) {
+  processor(args, {
+    transform: function (args) {
+      const data = args.result
+
+      setPagination(data, 24)
+      return transformReleases(data)
+    }
+  })
 }
 
 function transformReleases (obj) {
-  console.log('obj', obj)
   obj.results     = obj.results.sort(sortRelease).map(mapRelease)
   obj.showingFrom = (obj.skip || 0) + 1
   obj.showingTo   = obj.skip + obj.results.length
@@ -1005,9 +1014,6 @@ function isVariousArtistsRelease(obj) {
 function processUserReleases (args) {
   processor(args, {
     start: function () {
-      console.log('start', args)
-      console.log('args.template', args.template)
-      console.log('args.node', args.node)
       render(args.template, args.node, {
         loading: true
       })
@@ -1015,7 +1021,6 @@ function processUserReleases (args) {
     success: function (args) {
       var scope = transformUserReleases(args.result)
 
-      console.log('scope', scope)
       scope.loading = false
       render(args.template, args.node, scope)
     },
@@ -1217,8 +1222,7 @@ function completedReleaseTracks (source, obj) {
   }
 }
 
-function completedMusic (source, obj) {
-  if (obj.error) return
+function completedReleasesPage (source, obj) {
   var parts = []
   var qs = searchStringToObject()
   var filter = qs.filters
