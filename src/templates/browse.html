@@ -83,7 +83,7 @@
 
 <script type="text/template" data-template="browse-filter-item">
     <li>
-        <input type="hidden" name="{{type}}s" value="{{value}}"/>
+        <input type="hidden" name="{{type}}s[{{index}}]" value="{{value}}"/>
         <button action="removeBrowseFilter">{{value}} <i class="fa fa-close"></i></button>
     </li>
 </script>
@@ -142,7 +142,7 @@
         </li>
         {{/each}}
         {{#unless total}}
-        <li class="error"><p>No results found.</li>
+        <li class=""><p>No results found.</li>
         {{/unless}}
     {{/data}}
 </script>
