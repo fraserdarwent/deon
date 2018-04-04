@@ -150,17 +150,19 @@ function getBrowseMoreButton () {
 
 function completedMusicBrowseResults (args) {
   const obj = args.result
+
   player.set(buildTracks())
-  var el = getBrowseMoreButton()
+
+  const el = getBrowseMoreButton()
+
   if (!el) return
-  var data = obj.data
-  var method = data && data.results && data.skip + data.results.length >= data.total ? "add" : "remove"
+  const data = obj.data
   el.disabled = false
-  el.classList[method]('hide')
+  el.classList.toggle('hide', !(data && data.results && data.skip + data.results.length >= data.total))
   mergeBrowseResults()
   startCountdownTicks()
   //Rebuild the indexes so that the index attribute matches their actual position on the page
-  document.querySelectorAll('[play-link]').forEach(function (el, index) {
+  document.querySelectorAll('[play-link]').forEach((el, index) => {
     el.setAttribute('index', index)
   })
 
@@ -207,7 +209,7 @@ function addBrowseFilter (e, el) {
 }
 
 function removeBrowseFilter (e, el) {
-  var li = el.parentElement
+  const li = el.parentElement
   li.parentElement.removeChild(li)
 }
 

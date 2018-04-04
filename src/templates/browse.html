@@ -28,7 +28,7 @@
             <div class="col-xs-12 col-sm-12 col-md-2"></div>
             <div class="col-xs-12 col-sm-12 col-md-10">
                 <div class="button-group text center">
-                    <button onclick="browseMore(event, this)" role="browse-more" class="hide" disabled>Show More</button>
+                    <button onclick="browseMore(event, this)" class="hide" disabled>Show More</button>
                 </div>
             </div>
         </div>
@@ -84,7 +84,7 @@
 <script type="text/template" data-template="browse-filter-item">
     <li>
         <input type="hidden" name="{{type}}s[{{index}}]" value="{{value}}"/>
-        <button action="removeBrowseFilter">{{value}} <i class="fa fa-close"></i></button>
+        <button type="button" onclick="removeBrowseFilter(event, this)">{{value}} <i class="fa fa-close"></i></button>
     </li>
 </script>
 
