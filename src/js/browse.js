@@ -1,29 +1,58 @@
-var browseMusicLimit = 25
-var browseUri = '/browse' // TODO 'music'
+const browseMusicLimit = 25
+const browseUri = '/browse' // TODO 'music'
+const browseMusicFilters = [
+  'tags',
+  'genres',
+  'types'
+]
 
-function transformBrowseMusic (obj) {
-  obj = obj || {}
-  var q    = searchStringToObject()
-  q.limit  = (q.pages || 0) * browseMusicLimit
-  q.skip   = 0
-  obj.query = objectToQueryString(q)
-  return obj
+function processBrowseMusicPage (args) {
+  let q = searchStringToObject()
+
+  q.limit = (q.pages || 0) * browseMusicLimit
+  q.skip = 0
+  const scope =  {
+    query: objectToQueryString(q)
+  }
+
+  renderContent(args.template, scope)
+
+  q = getBrowseMusicQuery()
+  q.limit = browseMusicLimit * (parseInt(q.pages) || 1)
+  q.skip = 0
+  delete q.pages
+  openBrowsePage(q)
 }
 
 function mapFilterString (str) {
   return str.substr(0, str.lastIndexOf('s'))
 }
 
-function completedBrowseFilters () {
-  var q = searchStringToObject()
-  filterBrowseMusic.filters.forEach(function (filter) {
-    var cel = document.querySelector('[role="filters-list-' + filter + '"]')
-    if (!cel) return
-    var values = (q[filter] || '').split(',').map(mapStringTrim).filter(filterNil)
-    values.forEach(function (value) {
-      var el = createFilterItem(mapFilterString(filter), value)
-      cel.appendChild(el)
-    })
+function processBrowseFilters (args) {
+  processor(args, {
+    success: function (args) {
+      const q = searchStringToObject()
+
+      render(args.template, args.node, {data: args.result})
+
+      browseMusicFilters.forEach((filter) => {
+        const cel = document.querySelector('[role="filters-list-' + filter + '"]')
+
+        if (!cel) {
+          return
+        }
+        const values = (q[filter] || '')
+          .split(',')
+          .map(mapStringTrim)
+          .filter(filterNil)
+
+        values.forEach((value) => {
+          const el = createFilterItem(mapFilterString(filter), value)
+
+          cel.appendChild(el)
+        })
+      })
+    }
   })
 }
 
@@ -37,70 +66,79 @@ function createFilterItem (type, value) {
   return div.firstElementChild
 }
 
-function completedBrowseMusic () {
-  var q = getBrowseMusicQuery()
-  q.limit = browseMusicLimit * (parseInt(q.pages) || 1)
-  q.skip = 0
-  delete q.pages
-  openBrowsePage(q)
-}
-
 function openBrowsePage (q) {
   var cel = document.querySelector('[role="browse-pages"]')
+  console.log('cel', cel);
   if (!cel) return
-  var tel = getTemplateEl('browse-page')
   var div = document.createElement('div')
-  render(div, tel.textContent, {
+  render('browse-page', div, {
     source: endpoint + '/catalog/browse/?' + objectToQueryString(q)
   })
   var ul = div.firstElementChild
   cel.appendChild(ul)
-  loadSubSources(ul)
+  loadNodeSources(ul)
 }
 
-function transformMusicBrowseResults (obj, done) {
-  var tracks = obj.results
-  var playIndexOffset = obj.skip || 0
+function processMusicBrowseResults (args) {
+  processor(args, {
+    hasLoading: true,
+    hasError: true,
+    transform: function (args) {
+      const result = args.result
+      const tracks = result.results
+      let playIndexOffset = result.skip || 0
+      const scope = Object.assign({}, result)
 
-  //Here we're taking all the tracks and putting them under a release object
-  var rmap = {}
-  tracks.forEach(function (track, index, arr) {
-    var release = track.release
-    if(release) {
-      release.inEarlyAccess = track.inEarlyAccess
-      if (!rmap[release._id]) {
-        rmap[release._id] = track.release
-      }
-      release = rmap[release._id]
-      if (!release.tracks) release.tracks = []
-      release.tracks.push(track)
-    }
-  })
-  var releases = Object.keys(rmap).map(function (key) { return rmap[key] }).sort(sortRelease)
-  releases.forEach(function(release) {
-    mapRelease(release)
-    release.tracks.forEach(function (track, index, arr) {
-      mapTrack(track)
-      if(track.streamable) {
-        track.index = playIndexOffset
-        track.trackNumber = index + 1
-        playIndexOffset++
-      }
-    })
-    release.tracks.sort(sortTracks)
-  })
+      //Here we're taking all the tracks and putting them under a release object
+      const rmap = {}
 
-  obj.results = releases
-  obj.total = obj.total
-  obj.hasGoldAccess = hasGoldAccess()
-  done(null, obj)
+      tracks.forEach((track, index, arr) => {
+        let release = track.release
+
+        if (release) {
+          release.inEarlyAccess = track.inEarlyAccess
+          if (!rmap[release._id]) {
+            rmap[release._id] = track.release
+          }
+          release = rmap[release._id]
+          if (!release.tracks) {
+            release.tracks = []
+          }
+          release.tracks.push(track)
+        }
+      })
+      const releases = Object.keys(rmap)
+        .map(function (key) {
+          return rmap[key] })
+        .sort(sortRelease)
+      releases.forEach(function(release) {
+        mapRelease(release)
+        release.tracks.forEach(function (track, index, arr) {
+          mapTrack(track)
+          if(track.streamable) {
+            track.index = playIndexOffset
+            track.trackNumber = index + 1
+            playIndexOffset++
+          }
+        })
+        release.tracks.sort(sortTracks)
+      })
+
+      scope.results = releases
+      scope.hasGoldAccess = hasGoldAccess()
+      console.log('scope', scope);
+      return scope
+    },
+    completed: completedMusicBrowseResults
+  })
 }
 
 function getBrowseMoreButton () {
   return document.querySelector('[role="browse-more"]')
 }
 
-function completedMusicBrowseResults (source, obj) {
+function completedMusicBrowseResults (args) {
+  const obj = args.result
   player.set(buildTracks())
   var el = getBrowseMoreButton()
   if (!el) return
@@ -161,10 +199,15 @@ function getBrowseMusicQuery () {
   return searchStringToObject()
 }
 
-function filterBrowseMusic (e, el) {
+function clearFilterBrowseMusic (e) {
+  console.log('TODO: clear the browse stuff')
+}
+
+function submitFilterBrowseMusic (e, el) {
+  e.preventDefault()
   var q = getBrowseMusicQuery()
   var data = getTargetDataSet(el) || {}
-  filterBrowseMusic.filters.forEach(function (key) {
+  browseMusicF.forEach(function (key) {
     if (data[key] && data[key].length > 0) {
       q[key] = data[key]
     } else {
@@ -186,11 +229,7 @@ function filterBrowseMusic (e, el) {
   }
   go('?' + objectToQueryString(q))
 }
-filterBrowseMusic.filters = [
-  'tags',
-  'genres',
-  'types'
-]
+
 
 function autoBrowseMore () {
   var btn = getBrowseMoreButton()
