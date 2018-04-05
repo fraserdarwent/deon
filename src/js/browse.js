@@ -31,32 +31,35 @@ function mapFilterString (str) {
 function processBrowseFilters (args) {
   processor(args, {
     success: function (args) {
-      const q = searchStringToObject()
-
       render(args.template, args.node, {data: args.result})
-
-      browseMusicFilters.forEach((filter) => {
-        const cel = document.querySelector('[role="filters-list-' + filter + '"]')
-
-        if (!cel) {
-          return
-        }
-        const values = (q[filter] || '')
-          .split(',')
-          .map(mapStringTrim)
-          .filter(filterNil)
-
-        values.forEach((value) => {
-          const el = createFilterItem(mapFilterString(filter), value)
-
-          if (!el) {
-            return
-          }
-
-          cel.appendChild(el)
-        })
-      })
+      renderBrowseFilters()
     }
+  })
+}
+
+function renderBrowseFilters () {
+  const q = searchStringToObject()
+
+  browseMusicFilters.forEach((filter) => {
+    const cel = document.querySelector('[role="filters-list-' + filter + '"]')
+
+    if (!cel) {
+      return
+    }
+    const values = (q[filter] || '')
+      .split(',')
+      .map(mapStringTrim)
+      .filter(filterNil)
+
+    values.forEach((value) => {
+      const el = createFilterItem(mapFilterString(filter), value)
+
+      if (!el) {
+        return
+      }
+
+      cel.appendChild(el)
+    })
   })
 }
 
@@ -225,6 +228,13 @@ function submitFilterBrowseMusic (e, el) {
   e.preventDefault()
   const q = getBrowseMusicQuery()
   const data = getDataSet(el)
+
+  const tags = findNode('.browse-table-tags')
+
+  if (tags) {
+    const tagData = getDataSet(tags)
+    Object.assign(data, tagData)
+  }
 
   browseMusicFilters.forEach((key) => {
     if (data[key] && data[key].length > 0) {

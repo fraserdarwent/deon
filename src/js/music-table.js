@@ -1,27 +1,18 @@
-var catalogMusicLimit = 50
+const catalogMusicLimit = 50
 
-function transformCatalogMusic (obj) {
-  obj = obj || {}
-  var q    = searchStringToObject()
-  q.limit  = catalogMusicLimit
-  q.skip   = (q.page-1 || 0) * catalogMusicLimit
-  obj.query = objectToQueryString(q)
-  return obj
+/*==================================
+=            PROCESSORS            =
+==================================*/
+function processCatalogPage (args) {
+  const q = searchStringToObject()
+  q.limit = catalogMusicLimit
+  q.skip = (q.page-1 || 0) * catalogMusicLimit
+  const query = objectToQueryString(q)
+
+  renderContent(args.template, {query: query})
+  completedCatalogMusic()
 }
 
-function transformCatalogFilters (obj) {
-  var q = searchStringToObject()
-  obj.search = q.search
-  return obj
-}
-
-function completedCatalogFilters () {
-  setTimeout(function () {
-    var input = document.querySelector('input[name=search]')
-    input.focus()
-    input.value = input.value
-  }, 1)
-}
 
 function completedCatalogMusic () {
   var q = getBrowseMusicQuery()
@@ -31,36 +22,82 @@ function completedCatalogMusic () {
   openCatalogPage(q)
 }
 
-function openCatalogPage (q) {
-  var cel = document.querySelector('[role="catalog-pages"]')
-  if (!cel) return
-  var tel = getTemplateEl('catalog-page')
+function processCatalogFilters (args) {
+  processor(args, {
+    transform: function (args) {
 
-  var div = document.createElement('div')
-  render(div, tel.textContent, {
+      const scope = Object.assign({
+        search: searchStringToObject().search
+      }, args.result)
+
+      cache('catalog-filters', scope)
+      return scope
+    },
+    completed: completedCatalogFilters
+  })
+}
+
+function completedCatalogFilters () {
+  setTimeout(() => {
+    const input = findNode('input[name=search]')
+
+    input.focus()
+    input.value = input.value
+  }, 1)
+  renderBrowseFilters()
+}
+
+function openCatalogPage (q) {
+  const cel = findNode('[role="catalog-pages"]')
+
+  if (!cel) {
+    return
+  }
+
+  const div = document.createElement('div')
+
+  render('catalog-rows-group', div, {
     source: endpoint + '/catalog/browse/?' + objectToQueryString(q)
   })
 
   cel.appendChild(div)
-  loadSubSources(div)
+  loadNodeSources(cel)
 }
 
-function transformMusicCatalogResults (obj, done){
-  if (obj.total > 1) obj.showPagination = true
-  setPagination(obj, obj.limit)
-  var streamableIndex = 0
-  obj.results = obj.results.map(function (item, index, arr) {
-    var track = mapTrack(item)
-    track.index = streamableIndex
-    if(track.streamable) {
-      streamableIndex++
-    }
-    return track
+function processCatalogResults (args) {
+  processor(args, {
+    transform: function (args) {
+      const result = args.result
+      const obj = Object.assign({}, result)
+
+      if (obj.total > 1) {
+        obj.showPagination = true
+      }
+      setPagination(obj, obj.limit)
+      let streamableIndex = 0
+
+      obj.results = obj.results.map((item, index, arr) => {
+        const track = mapTrack(item)
+
+        track.index = streamableIndex
+        if (track.streamable) {
+          streamableIndex++
+        }
+        return track
+      })
+
+      obj.tableHeaders = getSortableHeaders()
+
+      const filters = cache('catalog-filters')
+
+      Object.assign(obj, filters)
+
+      console.log('obj', obj)
+
+      return obj
+    },
+    completed: completedCatalogFilters
   })
-
-  obj.tableHeaders = getSortableHeaders()
-
-  return obj
 }
 
 function getSortableHeaders (sortBy, direction) {
