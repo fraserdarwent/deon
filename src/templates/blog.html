@@ -49,7 +49,7 @@
         </header>
         <div class="md-container">
             <div
-                template="markdown-post"
+                data-target-template="markdown-post"
                 data-source="$newshost/{{path}}">
             </div>
         </div>
@@ -57,20 +57,13 @@
     {{/data}}
 </script>
 
-<script type="text/template" data-template="markdown-post" transform="transformMarkdownPost" completed="completedMarkdownPost">
-    {{#loading}}
-    {{>loading-view}}
-    {{/loading}}
-    {{#error}}
-    <p>{{message}}</p>
-    {{/error}}
-    {{#data}}
-        {{{data}}}
-    {{/data}}
+<script type="text/template" data-template="markdown-post" data-process="processMarkdownPost">
+    {{{data}}}
 </script>
 
 <script type="text/template"
-        data-partial data-template="blog-featured">
+        data-partial
+        data-template="blog-featured">
 
         <div class="top-banner top-banner--blog-featured">
             <div class="banner">
@@ -101,7 +94,8 @@
 </script>
 
 <script type="text/template"
-        data-partial data-template="blog-article">
+        data-partial
+        data-template="blog-article">
         <article class="flex">
             <div class="col-xs-12 col-sm-12 col-md-6 article-banner{{#isOdd}} col-md-last{{/isOdd}} banner--scaled">
                 <a href="{{link}}" class="side-banner"
@@ -133,19 +127,13 @@
 <script type="text/template"
         data-route="^(?:news|blog)\/?(?:\?.*)?$"
         data-title="News"
-        transform="transformBlogPagination"
-        data-source="$newshost/json/archive/pages/1.json">
-    {{#loading}}
-    {{>loading-view}}
-    {{/loading}}
-    {{#error}}
-    <div class="container panel">
-        <p>{{message}}.</p>
-    </div>
-    {{/error}}
+        data-process="processBlogPagination"
+        data-source="$newshost/json/archive/pages/1.json"
+        data-template="blog-page-container"
+        >
     {{#data}}
     <div
-        template="blog-page"
+        data-target-template="blog-page"
         data-source="$newshost/json/archive/pages/{{page}}.json">
     </div>
     {{/data}}
@@ -154,19 +142,12 @@
 <script type="text/template"
         data-route="^(?:news|blog)\/tags\/(.*)"
         data-title="News"
-        transform="transformBlogPagination"
+        data-process="processBlogPagination"
+        data-template="blog-page-tag-container"
         data-source="$newshost/json/tags/$1/pages/1.json">
-    {{#loading}}
-    {{>loading-view}}
-    {{/loading}}
-    {{#error}}
-    <div class="container panel">
-        <p>An error has occured.</p>
-    </div>
-    {{/error}}
     {{#data}}
     <div
-        template="blog-page"
+        data-target-template="blog-page"
         data-source="$newshost/json/tags/{{tag}}/pages/{{page}}.json">
     </div>
     {{/data}}
@@ -174,43 +155,42 @@
 
 <script type="text/template"
         transform="transformBlog"
+        data-process="processBlogPage"
         data-template="blog-page">
-    {{#loading}}
-    {{>loading-view}}
-    {{/loading}}
-    {{#error}}
-    <div class="container panel">
-        <p>{{message}}.</p>
-    </div>
-    {{/error}}
     {{#data}}
 
-    {{#tag}}
-        <div class="container tag-header">
-            <h1>Posts tagged with "{{.}}"</h1>
-        </div>
-    {{/tag}}
+        {{#each tags}}
+            <div class="container tag-header">
+                <h1>Posts tagged with "{{.}}"</h1>
+            </div>
+        {{/each}}
 
-    {{#results}}
-    {{#featured}} {{>blog-featured}} {{/featured}}
-    {{^featured}} {{>blog-article}} {{/featured}}
-    {{/results}}
-    {{#showPagination}} {{>blogPagination}} {{/showPagination}}
+        {{#each results}}
+            {{#if featured}}
+                {{>blog-featured}}
+            {{else}}
+                {{>blog-article}}
+            {{/if}}
+        {{/eac}}
+        {{#if showPagination}}
+            {{>blog-pagination}}
+        {{/if}}
     {{/data}}
 </script>
 
 <script type="text/template"
-        data-partial data-template="blogPagination">
-    {{#total}}
+        data-partial
+        data-template="blog-pagination">
+    {{#if total}}
     <div class="container pagination pad-vertical pagination--blog text center">
-        {{#previous}}
+        {{#if previous}}
         <a href="?{{previous}}" class="button button--cta">Previous</a>
-        {{/previous}}
+        {{/if}}
         <label>{{showingFrom}} - {{showingTo}} of {{total}}</label>
-        {{#next}}
+        {{#if next}}
         <a href="?{{next}}" class="button button--cta">Next</a>
-        {{/next}}
+        {{/if}}
     </div>
-    {{/total}}
+    {{/if}}
 </script>
 

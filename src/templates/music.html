@@ -297,17 +297,19 @@
     <div class="panel">
       <p>{{message}}</p>
     </div>
-    {{/if  }}  
+    {{/if}}
     {{#unless loading}}
+        {{#if releases.length}}
         <div class="panel">
           <h2>Releases</h2>
           <ul class="art-list art-list--full-width discography">
           {{#releases}}
-          {{>release-list-item}}
+              {{>release-list-item}}
           {{/releases}}
           </ul>
         </div>
-        {{#appearsOn.length}}
+        {{/if}}
+        {{#if appearsOn.length}}
         <div class="panel">
           <h2>Appears On</h2>
           <ul class="art-list art-list--full-width discography">
@@ -316,7 +318,7 @@
           {{/appearsOn}}
           </ul>
         </div>
-        {{/appearsOn.length}}
+        {{/if}}
     {{/unless}}
 </script>
 
