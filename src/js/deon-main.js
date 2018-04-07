@@ -819,6 +819,14 @@ function processPage (opts) {
   renderContent(opts.node.dataset.template, {})
 }
 
+function processMarkdown (args) {
+  processor(args, {
+    transform: function (args) {
+      return marked(args.result)
+    }
+  })
+}
+
 function processHomePage () {
   console.log('render home');
   var scope = {
@@ -1041,6 +1049,14 @@ function transformUserReleases (obj) {
     return isVariousArtistsRelease(i)
   })
   return obj
+}
+
+function processMarkdownPage (args) {
+  pageProcessor(args, {
+    transform: function (args) {
+      return marked(args.result)
+    }
+  })
 }
 
 function transformMarkdown (obj) {
@@ -1436,6 +1452,16 @@ function setPagination (obj, perPage) {
   else {
     obj.showingTo = obj.total
   }
+}
+
+function requestWithFormData (opts, done) {
+  var fd = new FormData()
+  opts.data = opts.data || {}
+  for(var key in opts.data) {
+    fd.append(key, opts.data[key])
+  }
+  opts.data = fd
+  request(opts, done)
 }
 
 function getStats () {

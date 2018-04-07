@@ -72,11 +72,11 @@ function processServicesPage (args, done) {
     renderContent(args.template, {data: scope})
 
     var vendorSelect = findNode('select[name=vendor]')
-    //if (!vendorSelect) return
-    var qp = searchStringToObject()
 
-    if (qp.vendor) {
-      var vendor = qp.vendor.toLowerCase()
+    console.log('qo.vendor', qo.vendor)
+
+    if (qo.vendor) {
+      var vendor = qo.vendor.toLowerCase()
       var valid = true
 
       if (vendor == 'youtube') {
@@ -92,15 +92,15 @@ function processServicesPage (args, done) {
         valid = false
       }
 
-      if (qp.identity && valid) {
-        findNode('input[name=identity]').value = qp.identity
+      if (qo.identity && valid) {
+        findNode('input[name=identity]').value = qo.identity
         findNode('form[role="subscribe-new-license"]').submit()
       }
     }
 
     //If they are coming from a link for Gold then we automatcially add gold
     //to their cart
-    if (qp.ref == 'gold') {
+    if (qo.ref == 'gold') {
       subscribeGold({}, findNode('[action=subscribeGold]'))
     }
 

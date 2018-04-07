@@ -1,10 +1,8 @@
 var licensingABTest
 
-function transformLicensing (obj) {
-  obj = obj || {}
-  obj.scriptopen = "<script"
-  obj.scriptclose = "</script>"
-  return obj
+function processLicensingPage (args) {
+  renderContent(args.template)
+  pickBackground()
 }
 
 function getOtherLicensingPlatforms () {
@@ -18,46 +16,46 @@ function transformLicensingOtherPlatformsPage (obj) {
   return obj
 }
 
-function transformLicensingContentCreators (obj, done) {
-  obj = transformLicensing(obj)
+function processLicensingContentCreators (args) {
+  const scope = {}
+
   //Create the split test
   licensingABTest = new SplitTest({
     name: 'content-creator-description',
     dontCheckStarter: true,
     modifiers: {
       'control': function () {
-        obj.splitTestControl = true
-        obj.splitTestHeaders = false
+        scope.splitTestControl = true
+        scope.splitTestHeaders = false
       },
-      'headers' : function () {
-        obj.splitTestControl = false
-        obj.splitTestHeaders = true
+      'headers': function () {
+        scope.splitTestControl = false
+        scope.splitTestHeaders = true
       }
     },
     onStarted: function () {
-      done(null, obj)
+      renderContent(args.template, scope)
+      completedContentCreatorLicensing()
     }
   })
   licensingABTest.start()
 }
 
 function pickBackground(){
-  var quantity = 5;
-  var randomNumber = randomChooser(quantity);
-  var word = "";
-  var license = document.querySelector('#licensing');
+  var quantity = 5
+  var randomNumber = randomChooser(quantity)
+  var word = ""
+  var license = document.querySelector('#licensing')
   var words = ['first', 'second', 'third', 'fourth', 'fifth']
-  license.classList.add(words[randomNumber-1])
-}
 
-function completedLicensing () {
-  pickBackground() 
+  license.classList.add(words[randomNumber - 1])
 }
 
 function completedContentCreatorLicensing () {
   pickBackground()
   scrollToHighlightHash()
   var buyButtons = document.querySelectorAll('[role=licensing-cta]')
+
   buyButtons.forEach(function (btn) {
     btn.addEventListener('click', function (e) {
       licensingABTest.convert()
@@ -67,15 +65,17 @@ function completedContentCreatorLicensing () {
 }
 
 function transformCommercialLicensing () {
-  return go('/sync');
+  return go('/sync')
 }
 
 function showCrediting (e, el) {
   var type = el.getAttribute('credit-type')
   var credits = document.querySelectorAll('textarea.copycredits[credit-type]')
-  for(var i = 0; i < credits.length; i++) {
+
+  for (var i = 0; i < credits.length; i++) {
     var c = credits[i]
     var t = credits[i].getAttribute('credit-type')
+
     credits[i].classList.toggle('hide', t != type)
   }
 }
@@ -119,37 +119,39 @@ function submitLicensingOtherPlatforms (e) {
 
   var email = data.email
 
-  if(!email || email.indexOf('@') <= 0) {
+  if (!email || email.indexOf('@') <= 0) {
     return alert('Please enter a valid email')
   }
 
   var other = data.other
-  if(!other) {
+
+  if (!other) {
     var found = false
     var others = getOtherLicensingPlatforms()
-    for(var i = 0; i < others.length; i++) {
-      if(data[others[i]]) {
+
+    for (var i = 0; i < others.length; i++) {
+      if (data[others[i]]) {
         found = true
         break
       }
     }
 
-    if(!found) {
+    if (!found) {
       alert('Please select at least one platform')
     }
   }
-  if(isSignedIn()) {
+  if (isSignedIn()) {
     data.userId = session.user._id
   }
   requestWithFormData({
-    url: 'https://submit.monstercat.com', 
-    method: 'POST', 
+    url: 'https://submit.monstercat.com',
+    method: 'POST',
     data: data
   }, function (err, obj, xhr) {
-    if (err) return toasty(Error(err.message))
-    else {
-      toasty("Thanks, we'll let you know when those are available!")
-      document.getElementById('submit-licensing-other-platforms').disabled = true
-    }
+    if (err) { return toasty(Error(err.message)) }
+
+    toasty("Thanks, we'll let you know when those are available!")
+    document.getElementById('submit-licensing-other-platforms').disabled = true
+
   })
 }
