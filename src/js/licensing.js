@@ -141,7 +141,6 @@ function submitLicensingOtherPlatforms (e) {
       return data
     },
     validate: function (data, errs) {
-        console.log('data', data);
       if (!data.email || data.email.indexOf('@') <= 0) {
         errs.push('Please enter a valid email')
       }

@@ -113,32 +113,32 @@
                         <div class="volume-slider-handle"></div>
                     </div>
                 </div>
-            </div> 
-            <a href="#" class="silent scroll-container" role="track-link" 
+            </div>
+            <a href="#" class="silent scroll-container" role="track-link"
                onmouseover="scrollTrackTitle(this)" onmouseleave="removeScrollTrackTitle(this)">
                 <span class="scroll-title" role="track-title"></span>
             </a>
             <div class="col-md-hidden scrub-container scrub-container--mobile">
-                <div class="scrub" action="scrub">
+                <div class="scrub" onclick="scrub(event)">
                     <div class="progress" role="scrub-progress"></div>
                 </div>
             </div>
-            <button class="faux" action="toggleShuffle" role="mode">
+            <button class="faux" onclick="toggleShuffle(event)" role="mode">
                 <i class="fa fa-random"></i>
             </button>
-            <button class="faux" action="previous" role="previous">
+            <button class="faux" onclick="previous(event)" role="previous">
                 <i class="fa fa-step-backward"></i>
             </button>
-            <button class="faux" action="togglePlay">
+            <button class="faux" onclick="togglePlay(event)">
                 <i class="fa fa-play" role="play"></i>
             </button>
-            <button class="faux" action="next" role="next">
+            <button class="faux" onclick="next(event)" role="next">
                 <i class="fa fa-step-forward"></i>
             </button>
-            <button class="faux" action="toggleRepeat">
+            <button class="faux" onclick="toggleRepeat(event)">
                 <i class="fa fa-repeat"></i>
             </button>
-            <button class="faux volume-toggle" action="toggleVolume" role="volumeControl" onmouseover="startVolumeSliderShow(event)" onmouseleave="startVolumeSliderHide()">
+            <button class="faux volume-toggle" onclick="toggleVolume(event)" role="volumeControl" onmouseover="startVolumeSliderShow(event)" onmouseleave="startVolumeSliderHide()">
                 <i class="fa fa-volume-up"></i>
             </button>
         </div>
@@ -177,7 +177,7 @@
                 </a>
             </li>
             <li>
-                <button class="faux" action="showFront" role="feedback">
+                <button class="faux" onclick="showFront(event)" role="feedback">
                     <i class="fa fa-comments-o"></i>
                     Talk to us
                 </button>
@@ -227,7 +227,7 @@
 <script type="text/template"
         data-template="front-form"
         >
-<button class="button--close faux" action="closeFrontForm">
+<button class="button--close faux" onclick="closeFrontForm(event, this)">
     <i class="fa fa-remove"></i>
 </button>
 <h3>Message Support</h3>

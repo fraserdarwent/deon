@@ -75,14 +75,15 @@ function submitPodcastGallery (e, el) {
         url: 'https://submit.monstercat.com',
         method: 'POST',
         data: new FormData(data)
-      }, (err, body, xhr) {
+      }, (err, body, xhr) => {
         actionier.off(e.target)
         if (err) {
           formErrors(e.target, err)
-          return recordErrorAndAlert(err, 'Submit Podcast Gallery');
+          recordErrorAndAlert(err, 'Submit Podcast Gallery')
+          return
         }
-        toasty('Your photo has been accepted. Thank you!');
-      });
+        toasty('Your photo has been accepted. Thank you!')
+      })
     }
   })
   return
