@@ -11,7 +11,7 @@
         </div>
     </div>
     <div data-source="https://shop.monstercat.com/collections/website-featured/products.json" data-no-cors="true" data-target-template="home-merch"></div>
-    <div data-source="$endpoint/catalog/release?filters=type,Podcast&limit=8" template="home-podcast"></div>
+    <div data-source="$endpoint/catalog/release?filters=type,Podcast&limit=8" data-target-template="home-podcast"></div>
     {{>spotify-and-social}}
 </script>
 
@@ -130,7 +130,7 @@
 <input type="hidden" role="release-id" release-id="{{_id}}" />
 <div style="display: none;"
     data-source="$endpoint/catalog/browse?types=Single,EP,Album"
-    template="home-page-tracks">
+    data-target-template="home-page-tracks">
 </div>
 <a class="button button--cta button--icon button--icon button--home-play {{#inEarlyAccess}}early-access{{/inEarlyAccess}}"
         action="playSongs"

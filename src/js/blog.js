@@ -3,13 +3,13 @@
 ==================================*/
 
 function processBlogPagination (args) {
-  console.log('args', args)
   pageProcessor(args, {
     transform: function (args) {
       const q = searchStringToObject()
 
       return {
-        page: parseInt(q.page) || 1
+        page: parseInt(q.page) || 1,
+        tag: args.matches[1]
       }
     }
   })
@@ -19,12 +19,9 @@ function processBlogPage (args) {
   processor(args, {
     transform: function (args) {
       const obj = args.result
-      console.log('obj', obj);
-      const data = Object.assign({}, obj)
-
-      setPagination(data, obj.limit)
-
       const maxExcerpt = 200
+
+      setPagination(obj, obj.limit)
 
       obj.results = obj.results.map((i, index, arr) => {
         i.featured = (index == 0 && !obj.tag) ? true : false
@@ -49,7 +46,21 @@ function processBlogPage (args) {
 function processBlogPostPage (args) {
   pageProcessor(args, {
     transform: transformPost,
-    completed: completedPost
+    hasError: true,
+    success: function (args) {
+      setPageTitle(args.result.title)
+      var meta = {
+        'og:title': args.result.title,
+        'og:description': transformExcerptToText(args.result.excerpt),
+        'og:type': 'article',
+        'og:url': location.toString(),
+        'og:image': args.result.image
+      }
+
+      setMetaData(meta)
+      renderContent(args.template, {data: args.result})
+      pageIsReady()
+    }
   })
 }
 
@@ -74,19 +85,6 @@ function openShare(e, el){
   e.preventDefault
   return false
 }
-function completedPost (source, obj){
-  setPageTitle(obj.data.title)
-  var meta = {
-    'og:title': obj.data.title,
-    'og:description': transformExcerptToText(obj.data.excerpt),
-    'og:type': 'article',
-    'og:url': location.toString(),
-    'og:image': obj.data.image
-  }
-
-  setMetaData(meta)
-  pageIsReady()
-}
 
 function processMarkdownPost (args) {
   processor(args, {
@@ -97,9 +95,9 @@ function processMarkdownPost (args) {
   })
 }
 
-function completedMarkdownPost(){
-  var twitterEmbeds = document.querySelector('.twitter-tweet')
-  var redditEmbeds = document.querySelector('.reddit-embed')
+function completedMarkdownPost () {
+  var twitterEmbeds = findNode('.twitter-tweet')
+  var redditEmbeds = findNode('.reddit-embed')
 
   if (twitterEmbeds){
     var twitterJs = document.createElement('script')
@@ -114,7 +112,6 @@ function completedMarkdownPost(){
     document.getElementsByTagName('head')[0].appendChild(redditJs)
   }
 }
-<<<<<<< HEAD
 function transformBlogPagination(obj){
   var q = searchStringToObject()
   q.page = parseInt(q.page) || 1
@@ -143,22 +140,16 @@ function transformBlog(obj){
   })
   return obj
 }
-=======
 
->>>>>>> Blog to new declare
-function transformExcerptToText(htmlExcerpt){
+function transformExcerptToText (htmlExcerpt) {
   var aux = document.createElement('div')
 
   aux.innerHTML = htmlExcerpt
   return aux.textContent || aux.innerText || ""
 }
 function transformLegacyImages(img){
-<<<<<<< HEAD
   if (!img) {
     return ""
   }
-	return (img.indexOf('http') == -1) ? img = 'https://www.monstercat.com' + img : img
-=======
   return (img.indexOf('http') == -1) ? img = 'https://www.monstercat.com' + img : img
->>>>>>> Blog to new declare
 }

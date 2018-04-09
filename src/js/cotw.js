@@ -61,7 +61,6 @@ function oscillatePodcastGallery (timestamp) {
 function submitPodcastGallery (e, el) {
   submitForm(e, {
     validate: function (data, errs) {
-      console.log('data', data)
       if (!data.agree_tos) {
         errs.push('You must agree to the Terms of Service')
       }
@@ -71,13 +70,12 @@ function submitPodcastGallery (e, el) {
       return errs
     },
     action: function () {
-      console.log('do a thing')
       actionier.on(e.target)
       request({
         url: 'https://submit.monstercat.com',
         method: 'POST',
-        data: new FormData(p)
-      }, function (err, body, xhr) {
+        data: new FormData(data)
+      }, (err, body, xhr) {
         actionier.off(e.target)
         if (err) {
           formErrors(e.target, err)

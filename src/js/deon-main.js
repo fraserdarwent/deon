@@ -1,5 +1,5 @@
 var endpoint        = endhost + '/api'
-var newshost        = '/news-api'
+var newshost        = 'https://www.monstercat.com/news-api'
 var datapoint       = 'https://blobcache.monstercat.com'
 var session         = null
 var pageTitleSuffix = 'Monstercat'
@@ -52,7 +52,6 @@ document.addEventListener("DOMContentLoaded", function (e) {
     trackUser()
     renderHeader()
     renderHeaderMobile()
-    startState()
     document.addEventListener("click", interceptClick)
     //document.addEventListener("dblclick", interceptDoubleClick)
     //document.addEventListener("keypress", interceptKeyPress)
@@ -115,6 +114,9 @@ document.addEventListener("DOMContentLoaded", function (e) {
     }
   })
 })
+
+startState()
+
 
 //requestDetect.credentialDomains.push(endhost)
 
@@ -828,7 +830,6 @@ function processMarkdown (args) {
 }
 
 function processHomePage () {
-  console.log('render home');
   var scope = {
     loading: true
   }
@@ -948,7 +949,7 @@ function processRosterPage (args) {
 function processRosterYear (obj) {
   processor(obj, {
     start: function () {
-      render('loading-view', '[role=roster-artists]')
+      render('loading-view', obj.node)
     },
     success: function (args) {
       var scope = args.result
@@ -964,8 +965,7 @@ function processRosterYear (obj) {
         if (a > b) return 1
         return 0
       });
-      render(args.template, '[role=roster-artists]', scope)
-
+      render(args.template, args.node, scope)
     }
   })
 }
@@ -1054,7 +1054,23 @@ function transformUserReleases (obj) {
 function processMarkdownPage (args) {
   pageProcessor(args, {
     transform: function (args) {
-      return marked(args.result)
+      const md = marked(args.result)
+      console.log('md', md)
+      return md
+    },
+    completed: function (args) {
+      const title = args.node.dataset.pageTitle
+
+      if (title) {
+        setPageTitle(title)
+      }
+      else {
+        const titleEl = findNode('h1,h2')
+
+        if (titleEl) {
+          setPageTitle(titleEl.textContent)
+        }
+      }
     }
   })
 }
@@ -1387,6 +1403,81 @@ function renderContent (template, scope) {
   render(template, content, scope)
 }
 
+
+/**
+ * General purpose processor for other processors to call so that they don't have
+ * to rewrite stuff.
+ *
+ * @param {Object} args Arguments that the calling function got
+ * @param {Object} methods Map of functions to call based on the
+                   state of the request.
+ * @example
+ * function myPageProcessor () {
+ *  processor(arguments, {
+ *   start: function () { findNode('.loading').style.display = 'block') },
+ *   success: function () { alert('XHR finished without erro'); },
+ *   start: function () { console.log('loading...'); },
+ *   error: function (args) { console.error('Error occured', args.error) }
+ *  })
+ * }
+ */
+function processor (args, options) {
+  const opts = options || {}
+
+  if (opts[args.state] === false) {
+    return
+  }
+
+  if (opts[args.state]) {
+    opts[args.state](args)
+    return
+  }
+
+  if (args.state == 'start') {
+    if (opts.hasLoading) {
+      render(args.template, args.node, {loading: true})
+      return
+    }
+
+    render('loading-view', args.node)
+    return
+  }
+
+  //The ajax is done, and either succeeded or failed
+  if (args.state == 'finish') {
+    if (args.err) {
+      if (opts.error) {
+        opts.error(args)
+        return
+      }
+      else if (opts.hasError) {
+        render(args.template, args.node, {error: args.err})
+        return
+      }
+
+      render('error', args.node, {message: args.err.toString()})
+      return
+    }
+    if (opts.success) {
+      opts.success(args)
+      return
+    }
+
+    var scope = {err: args.err, data: args.result, loading: false}
+
+    if (opts.transform) {
+      scope.data = opts.transform(args)
+    }
+
+    render(args.template, args.node, scope)
+
+    if (opts.completed) {
+      opts.completed(args)
+    }
+    return
+  }
+}
+
 /**
  * Wrapper for the processor function that always makes the
  * [role=content] node the node that gets rendered into
@@ -1433,14 +1524,12 @@ function objSetPageQuery (obj, page, opts) {
 function setPagination (obj, perPage) {
   var q = searchStringToObject()
   q.page = parseInt(q.page) || 1
-  //TODO: Calculate whether prev or next are required
-  //based on current page and the numperpage
   var nq = Object.assign({}, q)
   var pq  = Object.assign({}, q)
   nq.page = nq.page + 1
   pq.page = pq.page - 1
   if (q.page * perPage < obj.total) {
-    obj.next     = objectToQueryString(nq)
+    obj.next = objectToQueryString(nq)
   }
   if (q.page > 1) {
     obj.previous = objectToQueryString(pq)

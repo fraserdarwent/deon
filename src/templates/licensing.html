@@ -173,14 +173,19 @@
 
 <script type="text/template"
         data-route="^licensing\/youtube-policy\/?\??(.*)?$"
-        data-title="Monstercat YouTube Licensing Policy">
+        data-title="Monstercat YouTube Licensing Policy"
+        data-template="youtube-policy-page"
+        data-process="processPage"
+        >
   <div class="container">
     <h1>YouTube Licensing Policy</h1>
   </div>
   <div
       class="reading-md"
-      template="markdown-simple"
-      source="https://raw.githubusercontent.com/monstercat/docs/master/YouTube%20Policy.md">
+      data-target-template="markdown-simple"
+      data-source="https://raw.githubusercontent.com/monstercat/docs/master/YouTube%20Policy.md"
+      data-no-cors
+      >
   </div>
   <div class="container panel">
     <h3>Buy a YouTube License</h3>
@@ -197,8 +202,9 @@
 <script type="text/template"
         data-route="^licensing\/other-platforms\/?\??(.*)?$"
         data-title="Licensing Music for Facebook, Instagram, and more"
-        transform="transformLicensingOtherPlatformsPage">
-{{#data}}
+        data-process="processLicensingOtherPlatformsPage"
+        data-template="licensing-other-platforms-page"
+        >
 <div class="container">
   <div class="col-md-6 col-md-offset-3">
     <div class="panel paragraphs">
@@ -213,14 +219,14 @@
         <div class="form-group">
           <label>Platforms</label>
           <ul class="checkboxes">
-            {{#platforms}}
+            {{#each platforms}}
               <li>
                 <label>
                   <input type="checkbox" name="{{.}}" value ="1" />
                   {{.}}
                 </label>
               </li>
-            {{/platforms}}
+            {{/each}}
             <li>
               <label>Other:</label>
               <input type="text" name="other" class="small" size="20" />
@@ -238,7 +244,6 @@
     </div>
   </div>
 </div>
-{{/data}}
 </script>
 
 <!-- MUSTACHES -->

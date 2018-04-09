@@ -291,7 +291,7 @@
         data-template="events-email-optin">
 <div role="events-email-optin">
   {{#if isSignedIn}}
-    <div data-source="$endpoint/self" template="events-email-optin"></div>
+    <div data-source="$endpoint/self" data-target-template="events-email-optin"></div>
   {{else}}
     <div class="container panel events-email events-email-signin">
       <form onsubmit="signUpForEventEmail(event, this)">

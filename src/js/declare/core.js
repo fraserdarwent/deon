@@ -451,17 +451,21 @@ function loadNodeSource (node, matches) {
   if (!source) {
     return
   }
-  source = source.replace(/\$([\w\.]+)/g, function (str, a) {
+  //Was this: /\$([\w\.]+)/g
+  //But that broke $newspost/json/$1.json by removing the .json part
+  source = source.replace(/\$([\w]+)/g, (str, a) => {
     var match
 
     if (!isNaN(parseInt(a))) {
       match = matches[parseInt(a)]
     }
+
     if (!match) {
       var x = getFromDotString(window, a)
 
       match = x != undefined ? x.toString() : a
     }
+
     return match
   })
   var cors = !node.hasAttribute('data-no-cors')
@@ -474,78 +478,10 @@ function loadNodeSource (node, matches) {
     args.state = 'finish'
     args.result = body
     args.xhr = xhr
+    args.err = err
     process(args)
     //loadNodeSources(node, matches);
   })
-}
-
-/**
- * General purpose processor for other processors to call so that they don't have
- * to rewrite stuff.
- *
- * @param {Object} args Arguments that the calling function got
- * @param {Object} methods Map of functions to call based on the
-                   state of the request.
- * @example
- * function myPageProcessor () {
- *  processor(arguments, {
- *   start: function () { findNode('.loading').style.display = 'block') },
- *   success: function () { alert('XHR finished without erro'); },
- *   start: function () { console.log('loading...'); },
- *   error: function (args) { console.error('Error occured', args.error) }
- *  })
- * }
- */
-function processor (args, options) {
-  const opts = options || {}
-
-  if (opts[args.state] === false) {
-    return
-  }
-
-  if (opts[args.state]) {
-    opts[args.state](args)
-    return
-  }
-
-  if (args.state == 'start') {
-    if (opts.hasLoading) {
-      render(args.template, args.node, {loading: true})
-      return
-    }
-
-    render('loading-view', args.node)
-    return
-  }
-
-  //The ajax is done, and either succeeded or failed
-  if (args.state == 'finish') {
-    if (args.err) {
-      if (opts.error) {
-        opts.error(args)
-        return
-      }
-
-      render('error', args.template, {err: args.err})
-    }
-    if (opts.success) {
-      opts.success(args)
-      return
-    }
-
-    var scope = {err: args.err, data: args.result, loading: false}
-
-    if (opts.transform) {
-      scope.data = opts.transform(args)
-    }
-
-    render(args.template, args.node, scope)
-
-    if (opts.completed) {
-      opts.completed(args)
-    }
-    return
-  }
 }
 
 /**

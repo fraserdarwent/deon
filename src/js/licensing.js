@@ -9,11 +9,12 @@ function getOtherLicensingPlatforms () {
   return ['Facebook', 'Instagram', 'Vimeo']
 }
 
-function transformLicensingOtherPlatformsPage (obj) {
-  obj = obj || {}
+function processLicensingOtherPlatformsPage (args) {
+  const obj = {}
+
   obj.platforms = getOtherLicensingPlatforms()
   obj.email = isSignedIn() ? session.user.email : ''
-  return obj
+  renderContent(args.template, obj)
 }
 
 function processLicensingContentCreators (args) {
@@ -111,6 +112,64 @@ function openTrackLicensing (e) {
 }
 
 function submitLicensingOtherPlatforms (e) {
+
+  submitForm(e, {
+    action: function (args) {
+      actionier.on(e.target)
+      requestWithFormData({
+        url: 'https://submit.monstercat.com',
+        method: 'POST',
+        data: args.data
+      }, (err, obj, xhr) => {
+        actionier.off(e.target)
+        if (terror(err)) {
+          return
+        }
+
+        toasty("Thanks, we'll let you know when those are available!")
+      })
+
+    },
+    transformData: function (data) {
+      data.date = new Date().toISOString()
+      data.type = 'licensing_other_platforms'
+
+      if (isSignedIn()) {
+        data.userId = session.user._id
+      }
+
+      return data
+    },
+    validate: function (data, errs) {
+        console.log('data', data);
+      if (!data.email || data.email.indexOf('@') <= 0) {
+        errs.push('Please enter a valid email')
+      }
+
+      var other = data.other
+
+      if (!other) {
+        var found = false
+        var others = getOtherLicensingPlatforms()
+
+        for (var i = 0; i < others.length; i++) {
+          if (data[others[i]]) {
+            found = true
+            break
+          }
+        }
+
+        if (!found) {
+          errs.push('Please select at least one platform')
+        }
+      }
+
+      return errs
+    }
+  })
+
+  return
+
   e.preventDefault()
   var data = getDataSet(e.target)
 

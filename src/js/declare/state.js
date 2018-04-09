@@ -57,18 +57,15 @@ function readState () {
   return node
 }
 
-/**
- * Starts listening to the "popstate" event after page loads and fires initial
- * change state for the page.
- */
-function startState () {
-  function on (e) {
-    changeState(location.pathname + location.search, e.state, '')
+function onPopState (e) {
+  changeState(location.pathname + location.search, e.state, '')
+}
+
+function startState (e) {
+  window.addEventListener("popstate", onPopState)
+  if (e) {
+    onPopState(e)
   }
-  document.addEventListener("DOMContentLoaded", function (e) {
-    window.addEventListener("popstate", on)
-    on(e)
-  })
 }
 
 /**

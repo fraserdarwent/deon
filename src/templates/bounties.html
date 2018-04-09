@@ -1,12 +1,16 @@
 <script type="text/template"
         data-route="^dev\/bounties"
         data-title="Developer Bounty Hunter Program - Monstercat"
+        data-process="processPage"
+        data-template="dev-bounties-page"
 >
   <div class="container">
     <div class="panel paragraphs">
       <div
-          template="markdown-bare"
-          source="https://raw.githubusercontent.com/monstercat/docs/master/bounties.md">
+          data-target-template="markdown-bare"
+          data-source="https://raw.githubusercontent.com/monstercat/docs/master/bounties.md"
+          data-no-cors
+          >
       </div>
     </div>
   </div>
