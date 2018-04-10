@@ -680,44 +680,33 @@ function getReleasePurchaseLinks (urls) {
   return links
 }
 
-function removeYouTubeClaim (e, el) {
-  var data = getTargetDataSet(el)
-  var videoIdInput = document.querySelector('input[name="videoId"]')
+function submitRemoveYouTubeClaim (e, el) {
+  const videoIdInput = document.querySelector('input[name="videoId"]')
 
-  if (!data || !data.videoId) { return }
+  submitForm(e, {
+    transformData: function (data) {
+      data.videoId = youTubeIdParser(data.videoId)
 
-  var videoId = data.videoId
+      if (data.videoId !== false) {
+        videoIdInput.value = data.videoId
+      }
 
-  if (videoId.indexOf('youtu') > -1){
-    videoId = youTubeIdParser(videoId)
-    if (!videoId) {
-      return toasty(new Error('Please make sure to enter a YouTube ID or a valid YouTube URL.'))
-    }
-    videoIdInput.value = videoId
-  }
+      return data
+    },
+    validate: function (data, errs) {
 
-  var button = document.querySelector('button[action=removeYouTubeClaim]')
+      if (!data.videoId) {
+        errs.push('Please enter a valid YouTube ID or YouTube video URL')
+      }
 
-  if (button.classList.contains('on')) {
-    return
-  }
-
-  button.classList.toggle('on', true)
-
-  requestJSON({
+      return errs
+    },
     url: endpoint + '/self/remove-claims',
     method: 'POST',
-    data: {
-      videoId: videoId
-    },
-    withCredentials: true
-  }, function (err, obj, xhr) {
-    button.classList.toggle('on', false)
-    if (err) {
-      return toasty(new Error(err.message))
+    success: function () {
+      toasty(strings.claimReleased)
+      videoIdInput.value = ""
     }
-    toasty(strings.claimReleased)
-    videoIdInput.value = ""
   })
 }
 
