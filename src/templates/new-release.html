@@ -23,7 +23,7 @@
                     <img src="{{cover}}"
                     class="shadow responsive"
                     style="cursor: pointer;"
-                    action="openReleaseArt"
+                    onclick="openReleaseArt(event, this)"
                     big-src="{{coverUrl}}"/>
                 </div>
                 <div class="col-xs-12 col-sm-12 col-md-8 cl-white featured-details">
@@ -85,7 +85,7 @@
                                 <button class="button button--icon button--icon-rg button--{{#inEarlyAccess}}gold{{/inEarlyAccess}}{{^inEarlyAccess}}white{{/inEarlyAccess}} mb-0"
                                 ab-test="{{activeTest}}"
                                 kpi="play-release"
-                                action="playSongs"
+                                onclick="playSongs(event, this)"
                                 role="play-release"
                                 release-id="{{_id}}">
                                 {{#inEarlyAccess}}
@@ -105,23 +105,7 @@
                                     <a href="{{downloadLink}}"
                                     target="_blank"
                                     class="button button--icon button--icon-rg button--gold mb-0"
-                                    action="accessDownloadOrModal"
-                                    title="Download Track"
-                                    track-title="{{title}}"
-                                    click-action="Click Download Gold"
-                                    click-category="Release Links"
-                                    ab-test="{{activeTest}}"
-                                    kpi="download-release">
-                                    Download with Gold
-                                    <i class="fa fa-cloud-download"></i>
-                                    </a>
-                                </li>
-                                {{/releaseDate}}
-                                <li class="mb-1">
-                                    <a href="{{downloadLink}}"
-                                    target="_blank"
-                                    class="button button--icon button--icon-rg button--gold mb-0"
-                                    action="accessDownloadOrModal"
+                                    onclick="accessDownloadOrModal(event, this)"
                                     title="Download Track"
                                     track-title="{{title}}"
                                     click-action="Click Download Gold"

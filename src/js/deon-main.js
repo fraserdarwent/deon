@@ -1387,16 +1387,16 @@ function completedRoster (){
 /* UI Stuff */
 
 function accessDownloadOrModal (e, el) {
-  if (el.getAttribute('free-download-for-users') == 'true') {
+  if (el.dataset.freeDownloadForUsers == 'true') {
     if (isSignedIn()) {
       return true
     }
 
     e.preventDefault()
     var opts = {
-      releaseTitle: el.getAttribute('release-title'),
+      releaseTitle: el.dataset.releaseTitle,
       redirect: encodeURIComponent(window.location),
-      trackTitle: el.getAttribute('track-title'),
+      trackTitle: el.dataset.trackTitle,
     }
 
     openModal('freedownload-for-users-modal', opts)

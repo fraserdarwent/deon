@@ -140,37 +140,44 @@ function saveShopEmail (e, el) {
   })
 }
 
-function enableTwoFactor (e, el) {
-  var data = getTargetDataSet(el, false, true)
-  if (!data) return
+function transformTwoFactorFormData (data) {
   data.number = String(data.number)
-  requestJSON({
-    url: endpoint + '/self/two-factor',
+  return data
+}
+
+function enableTwoFactor (e, el) {
+  submitForm(e, {
     method: 'PUT',
-    data: data,
-    withCredentials: true
-  }, function (err, obj, xhr) {
-    if (err) return window.alert(err.message)
-    window.location.hash = '#two-factor'
-    reloadPage()
-    toasty(strings.twoFactorPending)
+    url: endpoint + '/self/two-factor',
+    transformData: transformTwoFactorFormData,
+    validate: function (data, errs) {
+      if (!data.countryCode) {
+        errs.push('Country is required')
+      }
+      if (!data.number) {
+        errs.push('Number is required')
+      }
+
+      return errs
+    },
+    success: function () {
+      window.location.hash = '#two-factor'
+      reloadPage()
+      toasty(strings.twoFactorPending)
+    }
   })
 }
 
 function confirmTwoFactor (e, el) {
-  var data = getTargetDataSet(el, false, true)
-  if (!data) return
-  data.number = String(data.number)
-  requestJSON({
+  submitForm(e, {
+    transformData: transformTwoFactorFormData,
     url: endpoint + '/self/two-factor/confirm',
     method: 'PUT',
-    data: data,
-    withCredentials: true
-  }, function (err, obj, xhr) {
-    if (err) return window.alert(err.message)
-    reloadPage()
-    window.location.hash = '#two-factor'
-    toasty(strings.twoFactorConfirmed)
+    success: function () {
+      reloadPage()
+      window.location.hash = '#two-factor'
+      toasty(strings.twoFactorConfirmed)
+    }
   })
 }
 
@@ -179,8 +186,10 @@ function disableTwoFactor (e, el) {
     url: endpoint + '/self/two-factor/disable',
     method: 'PUT',
     withCredentials: true
-  }, function (err, obj, xhr) {
-    if (err) return window.alert(err.message)
+  }, (err, obj, xhr) => {
+    if (terror(err)) {
+      return
+    }
     reloadPage()
     toasty(strings.twoFactorDisabled)
   })
