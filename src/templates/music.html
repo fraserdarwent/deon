@@ -135,24 +135,31 @@
 </script>
 
 <script type="text/template"
-        data-partial data-template="play-song">
+        data-partial
+        data-template="play-song">
 {{#streamable}}
 <button class="faux button--mobile{{#inEarlyAccess}} in-early-access{{/inEarlyAccess}}"
         onclick="playSong(event, this)"
         role="play-song"
-        play-link="{{playUrl}}"
-        title="{{title}}"
-        artists-title="{{artistsTitle}}"
-        {{#artists.length}}artist="{{#artists}}{{name}}, {{/artists}}"{{/artists.length}}
-        index="{{index}}"
-        track-id="{{_id}}"
-        {{#activeTest}}
-        ab-test="{{activeTest}}"
-        kpi="play-track"
-        {{/activeTest}}
-        {{#licensable}}licensable{{/licensable}}
-        {{#playlistId}}playlist-id="{{playlistId}}"{{/playlistId}}
-        release-id="{{releaseId}}">
+        data-play-link="{{playUrl}}"
+        data-title="{{title}}"
+        data-artists-title="{{artistsTitle}}"
+        {{#if artists.length}}
+            data-artist="{{#each artists}}{{name}}, {{/each}}"
+        {{/if}}
+        data-index="{{index}}"
+        data-track-id="{{_id}}"
+        {{#if activeTest}}
+            data-ab-test="{{activeTest}}"
+            data-kpi="play-track"
+        {{/if}}
+        {{#if licensable}}
+            data-licensable
+        {{/if}}
+        {{#if playlistId}}
+            data-playlist-id="{{playlistId}}"
+        {{/if}}
+        data-release-id="{{releaseId}}">
     <i class="fa fa-play-circle inactive"></i>
     <i class="fa fa-pause-circle active"></i>
 </button>
@@ -173,14 +180,14 @@
 {{#if showDownloadLink}}
 <a class="silent button--mobile"
    target="_blank"
-   title="Download Track"
-   free-download-for-users="{{freeDownloadForUsers}}"
-   track-title="{{title}}"
-   action="accessDownloadOrModal"
-    {{#activeTest}}
-    ab-test="{{activeTest}}"
-    kpi="download-track"
-    {{/activeTest}}
+   data-title="Download Track"
+   data-free-download-for-users="{{freeDownloadForUsers}}"
+   data-track-title="{{title}}"
+   onclick="accessDownloadOrModal(event, this)"
+    {{#if activeTest}}
+        data-ab-test="{{activeTest}}"
+        data-kpi="download-track"
+    {{/if}}
    href="{{downloadLink}}">
     <i class="fa fa-download"></i>
 </a>
@@ -190,10 +197,10 @@
    target="_blank"
     onclick="openTrackLicensing(event)"
     data-release-id="{{releaseId}}"
-    {{#activeTest}}
-    ab-test="{{activeTest}}"
-    kpi="open-track-licensing"
-    {{/activeTest}}
+    {{#if activeTest}}
+        ab-test="{{activeTest}}"
+        kpi="open-track-licensing"
+    {{/if}}
     data-track-id="{{_id}}">
     <i class="fa fa-copyright"></i>
     <span class="col-xs-hidden">License</span>
@@ -203,7 +210,7 @@
 <a class="silent button--mobile"
    target="_blank"
     onclick="openAddToPlaylist(event, this)"
-    title="Add to Playlist"
+    data-title="Add to Playlist"
     data-release-id="{{releaseId}}"
     data-track-id="{{_id}}">
     <i class="fa fa-plus"></i>
@@ -221,7 +228,7 @@
 {{#data}}
     <div class="bgbox">
         <div class="banner banner--scaled">
-            <div class="banner" 
+            <div class="banner"
               style="background-image: url('{{image}}');
               background-position: center {{imagePositionY}}%;"></div>
             <div class="banner-shade banner-shade--darker"></div>

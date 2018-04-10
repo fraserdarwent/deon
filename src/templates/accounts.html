@@ -30,7 +30,7 @@
                                            placeholder="a secret"/>
                                     <button
                                         class="faux password"
-                                        action="togglePassword"
+                                        onclick="togglePassword(event, this)"
                                         tabindex="999"
                                         toggle-target="password">
                                         <i class="fa fa-eye-slash"></i>
@@ -83,8 +83,8 @@
             <div class="col-xs-12 col-md-6 panel">
                 <h2>With Social</h2>
                 <div class="button-group button-group--margin">
-                    <button class="button--social button--half button--fb" action="clickSignInFacebook"><i class="fa fa-social-f"></i> Sign In</button>
-                    <button class="button--social button--half button--g" action="clickSignInGoogle"><i class="fa fa-social-g"></i> Sign In</button>
+                    <button class="button--social button--half button--fb" onclick="clickSignInFacebook(event, this)"><i class="fa fa-social-f"></i> Sign In</button>
+                    <button class="button--social button--half button--g" onclick="clickSignInGoogle(event, this)"><i class="fa fa-social-g"></i> Sign In</button>
                 </div>
             </div>
         </div>
@@ -169,7 +169,7 @@
                     placeholder="a secret"/>
                 <button
                     class="faux password"
-                    action="togglePassword"
+                    onclick="togglePassword(event, this)"
                     toggle-target="password"
                     type="button">
                     <i class="fa fa-eye-slash"></i>
@@ -186,44 +186,49 @@
     <div class="container">
         <h1>Authenticate Token</h1>
         <div class="panel">
-            <table class="form mobile" data-set="auth-token">
-                <tr>
-                    <th>Token</th>
-                    <td>
-                        <input type="text" name="token" placeholder="Enter Here"/>
-                    </td>
-                </tr>
-            </table>
-            <div class="button-group">
-                <button class="button--cta button--full" action="authenticateTwoFactorToken" data-set-target="auth-token">Authorize</button>
-                <button class="button--full" action="resendTwoFactorToken">Resend Token</button>
-            </div>
+            <form onsubmit="authenticateTwoFactorToken(event, this)">
+                <table class="form mobile">
+                    <tr>
+                        <th>Token</th>
+                        <td>
+                            <input type="text" name="token" placeholder="Enter Here"/>
+                        </td>
+                    </tr>
+                </table>
+                <div class="button-group">
+                    <button class="button--cta button--full">Authorize</button>
+                    <button class="button--full" type="button" onclick="resendTwoFactorToken(event, this)">Resend Token</button>
+                </div>
+            </form>
         </div>
     </div>
 </script>
 
 <script type="text/template"
         data-route="^forgot-password"
-        data-title="Forgot Password?">
+        data-title="Forgot Password?"
+        >
     <div class="container">
         <h1>Forgot Password?</h1>
         <div class="panel">
-        <table class="form mobile" data-set="credentials">
-            <tbody>
-                <tr>
-                    <th>Email</th>
-                    <td>
-                        <input
-                            type="text"
-                            name="email"
-                            placeholder="kitty@monstercat.com"/>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <div class="button-group">
-            <button class="button--cta button--full" action="recoverPassword" data-set-target="credentials">Send Reset Link</button>
-        </div>
+            <form onsubmit="recoverPassword(event, this)">
+                <table class="form mobile">
+                    <tbody>
+                        <tr>
+                            <th>Email</th>
+                            <td>
+                                <input
+                                    type="text"
+                                    name="email"
+                                    placeholder="kitty@monstercat.com"/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="button-group">
+                    <button class="button--cta button--full">Send Reset Link</button>
+                </div>
+            </form>
         </div>
     </div>
 </script>
@@ -294,7 +299,8 @@
         data-route="^confirm-sign-up"
         data-title="Confirm Sign Up"
         completed="completedSignUp"
-        transform="mapConfirmSignup">
+        transform="mapConfirmSignup"
+        >
     <div class="container">
         <h1>Confirm Sign Up</h1>
         <div class="panel">

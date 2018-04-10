@@ -434,6 +434,11 @@ function loadNodeSource (node, matches) {
 
     dataProcess = target.dataset.process
   }
+
+  if (dataProcess && !window[dataProcess]) {
+    throw new Error(dataProcess + ' is not defined')
+  }
+
   process = getMethod(dataProcess) || dummyMethod
 
   var args = {

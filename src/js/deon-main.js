@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function (e) {
   registerPartials()
   initSocials()
   renderHeader()
-  loadSession(function (err, obj) {
+  loadSession((err, obj) => {
     sixPackSession = new sixpack.Session()
     trackUser()
     renderHeader()
@@ -102,6 +102,11 @@ document.addEventListener("DOMContentLoaded", function (e) {
     //siteNotices.goldShopCodeNotice.start()
   })
   document.querySelector('.credit [role=year]').innerText = new Date().getFullYear()
+
+  window.addEventListener('404', function (e) {
+    renderContent('404')
+  })
+
 
   window.addEventListener('changestate', function (e) {
     recordPage()
@@ -839,12 +844,12 @@ function processMarkdown (args) {
   })
 }
 
-function processHomePage () {
+function processHomePage (args) {
   var scope = {
     loading: true
   }
 
-  renderContent('home-page')
+  renderContent('home-page', scope)
 }
 
 function processHomeFeatured (opts) {
@@ -889,20 +894,30 @@ function transformHome (obj) {
   return obj
 }
 
-function transformHomeTracks (obj, done) {
-  obj = obj || {}
-  transformTracks(obj.results, function (err, data) {
-    done(err, data)
+function processHomeTracks (args) {
+  processor(args, {
+    transform: function (args) {
+      let result = args.result
+
+      result.results = transformTracks(result.results)
+      console.log('result.results', result.results);
+      return result
+    }
   })
 }
 
-function transformPodcast (obj) {
-  obj.podcasts = obj.results.map(mapRelease)
-  obj.podcasts.length = 8
-  obj.podcasts.forEach(function (i, index, arr) {
-    i.episode = (i.title).replace('Monstercat Podcast ', '').replace(/[()]/g, '')
+function processPodcasts (args) {
+  processor(args, {
+    transform: function (args) {
+      const obj = Object.assign({}, args.result)
+      obj.podcasts = obj.results.map(mapRelease)
+      obj.podcasts.length = 8
+      obj.podcasts.forEach(function (i, index, arr) {
+        i.episode = (i.title).replace('Monstercat Podcast ', '').replace(/[()]/g, '')
+      })
+      return obj
+    }
   })
-  return obj
 }
 
 function processHomeMerch (opts) {
@@ -1076,7 +1091,7 @@ function processMarkdownPage (args) {
       return md
     },
     completed: function (args) {
-      const title = args.node.dataset.pageTitle
+      const title = args.node.dataset.title
 
       if (title) {
         setPageTitle(title)
@@ -1524,6 +1539,17 @@ function processor (args, options) {
  */
 function pageProcessor (args, meths) {
   args.node = findNode('[role=content]')
+
+  const completed = args.completed
+  console.log('completed', completed);
+
+  Object.assign(args, {
+    completed: function (arguments) {
+      console.log('completed')
+      completed.call(null, arguments)
+    }
+  })
+
   return processor(args, meths)
 }
 

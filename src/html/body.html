@@ -123,19 +123,19 @@
                     <div class="progress" role="scrub-progress"></div>
                 </div>
             </div>
-            <button class="faux" onclick="toggleShuffle(event)" role="mode">
+            <button class="faux" onclick="toggleShuffle(event, this)" role="mode">
                 <i class="fa fa-random"></i>
             </button>
-            <button class="faux" onclick="previous(event)" role="previous">
+            <button class="faux" onclick="previous(event, this)" role="previous">
                 <i class="fa fa-step-backward"></i>
             </button>
-            <button class="faux" onclick="togglePlay(event)">
+            <button class="faux" onclick="togglePlay(event, this)">
                 <i class="fa fa-play" role="play"></i>
             </button>
-            <button class="faux" onclick="next(event)" role="next">
+            <button class="faux" onclick="next(event, this)" role="next">
                 <i class="fa fa-step-forward"></i>
             </button>
-            <button class="faux" onclick="toggleRepeat(event)">
+            <button class="faux" onclick="toggleRepeat(event, this)">
                 <i class="fa fa-repeat"></i>
             </button>
             <button class="faux volume-toggle" onclick="toggleVolume(event)" role="volumeControl" onmouseover="startVolumeSliderShow(event)" onmouseleave="startVolumeSliderHide()">

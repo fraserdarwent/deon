@@ -48,6 +48,13 @@ function readState () {
   var result = getRouteNode(str)
 
   if (!result) {
+    const ev = new CustomEvent("404", {
+      detail: {
+        path: str
+      }
+    })
+
+    window.dispatchEvent(ev)
     return
   }
   var node = cloneNodeAsElement(result.node, 'div')

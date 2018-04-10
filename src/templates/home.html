@@ -1,6 +1,5 @@
 <script type="text/template"
         data-route="^(\?.*)?$"
-        data-title="Monstercat"
         data-process="processPage"
         data-template="home-page"
         >
@@ -116,10 +115,12 @@
 
 <script type="text/template"
         data-template="home-page-tracks"
-        transform="transformHomeTracks"
+        data-process="processHomeTracks"
         >
 {{#data}}
-    {{>play-song}}
+    {{#each results}}
+        {{>play-song}}
+    {{/each}}
 {{/data}}
 </script>
 
@@ -133,9 +134,9 @@
     data-target-template="home-page-tracks">
 </div>
 <a class="button button--cta button--icon button--icon button--home-play {{#inEarlyAccess}}early-access{{/inEarlyAccess}}"
-        action="playSongs"
+        onclick="playSongs(event)"
         role="play-release"
-        release-id="{{_id}}">
+        data-release-id="{{_id}}">
     <span class="play"><i class="fa fa-play"></i> <span>{{#inEarlyAccess}}Listen Early{{/inEarlyAccess}}{{^inEarlyAccess}}Play{{/inEarlyAccess}}</span></span>
     <span class="pause"><i class="fa fa-pause"></i> <span>Pause</span></span>
 </a>
@@ -143,13 +144,8 @@
 
 <script type="text/template"
         data-template="home-podcast"
-        transform="transformPodcast">
-    {{#loading}}
-    {{>loading-view}}
-    {{/loading}}
-    {{#error}}
-    <p>{{message}}</p>
-    {{/error}}
+        data-process="processPodcasts"
+        >
     {{#data}}
     <section class="podcast">
         <div class="container latest">
@@ -158,14 +154,14 @@
                     <h2 class="line-top">Call of the Wild</h2>
                 </div>
                 <div class="col-xs-6 text right">
-                    <a href="https://www.monstercat.com/cotw" class="button button--black button--icon button--transparent">
+                    <a href="/cotw" class="button button--black button--icon button--transparent">
                         View all
                         <i class="fa fa-chevron-right"></i>
                     </a>
                 </div>
             </header>
             <ul class="art-list art-list--full-width">
-                {{#podcasts}}
+                {{#each podcasts}}
                 <li>
                     <a class="silent" href="/release/{{catalogId}}" title="{{title}}">
                         <div class="image-wrapper">
@@ -174,7 +170,7 @@
                         </div>
                     </a>
                 </li>
-                {{/podcasts}}
+                {{/each}}
             </ul>
         </div>
     </section>

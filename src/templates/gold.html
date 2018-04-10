@@ -194,7 +194,7 @@
               <div class="side-banner" style="background-image: url({{image}});"></div>
           </div>
           <div class="col-xs-12 col-sm-12 col-md-6 article-details">
-              <div class="article-wrapper">
+              <div class="article-wrapper {{#if isOdd}}pl-2{{else}}pr-2{{/if}}">
                 <h2>{{title}}</h2>
                 <p class="description">{{{description}}}</p>
                 {{#if discord}}

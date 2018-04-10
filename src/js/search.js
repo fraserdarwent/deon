@@ -81,7 +81,8 @@ function searchMobile (e, el, url) {
   search(e, el, url)
 }
 
-function search (e, el, url) {
+function submitSearch (e, el, url) {
+  e.preventDefault()
   var data = getDataSet(el)
   var types = getSearchTypes()
   var searchType = getSearchType('all')
@@ -112,6 +113,7 @@ function search (e, el, url) {
     }
   }
   const goUrl = searchType.url
+  console.log('searchType', searchType);
 
   q.term = searchTerm
   delete q.page
