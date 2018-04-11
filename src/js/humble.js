@@ -1,16 +1,15 @@
 var humblePromoName = 'Humble Streamer Bundle March 2017'
-function transformHumbleBundleRedeemPage (obj, done) {
-  loadSession(function (err, sess) {
-    obj = obj || {}
+function processHumbleBundleRedeemPage (args) {
+  loadSession((err, sess) => {
+    const obj = {}
+
     obj.showSignInStep = true
     obj.showGoldStep = false
     obj.showTwitchStep = false
-    
     obj.isSignedIn = isSignedIn()
     obj.doneSignInStep = obj.isSignedIn
     obj.doneGoldStep = hasGoldAccess()
     obj.doneTwitchStep = false
-    
     if(obj.doneSignInStep) {
       obj.showGoldStep = true
     }
@@ -25,28 +24,28 @@ function transformHumbleBundleRedeemPage (obj, done) {
       requestJSON({
         url: endpoint + '/self/whitelist/used-promo/' + encodeURIComponent(humblePromoName),
         withCredentials: true
-      }, function (err, resp) {
-        if(err) {
-          alert(err)
-          done(null, obj)
+      }, (err, resp) => {
+        if (terror(err)) {
+          renderContent(args.template, obj)
           return
         }
-        else {
-          obj.doneTwitchStep = resp.used
-          done(null, obj)
-        }
+        obj.doneTwitchStep = resp.used
+        renderContent(args.template, obj)
       })
     }
     else {
-      done(null, obj)
+      renderContent(args.template, obj)
     }
   })
 }
 
+function transformHumbleBundleRedeemPage (obj, done) {
+
+}
+
 function submitHumbleTwitch (e, el) {
   e.preventDefault()
-  console.log('el', el)
-  var data = getTargetDataSet(el)
+  var data = getDataSet(el)
   var button = document.querySelector('button[role=submit-humble-twitch]')
   if(!data.username) {
     return

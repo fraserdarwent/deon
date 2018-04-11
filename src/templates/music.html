@@ -74,11 +74,11 @@
 <script type="text/template"
         data-partial data-template="play-release">
 <button class="button--release-cta button--cta"
-        action="playSongs"
+        onclick="playSongs(event, this)"
         ab-test="{{activeTest}}"
         kpi="play-release"
         role="play-release"
-        release-id="{{_id}}">
+        data-release-id="{{_id}}">
     <i class="fa fa-play inactive"></i> <span>Play</span>
     <i class="fa fa-pause active"></i> <span>Pause</span>
 </button>
@@ -167,7 +167,7 @@
 {{^streamable}}
     {{#inEarlyAccess}}
         <button class="faux button--mobile{{#inEarlyAccess}} in-early-access{{/inEarlyAccess}}"
-                action="canDownloadOrModal"
+                onclick="canDownloadOrModal(event, this)"
                 title="{{title}}">
             <i class="fa fa-play-circle inactive"></i>
         </button>

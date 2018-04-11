@@ -171,11 +171,11 @@
         <div class="col-xs-12 col-sm-12 col-md-6 col-md-offset-6">
           <h1 id="top">Monstercat Gold</h1>
           <ul class="gold-perks">
-            <li><a href="#download-access" action="anchorScrollTo">Download Monstercat songs in your preferred format</a></li>
-            <li><a href="#early-streaming" action="anchorScrollTo">Early streaming access to new releases</a></li>
-            <li><a href="#support-the-artists" action="anchorScrollTo">Directly support the artists</a></li>
-            <li><a href="#shop-discounts" action="anchorScrollTo">Discounts on Monstercat merch</a></li>
-            <li><a href="#discord" action="anchorScrollTo">and more!</a></li>
+            <li><a href="#download-access" onclick="anchorScrollTo(event, this)">Download Monstercat songs in your preferred format</a></li>
+            <li><a href="#early-streaming" onclick="anchorScrollTo(event, this)">Early streaming access to new releases</a></li>
+            <li><a href="#support-the-artists" onclick="anchorScrollTo(event, this)">Directly support the artists</a></li>
+            <li><a href="#shop-discounts" onclick="anchorScrollTo(event, this)">Discounts on Monstercat merch</a></li>
+            <li><a href="#discord" onclick="anchorScrollTo(event, this)">and more!</a></li>
           </ul>
           <br />
           {{#if hasGoldAccess}}
@@ -217,7 +217,7 @@
                     {{cta}} - $5/mo
                   </a>
                 {{/unless}}
-                <a class="back-to-top" href="#top" action="anchorScrollTo">back to top</a>
+                <a class="back-to-top" href="#top" onclick="anchorScrollTo(event, this)">back to top</a>
               </div>
           </div>
       </section>
