@@ -164,7 +164,7 @@
             <p>No releases found.</p>
         {{/unless}}
         {{#more}}
-            <a href="/search/releases?{{query}}">{{message}}</a>
+            <a href="/search/releases?{{../query}}">{{message}}</a>
         {{/more}}
     {{/data}}
 </script>
@@ -183,7 +183,7 @@
         {{/unless}}
         {{#more}}
             <br/>
-            <a href="/search/artists?{{query}}">{{message}}</a>
+            <a href="/search/artists?{{../query}}">{{message}}</a>
         {{/more}}
     {{/data}}
 </script>
@@ -198,7 +198,7 @@
         {{/unless}}
         {{#more}}
         <br/>
-        <a href="/search/songs?{{query}}">{{message}}</a>
+        <a href="/search/songs?{{../query}}">{{message}}</a>
         {{/more}}
     {{/data}}
 </script>

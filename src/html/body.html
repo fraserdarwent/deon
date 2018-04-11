@@ -62,7 +62,7 @@
             </button>
             <ul role="nav">
                 <li class="global-search global-search--mobile">
-                    <form onsubmit="searchMobile(event, this)">
+                    <form onsubmit="submitSearchMobile(event, this)">
                         <button class="faux">
                             <i class="fa fa-search"></i>
                         </button>
@@ -94,7 +94,7 @@
                 id="navigation">
         </div>
         <div class="col-xs-hidden col-md-visible global-search">
-            <form onsubmit="search(event, this)" class="d-inline" role="search-global">
+            <form onsubmit="submitSearch(event, this)" class="d-inline" role="search-global">
                 <button class="faux">
                     <i class="fa fa-search"></i>
                 </button>

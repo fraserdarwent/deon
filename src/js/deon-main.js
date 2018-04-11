@@ -889,7 +889,6 @@ function processHomeTracks (args) {
       let result = args.result
 
       result.results = transformTracks(result.results)
-      console.log('result.results', result.results);
       return result
     }
   })
@@ -960,7 +959,7 @@ function processRosterPage (args) {
         selectedYear: year
       }
 
-      renderContent(args.node.dataset.template, scope)
+      renderContent(args.template, scope)
     }
   })
 }

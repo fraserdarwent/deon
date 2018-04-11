@@ -76,7 +76,7 @@ function getSearchType (type) {
 /*===============================
 =            ACTIONS            =
 ===============================*/
-function searchMobile (e, el, url) {
+function submitSearchMobile (e, el, url) {
   closeNav()
   search(e, el, url)
 }
@@ -183,9 +183,10 @@ function processSearchSnippetTracks (args) {
     transform: function (args) {
       console.log('args', args)
       const result = args.result
-      const data = Object.assign({}, result)
+      let data = Object.assign({}, result)
       data.results = transformTracks(result.results)
-      data.more = transformSearchSnippet(result, 'song')
+      data = transformSearchSnippet(data, 'song')
+
       if (data.more) {
         data.more.message = 'View All Songs Results'
       }
@@ -198,10 +199,9 @@ function processSearchSnippetReleases (args) {
   processor(args, {
     transform: function (args) {
       const result = args.result
-      console.log('result', result)
-      const data = Object.assign({}, transformReleases(result))
+      let data = Object.assign({}, transformReleases(result))
 
-      data.more = transformSearchSnippet(result, 'album')
+      data = transformSearchSnippet(data, 'album')
       if (data.more) {
         data.more.message = 'View All Album Results'
       }
@@ -214,10 +214,10 @@ function processSearchSnippetArtists (args) {
   processor(args, {
     transform: function (args) {
       const result = args.result
-      const data = Object.assign({}, result)
+      let data = Object.assign({}, result)
 
       data.results = result.results.map(transformWebsiteDetails)
-      data.more = transformSearchSnippet(result, 'artist')
+      data = transformSearchSnippet(data, 'artist')
 
       if (data.more) {
         data.more.message = 'View All Artists Results'

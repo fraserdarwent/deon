@@ -196,9 +196,11 @@ Already have an account? <a class="switch-sign-on" onclick="servicesChangeSignOn
     {{else}}
         <label>You have Gold Membership.</label>
         <p>Your Gold Membership will expire on {{endDate}}</p>
-        <div data-set="subscribe-gold" class="services-form">
-            <input type="text" name="trialCode" placeholder="Special Code"/>
-            <button class="button--gold" action="subscribeGold" data-set-target="subscribe-gold">Re-Subscribe</button>
+        <div class="services-form">
+            <form onsubmit="submitSubscribeGold(event, this)">
+                <input type="text" name="trialCode" placeholder="Special Code"/>
+                <button class="button--gold">Re-Subscribe</button>
+            </form>
         </div>
     {{/unless}}
 </script>
