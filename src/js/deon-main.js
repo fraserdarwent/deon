@@ -1481,6 +1481,14 @@ function processor (args, options) {
   }
 
   if (args.state == 'start') {
+    //Processors with a transform and no source and just providing their
+    //own data
+    if (!args.node.dataset.source && options.transform) {
+      args.state = 'finish'
+      processor(args, options)
+      return
+    }
+
     if (opts.hasLoading) {
       render(args.template, args.node, {loading: true})
       return

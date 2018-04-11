@@ -75,7 +75,7 @@ function authenticateTwoFactorToken (e, el) {
   requestJSON({
     url: endhost + '/signin/token',
     method: 'POST',
-    data: getTargetDataSet(el),
+    data: getDataSet(el),
     withCredentials: true
   }, function (err, obj, xhr) {
     if (err) { return toasty(new Error(err.message)) }
@@ -129,43 +129,42 @@ function signOut (e, el) {
 }
 
 function recoverPassword (e, el) {
-  var data = getTargetDataSet(el)
-
-  data.returnUrl = location.protocol + '//' + location.host + '/reset-password?key=:code'
-  requestJSON({
+  submitForm(e, {
+    transformData: function (data) {
+      data.returnUrl = location.protocol + '//' + location.host + '/reset-password?key=:code'
+      return data
+    },
+    successMsg: strings.passwordResetEmail,
     url: endhost + '/password/send-verification',
-    method: 'POST',
-    withCredentials: true,
-    data: data
-  }, function (err, obj, xhr) {
-    if (err) { return toasty(new Error(err.message)) }
-    window.alert(strings.passwordResetEmail)
+    method: 'POST'
   })
 }
 
-function transformPasswordReset (obj) {
-  obj = obj || {}
-  var key = searchStringToObject().key
+function processPasswordResetPage (args) {
+  pageProcessor(args, {
+    transform: function () {
+      const obj = {}
+      var key = searchStringToObject().key
 
-  obj.missingKey = !key
-  return obj
+      obj.missingKey = !key
+      return obj
+    }
+  })
 }
 
 function updatePassword (e, el) {
-  var data = getTargetDataSet(el)
+  submitForm(e, {
+    validate: function (data, errs) {
+      if (!data.password) {
+        errs.push(strings.passwordMissing)
+      }
 
-  if (!data.password) { return window.alert(strings.passwordMissing) }
-  if (data.password != data.confirmPassword) { return window.alert(strings.passwordDoesntMatch) }
-  data.code = searchStringToObject().key
-  requestJSON({
-    url: endhost + '/password/reset',
-    method: 'POST',
-    withCredentials: true,
-    data: data
-  }, function (err, obj, xhr) {
-    if (err) { return toasty(new Error(err.message)) }
-    window.alert(strings.passwordReset)
-    go('/signin')
+      if (data.password != data.confirmPassword) {
+        errs.push(strings.passwordDoesntMatch)
+      }
+
+      return errs
+    }
   })
 }
 

@@ -112,7 +112,6 @@ function openTrackLicensing (e) {
 }
 
 function submitLicensingOtherPlatforms (e) {
-
   submitForm(e, {
     action: function (args) {
       actionier.on(e.target)
@@ -165,51 +164,5 @@ function submitLicensingOtherPlatforms (e) {
 
       return errs
     }
-  })
-
-  return
-
-  e.preventDefault()
-  var data = getDataSet(e.target)
-
-  data.type = "licensing_other_platforms"
-  data.date = new Date().toISOString()
-
-  var email = data.email
-
-  if (!email || email.indexOf('@') <= 0) {
-    return alert('Please enter a valid email')
-  }
-
-  var other = data.other
-
-  if (!other) {
-    var found = false
-    var others = getOtherLicensingPlatforms()
-
-    for (var i = 0; i < others.length; i++) {
-      if (data[others[i]]) {
-        found = true
-        break
-      }
-    }
-
-    if (!found) {
-      alert('Please select at least one platform')
-    }
-  }
-  if (isSignedIn()) {
-    data.userId = session.user._id
-  }
-  requestWithFormData({
-    url: 'https://submit.monstercat.com',
-    method: 'POST',
-    data: data
-  }, function (err, obj, xhr) {
-    if (err) { return toasty(Error(err.message)) }
-
-    toasty("Thanks, we'll let you know when those are available!")
-    document.getElementById('submit-licensing-other-platforms').disabled = true
-
   })
 }

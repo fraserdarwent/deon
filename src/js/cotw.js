@@ -87,31 +87,4 @@ function submitPodcastGallery (e, el) {
     }
   })
   return
-  e.preventDefault();
-  var p = getDataSetTargetElement(el);
-  var tos = p.querySelector('#podcast-gallery-tos');
-  var file = p.querySelector('[type="file"]');
-  var name = p.querySelector('[name="display_name"]');
-  var social = p.querySelector('[name="social_link"]');
-  var email = p.querySelector('[name="email"]');
-  var btn = p.querySelector('button');
-  if (!tos || !tos.checked) return alert('You need to agree to the Terms of Service.');
-  if (!file.value || !name.value || !social.value || !email.value) return alert('Please fill out the form.');
-  btn.disabled = true;
-  btn.classList.add('disabled', 'on');
-  request({
-    url: 'https://submit.monstercat.com',
-    method: 'POST',
-    data: new FormData(p)
-  }, function (err, body, xhr) {
-    btn.disabled = false;
-    btn.classList.remove('disabled', 'on');
-    if (err) return recordErrorAndAlert(err, 'Submit Podcast Gallery');
-    toasty('Your photo has been accepted. Thank you!');
-    //name.value = "";
-    //email.value = "";
-    //social.value = "";
-    tos.checked = false;
-  });
-  return false;
 }

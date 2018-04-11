@@ -17,9 +17,9 @@ function createAndAddToPlaylist (e, el) {
   if (!data)
     return
 
-  var tracks = [{trackId: el.getAttribute('track-id'), releaseId: el.getAttribute('release-id')}]
 
-  createPlaylist(e, el, data.name, tracks, (err, obj, xhr) => {
+  var tracks = [{trackId: el.dataset.trackId, releaseId: el.releaseId}]
+  createPlaylist(e, el, data.name, tracks, function (err, obj, xhr) {
     if (err) {
       toasty(new Error(err))
       return
@@ -36,14 +36,13 @@ function renamePlaylist (e, el) {
   if (!name)
     return
 
-  update('playlist', el.getAttribute('playlist-id'), { name: name }, simpleUpdate)
+  update('playlist', el.dataset.playlistId, { name: name }, simpleUpdate)
 }
 
 function destroyPlaylist (e, el) {
-  if (!window.confirm(strings.destroyPlaylist))
+  if (!window.confirm(strings.destroyPlaylist)) 
     return
-
-  destroy('playlist', el.getAttribute('playlist-id'), simpleUpdate)
+  destroy('playlist', el.dataset.playlistId, simpleUpdate)
 }
 
 function clickRemoveFromPlaylist (e, el) {
@@ -71,7 +70,7 @@ function clickRemoveFromPlaylist (e, el) {
       }
 
       cache(url, obj)
-      loadNodeSources(document.querySelector('[role="content"]'), true)
+      loadNodeSources(findNode('[role="content"]'), true)
     })
   })
 }
@@ -660,9 +659,8 @@ function playlistDrop (e) {
   var trackId = e.dataTransfer.getData('trackId')
   var releaseId = e.dataTransfer.getData('releaseId')
   var droppedTr = e.target.closest('[role="playlist-track"]')
-  var draggedTr = document.querySelector('tr[role="playlist-track"][track-id="' + trackId + '"][release-id="' + releaseId + '"]')
-
-  if (draggedTr == null)
+  var draggedTr = findNode('tr[role="playlist-track"][track-id="' + trackId + '"][release-id="' + releaseId + '"]')
+  if(draggedTr == null) {
     return
 
   draggedTr.classList.remove('drag-dragging')
