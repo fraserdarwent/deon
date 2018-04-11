@@ -129,7 +129,7 @@
             <br/>
             <form onsubmit="checkoutSubscriptions(event)">
                 {{#if showSignUp}}
-                    <div id="sign-on" data-submit-action="checkoutSubscriptions" trigger-target="checkoutSubscriptions">
+                    <div id="sign-on">
                         <div role="sign-on-errors"></div>
                         <div role="sign-on-fields" class="sign-on-fields">
                             {{>services-sign-up}}
@@ -137,7 +137,7 @@
                     </div>
                 <br />
                 {{/if}}
-                <div data-set="pay-method">
+                <div>
                    {{>payment-method-recurring}}
                    <button class="button--cta">
                         Complete Purchase
@@ -162,7 +162,7 @@
 </table>
 <p>
 Already have an account? <a class="switch-sign-on" onclick="servicesChangeSignOnMethod(event, 'sign-in')">Sign in</a>.
-<br />Create an account with <a action="checkoutSubscriptions" data-social="facebook">Facebook</a> or <a action="checkoutSubscriptions" data-social="google">Google</a>.</p>.
+<br />Create an account with <a onclick="checkoutSubscriptions(event, this)" data-social="facebook">Facebook</a> or <a onclick="checkoutSubscriptions(event, this)" data-social="google">Google</a>.</p>.
 </p>
 </script>
 
@@ -176,11 +176,11 @@ Already have an account? <a class="switch-sign-on" onclick="servicesChangeSignOn
     {{>sign-in-fields}}
 </table>
 <!--
-<button class="button--social button--half button--fb" action="signInFacebook"><i class="fa fa-social-f"></i> Sign In</button>
-<button class="button--social button--half button--g" action="signInGoogle"><i class="fa fa-social-g"></i> Sign In</button>
+<button class="button--social button--half button--fb" onclick="signInFacebook(event, this)"><i class="fa fa-social-f"></i> Sign In</button>
+<button class="button--social button--half button--g" onclick="signInGoogle(event, this)"><i class="fa fa-social-g"></i> Sign In</button>
 -->
 <p>New here? <a class="switch-sign-on" onclick="servicesChangeSignOnMethod(event, 'sign-up')">Create an account</a>.
-<br />Log in with <a action="checkoutSubscriptions" data-social="facebook">Facebook</a> or <a action="checkoutSubscriptions" data-social="google">Google</a>.</p>
+<br />Log in with <a onclick="checkoutSubscriptions(event, this)" data-social="facebook">Facebook</a> or <a onclick="checkoutSubscriptions(event, this)" data-social="google">Google</a>.</p>
 </script>
 
 <script type="text/template"
@@ -240,7 +240,7 @@ Already have an account? <a class="switch-sign-on" onclick="servicesChangeSignOn
             ${{cost}}
         </td>
         <td>
-            <button class="faux" action="removeSub">
+            <button class="faux" onclick="removeSub(event, this)">
                 <i class="fa fa-trash-o"></i>
             </button>
         </td>
@@ -258,7 +258,7 @@ Already have an account? <a class="switch-sign-on" onclick="servicesChangeSignOn
     {{/error}}
     {{#data}}
     {{#results}}
-    <tr s-data-set data-set="whitelist-{{_id}}" class="{{#blacklisted}}blacklisted{{/blacklisted}}">
+    <tr s-data-set class="{{#blacklisted}}blacklisted{{/blacklisted}}">
         {{#blacklisted}}
             <td class="vendor">{{vendorName}}</td>
             <td class="identity">{{identity}}</td>
@@ -268,11 +268,6 @@ Already have an account? <a class="switch-sign-on" onclick="servicesChangeSignOn
         {{/blacklisted}}
         {{^blacklisted}}
             <td>
-                {{#resume}}
-                <input type="hidden" name="id" value="{{_id}}"/>
-                <input type="hidden" name="amount" value="{{amount}}"/>
-                {{/resume}}
-                <input type="hidden" name="vendor" value="{{vendor}}"/>
                 {{vendorName}}
             </td>
             <td>
@@ -300,28 +295,34 @@ Already have an account? <a class="switch-sign-on" onclick="servicesChangeSignOn
                 {{/subscriptionActive}}
             </td>
             <td>
-                {{#licenseUrl}}
-                <a href="{{licenseUrl}}"
-                   title="Open license document."
-                   target="_blank">View License</a>
-                {{/licenseUrl}}
-                {{^canBuyOut}}
-                <a href="/account/services/buyout/{{_id}}">Prepay 20 Months</a>
-                {{/canBuyOut}}
-                {{#cancel}}
-                <button class="faux"
-                        action="cancelLicenseSubscription"
-                        whitelist-id="{{_id}}">
-                    Cancel Subscription
-                </button>
-                {{/cancel}}
-                {{#resume}}
-                <button class="faux"
-                        action="resumeLicenseSubscription"
-                        data-set-target="whitelist-{{_id}}">
-                    Resume Subscription
-                </button>
-                {{/resume}}
+                <form onsubmit="resumeLicenseSubscription(event, this)">
+                    {{#resume}}
+                    <input type="hidden" name="id" value="{{_id}}"/>
+                    <input type="hidden" name="amount" value="{{amount}}"/>
+                    {{/resumt}}
+                    <input type="hidden" name="vendor" value="{{vendor}}"/>
+                    {{#if licenseUrl}}
+                    <a href="{{licenseUrl}}"
+                       title="Open license document."
+                       target="_blank">View License</a>
+                    {{/if}}
+                    {{#unless canBuyOut}}
+                    <a href="/account/services/buyout/{{_id}}">Prepay 20 Months</a>
+                    {{/unless}}
+                    {{#cancel}}
+                    <button class="faux"
+                            type="button"
+                            onclick="cancelLicenseSubscription(event, this)"
+                            data-whitelist-id="{{_id}}">
+                        Cancel Subscription
+                    </button>
+                    {{/cancel}}
+                    {{#resume}}
+                    <button class="faux">
+                        Resume Subscription
+                    </button>
+                    {{/resume}}
+                </form>
             </td>
         {{/blacklisted}}
     </tr>
@@ -334,7 +335,9 @@ Already have an account? <a class="switch-sign-on" onclick="servicesChangeSignOn
 
 <script type="text/template"
         data-route="^account\/services\/processing"
-        completed="completedProcessing">
+        data-process="processServicesProcessingPage"
+        data-template="services-processing-page"
+        >
     <div class="container">
         <h1>Payment Processing <i class="fa fa-spin fa-gear"></i></h1>
         <p>Your payment is being processed. Please wait.</p>
@@ -390,26 +393,28 @@ Already have an account? <a class="switch-sign-on" onclick="servicesChangeSignOn
 
 <script type="text/template" data-template="resume-whitelist">
     <div class="modal panel">
-        <div class="pointer-events" data-set="resume-payment">
-            <input type="hidden" name="id" value="{{id}}">
-            <input type="hidden" name="vendor" value="{{vendor}}">
-            <input type="hidden" name="identity" value="{{identity}}">
-            {{#amount}}
-            <input type="hidden" name="amount" value="{{amount}}">
-            {{/amount}}
-            <table class="form">
-                <tr>
-                    <th>Platform</th>
-                    <td>{{vendor}}</td>
-                </tr>
-                <tr>
-                    <th>Channel Id</th>
-                    <td>{{identity}}</td>
-                </tr>
-            </table>
-            {{>payment-method-recurring}}
-            <button action="resumeLicenseConfirm" data-set-target="resume-payment">Resume Payments</button>
-            <button action="closeModal">Cancel</button>
+        <div class="pointer-events">
+            <form onsubmit="resumeLicenseConfirm(event, this)">
+                <input type="hidden" name="id" value="{{id}}">
+                <input type="hidden" name="vendor" value="{{vendor}}">
+                <input type="hidden" name="identity" value="{{identity}}">
+                {{#if amount}}
+                <input type="hidden" name="amount" value="{{amount}}">
+                {{/if}}
+                <table class="form">
+                    <tr>
+                        <th>Platform</th>
+                        <td>{{vendor}}</td>
+                    </tr>
+                    <tr>
+                        <th>Channel Id</th>
+                        <td>{{identity}}</td>
+                    </tr>
+                </table>
+                {{>payment-method-recurring}}
+                <button>Resume Payments</button>
+                <button onclick="closeModal(event, this)" type="button">Cancel</button>
+            </form>
         </div>
     </div>
 </script>

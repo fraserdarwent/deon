@@ -249,7 +249,7 @@ function transformEventsEmailOptin (obj) {
 }
 
 function subscribeEventsOptIn (e, el) {
-  var data = getTargetDataSet(el, true, true)
+  var data = formToObject(el)
 
   data['emailOptIns[events]'] = true
   update('self', null, data, (err, obj) => {
@@ -264,7 +264,7 @@ function subscribeEventsOptIn (e, el) {
 }
 
 function signUpForEventEmail (e, el) {
-  var data = getTargetDataSet(el, true, true)
+  var data = formToObject(el)
   var qs = {}
 
   if (data && data.placeNameFull && data.placeNameFull.length > 0) {

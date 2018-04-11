@@ -426,7 +426,7 @@ checkoutSubscriptions.stripe = function checkoutSubscriptionsStripe (data, subs)
 
 function cancelLicenseSubscription (e, el) {
   if (!window.confirm(strings.cancelWhitelistSub)) { return }
-  var id = el.getAttribute('whitelist-id')
+  var id = el.dataset.whitelistId
   // TODO handle wait UX
 
   requestJSON({
@@ -440,14 +440,14 @@ function cancelLicenseSubscription (e, el) {
 }
 
 function resumeLicenseSubscription (e, el) {
-  var data = getTargetDataSet(el)
+  var data = getDataSet(el)
 
   openModal('resume-whitelist', data)
   bindPayPalGermanyWarning()
 }
 
 function resumeLicenseConfirm (e, el) {
-  var data = getTargetDataSet(el)
+  var data = getDataSet(el)
 
   if (!data.id) { return }
   if (!data.vendor) { return }
@@ -596,10 +596,12 @@ resumeLicenseConfirm.stripe = function resumeLicenseConfirmStripe (data) {
   })
 }
 
-function completedProcessing () {
+function processServicesProcessingPage (args) {
   var obj     = queryStringToObject(location.search)
   var uri     = null
   var forward = null
+
+  renderContent(args.template)
 
   if (obj.type == 'buyout') {
     uri = 'whitelist/buyout/complete'
@@ -630,8 +632,10 @@ function completedProcessing () {
       payerId: obj.PayerID
     }
   }, function (err, obj, xhr) {
-    if (err)
-    { return recordErrorAndAlert(err, 'Complete Processing') }
+    if (err) {
+      recordErrorAndAlert(err, 'Complete Processing')
+      return
+    }
     go(forward)
   })
 }
