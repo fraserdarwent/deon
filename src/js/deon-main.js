@@ -122,6 +122,14 @@ document.addEventListener("DOMContentLoaded", function (e) {
     if (typeof (stopCountdownTicks) == 'function') {
       stopCountdownTicks()
     }
+    if (window.location.pathname.indexOf("search") == -1) {
+      const searchFields = findNodes('[name=term]')
+      if (searchFields) {
+        searchFields.forEach((el) => {
+          el.value = ''
+        })
+      }
+    }
   })
 })
 
@@ -1075,7 +1083,6 @@ function processMarkdownPage (args) {
     transform: function (args) {
       const md = marked(args.result)
 
-      console.log('md', md)
       return md
     },
     completed: function (args) {
@@ -1529,11 +1536,9 @@ function pageProcessor (args, meths) {
   args.node = findNode('[role=content]')
 
   const completed = args.completed
-  console.log('completed', completed);
 
   Object.assign(args, {
     completed: function (arguments) {
-      console.log('completed')
       completed.call(null, arguments)
     }
   })

@@ -113,7 +113,6 @@ function submitSearch (e, el, url) {
     }
   }
   const goUrl = searchType.url
-  console.log('searchType', searchType);
 
   q.term = searchTerm
   delete q.page
@@ -181,9 +180,9 @@ function processSearchPage (args, type) {
 function processSearchSnippetTracks (args) {
   processor(args, {
     transform: function (args) {
-      console.log('args', args)
       const result = args.result
       let data = Object.assign({}, result)
+
       data.results = transformTracks(result.results)
       data = transformSearchSnippet(data, 'song')
 
@@ -278,7 +277,6 @@ function processSearchReleaseResults (args) {
     transform: function (args) {
       const result = args.result
       const data = Object.assign({}, result)
-      console.log('data', data);
       const type = getSearchType('releases')
 
       setPagination(data, type.perPage)
