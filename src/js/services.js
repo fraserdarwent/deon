@@ -68,12 +68,8 @@ function processServicesPage (args, done) {
     }
 
     cache(PAGE_SERVICES, scope)
-
     renderContent(args.template, {data: scope})
-
     var vendorSelect = findNode('select[name=vendor]')
-
-    console.log('qo.vendor', qo.vendor)
 
     if (qo.vendor) {
       var vendor = qo.vendor.toLowerCase()

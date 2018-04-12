@@ -44,6 +44,19 @@ preLoadImage('/img/artwork-merch.jpg')
 preLoadImage('/img/artist.jpg')
 
 document.addEventListener("DOMContentLoaded", function (e) {
+
+  const routeNodes = findNodes('[data-route]')
+  for (var i = 0; i < routeNodes.length; i++) {
+    let node = routeNodes[i]
+    if (!node.dataset.template) {
+      node.dataset.template = 'template_' + i
+    }
+    if (!node.dataset.process) {
+      node.dataset.process = 'processPage'
+      console.log('node.dataset', node.dataset)
+    }
+  }
+
   registerPartials()
   initSocials()
   renderHeader()

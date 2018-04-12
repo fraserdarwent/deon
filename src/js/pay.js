@@ -211,7 +211,7 @@ function checkoutSubscriptions (e, el) {
   var submit = function () {
     if (!subs.length) { return }
     recordSubscriptionEvent('Checkout')
-    var data = getDataSet('[data-set=pay-method]')
+    var data = getDataSet(el)
 
     if (!isValidPayMethod(data.method, checkoutSubscriptions)) { return }
     checkoutSubscriptions[data.method](data, subs)
@@ -705,7 +705,7 @@ function redirectServices (e, el) {
 
 function getTotalCheckoutCostFromSubs (arr) {
   return arr.reduce(function (prev, cur) {
-    return prev + cur.amount
+    return new Number(prev) + new Number(cur.amount)
   }, 0)
 }
 
@@ -713,7 +713,6 @@ function getCheckoutSubs () {
   var els = toArray(document.querySelectorAll('[role="new-subs"] tr') || [])
   return els.map((el) => {
     const data = formToObject(el)
-    console.log('data', data)
     return data
   })
 }
@@ -764,6 +763,8 @@ function removeSub (e, el) {
 }
 
 function submitSubscribeGold (e, el) {
+  e.preventDefault()
+
   if (reachedMaxCartSubscriptions()) {
     recordSubscriptionEvent('Reached Max Cart Subscriptions', 'Gold')
     return toasty(strings.cart5)
@@ -773,7 +774,8 @@ function submitSubscribeGold (e, el) {
     return toasty(strings.goldInCart)
   }
 
-  if (!transformServices.scope.user.gold.canSubscribe) {
+  const pageScope = cache(PAGE_SERVICES)
+  if (!pageScope.user.gold.canSubscribe) {
     return
   }
 
@@ -791,7 +793,7 @@ function submitSubscribeGold (e, el) {
   var data = formToObject(e.target)
 
   var fin = function (opts) {
-    if (isSignedIn() || transformServices.scope.onpageSignUp) {
+    if (isSignedIn() || pageScope.onpageSignUp) {
       addSub(opts)
       recordGoldEvent('Gold Added to Cart')
       toasty(strings.goldAdded)
@@ -843,8 +845,6 @@ function alreadyInCart (data) {
 function clickBuyoutNewLicense (e, el) {
   var data = formToObject(findParentWith(el, 'form'))
 
-  console.log('data', data)
-
   if (!data) { return }
   if (!data.vendor) { return }
   if (!data.identity) { return }
@@ -875,7 +875,6 @@ function submitSubscribeNewLicense (e, el) {
 
   var data = formToObject(e.target)
 
-  console.log('data', data)
   if (!data) { return }
   if (!data.vendor) { return }
   if (!data.identity) { return }
@@ -984,9 +983,8 @@ function transformCanceledPayment (obj) {
   return obj
 }
 
-function transformSubscribed (obj) {
-  obj = obj || {}
-  var qo = searchStringToObject()
+function processSubscribedPage (obj) {
+  const qo = searchStringToObject()
 
   if (isSignedIn()) {
     //The ?type=gold should only be added for peopleing come from /gold/get
@@ -1000,5 +998,6 @@ function transformSubscribed (obj) {
       }
     }
   }
-  return obj
+  renderContent(args.template, obj)
+  redirectServices()
 }

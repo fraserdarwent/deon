@@ -127,7 +127,7 @@
             </table>
             <div><span class="total-cost">$<span role="total-cost">0.00</span></span>/month</div>
             <br/>
-            <form onsubmit="checkoutSubscriptions(event)">
+            <form onsubmit="checkoutSubscriptions(event, this)">
                 {{#if showSignUp}}
                     <div id="sign-on">
                         <div role="sign-on-errors"></div>
@@ -301,7 +301,7 @@ Already have an account? <a class="switch-sign-on" onclick="servicesChangeSignOn
                     {{#resume}}
                     <input type="hidden" name="id" value="{{_id}}"/>
                     <input type="hidden" name="amount" value="{{amount}}"/>
-                    {{/resumt}}
+                    {{/resume}}
                     <input type="hidden" name="vendor" value="{{vendor}}"/>
                     {{#if licenseUrl}}
                     <a href="{{licenseUrl}}"
@@ -348,8 +348,10 @@ Already have an account? <a class="switch-sign-on" onclick="servicesChangeSignOn
 
 <script type="text/template"
         data-route="^account\/services\/subscribed"
+        data-process="processServicesPage"
         transform="transformSubscribed"
-        completed="redirectServices">
+        completed="redirectServices"
+        >
     <div class="container">
         <h1>Subscribed!</h1>
         <p>You have been succefully subscribed! You will be redirected to your services in 5 seconds.</p>
