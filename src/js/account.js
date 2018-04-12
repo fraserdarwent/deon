@@ -201,7 +201,7 @@ function disableTwoFactor (e, el) {
 
 function processAccountPage (args) {
   pageProcessor(args, {
-    transform: function (args) {
+    success: function (args) {
       const scope = {}
       const result = args.result
       const account = result
@@ -232,7 +232,7 @@ function processAccountPage (args) {
       scope.locationLegacy = isLegacyLocation()
       scope.emailOptIns = transformEmailOptins(account.emailOptIns)
       scope.account = account
-      return scope
+      renderContent(args.template, {data: scope})
     },
     completed: function () {
       scrollToHighlightHash()

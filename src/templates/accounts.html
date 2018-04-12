@@ -457,7 +457,7 @@
                                     </tbody>
                                 </table>
                                 <div class="button-group">
-                                    <button class="button--full">Save</button>
+                                    {{>submit-button text="Save" class=" "}}
                                 </div>
                             </form>
                             {{/self}}
@@ -702,9 +702,7 @@
              data-target-template="social-settings">
         </div>
         <div class="button-group">
-            <button class="button--cta button--full">
-                Update Settings
-            </button>
+            {{>submit-button text="Update Settings"}}
         </div>
     </form>
     {{/data}}
@@ -857,10 +855,7 @@
             </tbody>
         </table>
         <div class="button-group">
-            <button class="action-toggle">
-                Join Discord
-                <i class="fa fa-spin fa-refresh fa-fw on"></i>
-            </button>
+            {{>submit-button text="Join Discord" class="action-toggle"}}
         </div>
       <div role="response"></div>
     </div>

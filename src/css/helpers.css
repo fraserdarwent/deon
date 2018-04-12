@@ -582,10 +582,13 @@ a.cl-white {
 }
 /* Another Version 😞 */
 .actionier.on .actionier-off,
+form .actionier-on,
+form.on .actionier-off,
 .actionier .actionier-on {
   display: none;
 }
-.actionier.on .actionier-on {
+.actionier.on .actionier-on,
+form.on .actionier-on {
   display: initial;
 }
 

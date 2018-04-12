@@ -10,6 +10,27 @@
   <button type="button" class="button copy-clipboard-button" onclick="copyToClipboard(event)"><i class="fa fa-copy"></i></button>
 </script>
 
+<script type="text/template" data-partial data-template="submit-button">
+  <button class="{{#if class}}{{class}}{{else}}button--cta button--full{{/if}}">
+      <span class="actionier-off">
+        {{#if text}}
+          {{text}}
+        {{else}}
+          Submit
+        {{/if}}
+      </span>
+      <span class="actionier-on">
+        <i class="fa fa-gear fa-spin"></i>
+        <span class="ml-1">
+        {{#if working}}
+          {{working}}
+        {{else}}
+          Working...
+        {{/if}}
+      </span>
+      </span>
+  </button>
+</script>
 <script type="text/template"
         mustache-name="loading-placeholder">
 {{#words}}<span class="loading-placeholder">{{{.}}}</span>
