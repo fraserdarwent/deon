@@ -32,7 +32,7 @@
                         {{/if}}</h2>
                     <p>Monstercat Gold Membership allows you to download any of the music in FLAC, MP3, and WAV formats.</p>
                     {{#if permanent}}
-                        <p>You have Gold Membership.</p>
+                        <p>You have a free Gold Membership.</p>
                     {{/if}}
                     {{#if subscribed}}
                         {{>gold-subscription}}
@@ -302,6 +302,7 @@ Already have an account? <a class="switch-sign-on" onclick="servicesChangeSignOn
                     <input type="hidden" name="id" value="{{_id}}"/>
                     <input type="hidden" name="amount" value="{{amount}}"/>
                     {{/resume}}
+                    <input type="hidden" name="identity" value="{{identity}}"/>
                     <input type="hidden" name="vendor" value="{{vendor}}"/>
                     {{#if licenseUrl}}
                     <a href="{{licenseUrl}}"
@@ -519,7 +520,7 @@ Already have an account? <a class="switch-sign-on" onclick="servicesChangeSignOn
                 </table>
                 {{>payment-method}}
                 <div class="button-group">
-                    <button class="button--full">Buy License</button>
+                    {{>submit-button text="Buy License" class="button--full"}}
                 </div>
             </div>
             {{/data}}

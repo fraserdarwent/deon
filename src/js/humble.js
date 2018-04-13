@@ -44,32 +44,22 @@ function transformHumbleBundleRedeemPage (obj, done) {
 }
 
 function submitHumbleTwitch (e, el) {
-  e.preventDefault()
-  var data = getDataSet(el)
-  var button = document.querySelector('button[role=submit-humble-twitch]')
-  if(!data.username) {
-    return
-  }
-  button.disabled = true
-  button.innerHTML = 'Submitting...'
-  data.username = serviceUrlToChannelId(data.username)
-  requestJSON({
+  submitForm(e, {
+    validate: function (data, errs) {
+      if (!data.username) {
+        errs.push('Username required')
+      }
+
+      return errs
+    },
+    transformData: function (data) {
+      data.promo = humblePromoName
+      data.vendor = "Twitch"
+      return data
+    },
     url: endpoint + '/self/whitelist/redeem-via-trial-code',
     method: 'POST',
-    withCredentials: true,
-    data: {
-      identity: data.username,
-      vendor: 'Twitch',
-      promo: humblePromoName
-    }
-  }, function (err, resp) {
-    button.disabled = false
-    button.innerHTML = 'Submit'
-    if(err) {
-      alert(err)
-      return
-    }
-    else {
+    success: function () {
       toasty('License created! Redirecting...')
       go('/account/services')
     }

@@ -440,13 +440,16 @@ function cancelLicenseSubscription (e, el) {
 }
 
 function resumeLicenseSubscription (e, el) {
+  e.preventDefault()
   var data = getDataSet(el)
+  console.log('data', data);
 
   openModal('resume-whitelist', data)
   bindPayPalGermanyWarning()
 }
 
 function resumeLicenseConfirm (e, el) {
+  e.preventDefault()
   var data = getDataSet(el)
 
   if (!data.id) { return }

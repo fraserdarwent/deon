@@ -53,7 +53,6 @@ document.addEventListener("DOMContentLoaded", function (e) {
     }
     if (!node.dataset.process) {
       node.dataset.process = 'processPage'
-      console.log('node.dataset', node.dataset)
     }
   }
 

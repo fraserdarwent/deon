@@ -65,7 +65,7 @@
         {{^doneTwitchStep}}
           <form class="humble-step-action" onsubmit="submitHumbleTwitch(event, this)">
             <div><input type="text" name="username" placeholder="username" /></div>
-            <button class="btn button--cta" role="submit-humble-twitch">Submit</button>
+            {{>submit-button}}
           </form>
         {{/doneTwitchStep}}
       {{/showTwitchStep}}
