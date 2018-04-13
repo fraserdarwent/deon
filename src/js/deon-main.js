@@ -836,7 +836,6 @@ function processArtistPage (args) {
   pageProcessor(args, {
     transform: function (args) {
       var scope = {}
-
       scope = transformWebsiteDetails(args.result)
       return scope
     }
@@ -1538,7 +1537,9 @@ function processor (args, options) {
       scope.data = opts.transform(args)
     }
 
-    render(args.template, args.node, scope)
+    const renderNode = opts.renderNode || args.node
+
+    render(args.template, renderNode, scope)
 
     if (opts.completed) {
       opts.completed(args)
@@ -1554,18 +1555,9 @@ function processor (args, options) {
  * @param {Object} args Arguments from declare's process steps
  * @param {Object} meths Method overrides
  */
-function pageProcessor (args, meths) {
-  args.node = findNode('[role=content]')
-
-  const completed = args.completed
-
-  Object.assign(args, {
-    completed: function (arguments) {
-      completed.call(null, arguments)
-    }
-  })
-
-  return processor(args, meths)
+function pageProcessor (args, options) {
+  options.renderNode = findNode('[role=content]')
+  return processor(args, options)
 }
 
 function renderHeaderMobile () {
