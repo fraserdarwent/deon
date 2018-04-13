@@ -279,22 +279,22 @@ Already have an account? <a class="switch-sign-on" onclick="servicesChangeSignOn
             <td>{{paid}}</td>
             <td>${{remaining}}</td>
             <td>
-                {{#cost}}
-                ${{cost}}
-                {{/cost}}
-                {{^cost}}
-                N/A
-                {{/cost}}
+                {{#if cost}}
+                    ${{cost}}
+                {{else}}
+                    N/A
+                {{/if}}
             </td>
             <td>
-                {{#subscriptionActive}}
-                    Next Payment: {{nextBillingDate}}
-                {{/subscriptionActive}}
-                {{^subscriptionActive}}
-                    {{#nextBillingDate}}
+                {{#if subscriptionActive}}
+                    {{#if nextBillingDate}}
+                        Next Payment: {{nextBillingDate}}
+                    {{/if}}
+                {{else}}
+                    {{#if nextBillingDate}}
                         Expires: {{nextBillingDate}}
-                    {{/nextBillingDate}}
-                {{/subscriptionActive}}
+                    {{/if}}
+                {{/if}}
             </td>
             <td>
                 <form onsubmit="resumeLicenseSubscription(event, this)">

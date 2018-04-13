@@ -12,22 +12,19 @@
                 {{else}}
                     <div class="playlists">
                         <h5 class="mt-2">Add to New Playlist</h5>
-                        <div data-set="playlist" trigger-target="createAndAddToPlaylist">
+                        <form onsubmit="createAndAddToPlaylist(event, this)">
+                            <input type="hidden" name="releaseId" value="{{releaseId}}" />
+                            <input type="hidden" name="trackId" value="{{trackId}}" />
                             <input name="name"
                                 class="mv-1 mh-0 input--big xs-expando xs-expando-m"
                                 type="text"
                                 size="30"
                                 placeholder="Playlist Name"
                                 autocomplete="off">
-                            <button onclick="createAndAddToPlaylist(event, this)"
-                                class="mv-1 mh-0 xs-expando xs-expando-m"
-                                trigger="createAndAddToPlaylist"
-                                data-set-target="playlist"
-                                data-track-id="{{trackId}}"
-                                data-release-id="{{releaseId}}">
-                                Create and Add
+                            <button class="mv-1 mh-0 xs-expando xs-expando-m">
+                                {{>submit-button-inner text="Create and Add"}}
                             </button>
-                        </div>
+                        </form>
                         <h5 class="mt-1 mb-1">Add to Existing Playlist</h5>
                         <table>
                             <tbody>
@@ -72,7 +69,7 @@
         <h1>My Playlists</h1>
         <div class="panel">
             <div class="options">
-                <button onclick="createPlaylist(event, this)">
+                <button onclick="clickCreatePlaylist(event, this)">
                     Create Playlist
                 </button>
             </div>

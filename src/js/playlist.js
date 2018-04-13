@@ -1,7 +1,7 @@
 const PLAYLIST_DOWNLOAD_LIMIT = 50 //Maximum tracks you can download at once from a playlist
 const PLAYLIST_PAGE_LIMIT = 100
 
-function createPlaylist (e, el, name, tracks, cb) {
+function createPlaylist (name, tracks, cb) {
   if (!name) name = window.prompt(strings.createPlaylist)
   if (!name) return
   create('playlist', {
@@ -11,22 +11,35 @@ function createPlaylist (e, el, name, tracks, cb) {
   }, cb ? cb : simpleUpdate)
 }
 
+function clickCreatePlaylist (e, el) {
+  const name = window.prompt(strings.createPlaylist)
+  createPlaylist(name, [])
+}
+
 function createAndAddToPlaylist (e, el) {
-  var data = getTargetDataSet(el, false, true)
-
-  if (!data)
-    return
-
-
-  var tracks = [{trackId: el.dataset.trackId, releaseId: el.releaseId}]
-  createPlaylist(e, el, data.name, tracks, function (err, obj, xhr) {
-    if (err) {
-      toasty(new Error(err))
-      return
+  submitForm(e, {
+    validate: function (data, errs) {
+      if (!data.name) {
+        errs.push('Name is required')
+      }
+      return errs
+    },
+    transformData: function (data) {
+      data.tracks = [{trackId: data.trackId, releaseId: data.releaseId}]
+      return data
+    },
+    action: function (opts) {
+      actionier.on(opts.form)
+      createPlaylist(opts.data.name, opts.data.tracks, function (err, obj, xhr) {
+        actionier.off(opts.form)
+        if (terror(err)) {
+          formErrors(opts.form, err)
+          return
+        }
+        closeModal()
+        toasty(strings.addedToPlaylist)
+      })
     }
-
-    closeModal()
-    toasty(strings.addedToPlaylist)
   })
 }
 

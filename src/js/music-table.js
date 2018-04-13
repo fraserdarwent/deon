@@ -92,8 +92,6 @@ function processCatalogResults (args) {
 
       Object.assign(obj, filters)
 
-      console.log('obj', obj)
-
       return obj
     },
     completed: completedCatalogFilters

@@ -705,10 +705,12 @@ function submitRemoveYouTubeClaim (e, el) {
 
   submitForm(e, {
     transformData: function (data) {
-      data.videoId = youTubeIdParser(data.videoId)
+      if (data.videoId.indexOf('http') == 0) {
+        data.videoId = youTubeIdParser(data.videoId)
 
-      if (data.videoId !== false) {
-        videoIdInput.value = data.videoId
+        if (data.videoId !== false) {
+          videoIdInput.value = data.videoId
+        }
       }
 
       return data
