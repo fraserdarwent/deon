@@ -133,16 +133,16 @@
             <img src="/img/artwork.jpg" class="preload" />
             <img src="{{release.cover}}" />
             <a  class="button button--cta"
-                index="{{index}}"
+                data-index="{{index}}"
                 onclick="playSong(event, this)"
                 role="play-song"
-                play-link="{{playUrl}}"
-                title="{{title}}"
-                artists-title="{{artistsTitle}}"
+                data-play-link="{{playUrl}}"
+                data-title="{{title}}"
+                data-artists-title="{{artistsTitle}}"
                 data-track-id="{{_id}}"
-                {{#licensable}}licensable{{/licensable}}
-                {{#playlistId}}playlist-id="{{playlistId}}"{{/playlistId}}
-                data-release-id="{{releaseId}}">
+                data-release-id="{{releaseId}}"
+                data-licensable
+                >
                 <i class="fa fa-play"></i>
                   Play
             </a>
