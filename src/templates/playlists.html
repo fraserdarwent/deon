@@ -222,10 +222,6 @@
         data-template="playlist-tracks"
         data-process="processPlaylistTracks"
         completed="updateControls">
-    {{#loading}}
-        {{>loading-table-view}}
-    {{/loading}}
-    {{#data}}
         {{#each results}}
         <tr role="playlist-track"
             data-track-id="{{_id}}"
@@ -276,5 +272,4 @@
                 <td colspan="10">No Results.</td>
             </tr>
         {{/unless}}
-    {{/data}}
 </script>

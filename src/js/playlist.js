@@ -53,7 +53,7 @@ function renamePlaylist (e, el) {
 }
 
 function destroyPlaylist (e, el) {
-  if (!window.confirm(strings.destroyPlaylist)) 
+  if (!window.confirm(strings.destroyPlaylist))
     return
   destroy('playlist', el.dataset.playlistId, simpleUpdate)
 }
@@ -123,9 +123,11 @@ function addToPlaylist (e, el) {
 
   if (!playlistId) {
     return
+  }
 
-  if (actionier.isOn(el))
+  if (actionier.isOn(el)) {
     return
+  }
 
   const url = endpoint + '/playlist/' + playlistId
 
@@ -202,6 +204,8 @@ function isMyPlaylist (playlist) {
  * Processor for showing your list of playlists
  */
 function processPlaylistsPage (args) {
+  pageProcessor(args)
+  /*
   processor(args, {
     start: function start (args) {
       renderContent(args.template, {
@@ -220,6 +224,7 @@ function processPlaylistsPage (args) {
       })
     }
   })
+  */
 }
 
 function processPlaylistPage (args) {
@@ -293,49 +298,7 @@ function processPlaylistPage (args) {
       })
       appendSongMetaData(playlist.tracks)
       pageIsReady()
-      completedPlaylistTracks()
-    }
-  })
-}
-
-function processPlaylistTracks (args) {
-  processor(args, {
-    start: function (args) {
-      render(args.template, args.node, {loading: true})
-    },
-    success: function (args) {
-      const playlist = cache(PAGE_PLAYLIST).playlist
-      const result = args.result
-      const data = {}
-      const trackAtlas = toAtlas(result.results, '_id')
-
-      data.results = result.results.map((item, index, arr) => {
-        const track = mapTrack(item)
-
-        track.index = index
-        track.trackNumber = index + 1
-        track.playlistId = playlist._id
-        track.canRemove = isMyPlaylist(playlist) ? { index: track.index } : undefined
-        if (isMyPlaylist(playlist)) {
-          track.edit = {
-            releaseId: track.releaseId,
-            _id: track._id,
-            title: track.title,
-            trackNumber: track.trackNumber,
-            index: track.index
-          }
-        } else {
-          track.noEdit = {
-            trackNumber: track.trackNumber
-          }
-        }
-
-        return track
-      })
-
-      render(args.template, args.node, {
-        data: data
-      })
+      completedPlaylist()
     }
   })
 }
@@ -345,17 +308,8 @@ function completedPlaylistTracks (source, obj) {
 }
 
 function completedPlaylist (source, obj) {
-  if (obj.error) return
-  var pl = obj.data
-
-  setPageTitle(pl.name + pageTitleGlue + 'Playlist')
-  setMetaData({
-    'og:type': 'music.playlist',
-    'og:title': pl.name,
-    'og:url': location.toString()
-  })
-  appendSongMetaData(obj.data.tracks)
-  pageIsReady()
+  const pl = cache(PAGE_PLAYLIST).playlist
+  console.log('pl', pl);
 
   //Make a bunch of divs that are loading tracks to put into
   //the tbody
@@ -372,29 +326,6 @@ function completedPlaylist (source, obj) {
   }
 
   loadTracksDelayed(1)
-
-  const playlistTracks = {
-    pages: pages,
-    pagesLoaded: 0,
-    pageResults: {},
-    resultTables: {}
-  }
-  /*
-  const limit = PLAYLIST_PAGE_LIMIT
-  const skip = i * PLAYLIST_PAGE_LIMIT
-
-  for (var i = 0; i < pages; i++) {
-    const table = document.createElement('table')
-
-    const html =  '<tbody source="$endpoint/catalog/browse/?playlistId={{_id}}&skip={{skip}}&limit={{limit}}" template="playlist-tracks"><tr></tr></tbody>'
-
-    render(table, html, {_id: pl._id, skip: skip, limit: limit})
-
-    playlistTracks.resultTables[i] = table
-  }
-
-  cache('playlistTracks', playlistTracks)
-  */
 }
 
 function getPlaylistTracksTable () {
@@ -409,6 +340,7 @@ function loadPlaylistTracksPage (playlistId, page, done) {
   const skip = (page - 1) * PLAYLIST_PAGE_LIMIT
   const limit = PLAYLIST_PAGE_LIMIT
   const url = endpoint + '/catalog/browse/?playlistId=' + playlistId + '&skip= ' + skip + '&limit=' + limit
+  const playlist = cache(PAGE_PLAYLIST).playlist
 
   requestJSON({
     url: url,
@@ -423,27 +355,50 @@ function loadPlaylistTracksPage (playlistId, page, done) {
     const tracksTableTHead = getPlaylisTracksTHead()
     const placeHolderTBody = document.querySelector('tbody[data-placeholder-page="' + page + '"]')
 
-    transformPlaylistTracks(result, (err, tracks) => {
-      if (err) {
-        done(err)
-        return
+    const tracks = transformPlaylistTracks(playlist, result.results, page)
+
+    const table = document.createDocumentFragment()
+    const tbody = document.createElement('tbody')
+
+    table.appendChild(tbody)
+
+    render('playlist-tracks', tbody, {results: tracks})
+
+    tracksTable.insertBefore(table, placeHolderTBody)
+    tracksTable.removeChild(placeHolderTBody)
+    const firstPlaceHolder = placeHolderTBody.querySelector('tr[data-placeholder-page="' + page + '"]')
+
+    if (done) {
+      done(null, tracks)
+    }
+  })
+}
+
+function transformPlaylistTracks (playlist, tracks, page) {
+  const indexBump = (page - 1) * PLAYLIST_PAGE_LIMIT
+
+  return tracks.map((item, index, arr) => {
+    const track = mapTrack(item)
+
+    track.index = index + indexBump
+    track.trackNumber = index + 1 + indexBump
+    track.playlistId = playlist._id
+    track.canRemove = isMyPlaylist(playlist) ? { index: track.index } : undefined
+    if (isMyPlaylist(playlist)) {
+      track.edit = {
+        releaseId: track.releaseId,
+        _id: track._id,
+        title: track.title,
+        trackNumber: track.trackNumber,
+        index: track.index
       }
-
-      const table = document.createDocumentFragment()
-      const tbody = document.createElement('tbody')
-
-      table.appendChild(tbody)
-
-      render(tbody, getTemplate('playlist-tracks'), {data: tracks})
-
-      tracksTable.insertBefore(table, placeHolderTBody)
-      tracksTable.removeChild(placeHolderTBody)
-      const firstPlaceHolder = placeHolderTBody.querySelector('tr[data-placeholder-page="' + page + '"]')
-
-      if (done) {
-        done(null, tracks)
+    } else {
+      track.noEdit = {
+        trackNumber: track.trackNumber
       }
-    })
+    }
+
+    return track
   })
 }
 
@@ -567,10 +522,6 @@ function resetPlaylistInputs() {
 }
 
 function savePlaylistOrder() {
-  var id = document.querySelector('[playlist-id]').getAttribute('playlist-id')
-  var trackEls = document.querySelectorAll('[role="playlist-track"]')
-  var trackSaves = []
-
   const id = cache(PAGE_PLAYLIST).playlist._id
   const trackEls = document.querySelectorAll('[role="playlist-track"]')
   const trackSaves = []
@@ -655,15 +606,14 @@ function playlistDragLeave (e) {
   e.target.closest('[role="playlist-track"]').classList.remove('drag-active', 'drag-active-top', 'drag-active-bottom')
 }
 
-function getChildIndex (child){
+function getChildIndex (child) {
   var parent = child.parentNode
   var children = parent.children
-  var i = children.length - 1
 
-  for (; i >= 0; i--){
-    if (child == children[i])
+  for (var i = children.length - 1; i >= 0; i--) {
+    if (child == children[i]) {
       return i
-
+    }
   }
   return i
 }
@@ -675,6 +625,7 @@ function playlistDrop (e) {
   var draggedTr = findNode('tr[role="playlist-track"][track-id="' + trackId + '"][release-id="' + releaseId + '"]')
   if(draggedTr == null) {
     return
+  }
 
   draggedTr.classList.remove('drag-dragging')
   var draggedIndex = e.dataTransfer.getData('childIndex')

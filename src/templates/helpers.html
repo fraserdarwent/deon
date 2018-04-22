@@ -16,7 +16,9 @@
   </button>
 </script>
 <script type="text/template"
-        mustache-name="loading-placeholder">
+        data-template="loading-placeholder"
+        data-partial
+        >
 {{#words}}<span class="loading-placeholder">{{{.}}}</span>
 {{/words}}
 </script>

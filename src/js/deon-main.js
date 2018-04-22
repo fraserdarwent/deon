@@ -1556,6 +1556,7 @@ function processor (args, options) {
  * @param {Object} meths Method overrides
  */
 function pageProcessor (args, options) {
+  options = options || {}
   options.renderNode = findNode('[role=content]')
   return processor(args, options)
 }
