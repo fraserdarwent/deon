@@ -116,6 +116,7 @@
                                     <i class="fa fa-cloud-download"></i>
                                     </a>
                                 </li>
+                                {{/releaseDate}}
                             {{/inEarlyAccess}}
                             {{#inEarlyAccess}}
                                 {{^hasGoldAccess}}
@@ -237,14 +238,6 @@
                          data-source="$endpoint/events/upcoming?websiteDetailsIds={{artistIds}}">
                     </div>
                 {{/if}}
-            {{/if}}
-
-            {{#if merch}}
-            <div data-target-template="release-merch"
-                 class="mt-4 mb-2"
-                 data-no-cors
-                 data-source="https://shop.monstercat.com/collections/website-featured/products.json">
-            </div>
             {{/if}}
 
             {{#unless hasGoldAccess}}

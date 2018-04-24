@@ -240,55 +240,15 @@ function processReleasePage (args) {
           scope.hasGoldAccess = hasGoldAccess()
           setPageTitle(scope.release.title + ' by ' + scope.release.renderedArtists)
 
-          splittests.release1FeatureOrder = new SplitTest({
-            name: 'release-1-featuresorder',
-            dontCheckStarter: true,
-            modifiers: {
-              'gold-merch-more': function (_this) {
-                scope.features = [{
-                  gold: true
-                }, {
-                  merch: true
-                }, {
-                  moreFromArtists: true
-                }]
-              },
-              'merch-gold-more': function (_this) {
-                scope.features = [{
-                  merch: true
-                }, {
-                  gold: true
-                }, {
-                  moreFromArtists: true
-                }]
-              },
-              'more-merch-gold': function (_this) {
-                scope.features = [{
-                  moreFromArtists: true
-                }, {
-                  merch: true
-                }, {
-                  gold: true
-                }]
-              }
-              ,
-              'more-gold-merch': function (_this) {
-                scope.features = [{
-                  moreFromArtists: true
-                }, {
-                  gold: true
-                }, {
-                  merch: true
-                }]
-              }
-            },
-            onStarted: function () {
-              scope.activeTest = 'release1FeatureOrder'
-              cache(PAGE_RELEASE, scope)
-              renderContent(args.template, scope)
-            }
-          })
-          splittests.release1FeatureOrder.start()
+          scope.features = [{
+            moreFromArtists: true
+          }, {
+            gold: true
+          }, {
+            merch: true
+          }]
+          cache(PAGE_RELEASE, scope)
+          renderContent(args.template, scope)
         })
       })
     }
