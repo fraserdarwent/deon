@@ -6,7 +6,7 @@ function toast (opts) {
   }
   const div = document.createElement('div')
 
-  render('toast', div, opts)
+  betterRender('toast', div, opts)
   const el = div.firstElementChild
   const defaultShowTime = 3000
 
@@ -45,7 +45,7 @@ function terror (err) {
 function renderModal (name, scope) {
   const modalContainer = findNode('[role="modals"] [role="container"]')
 
-  render(name, modalContainer, scope)
+  betterRender(name, modalContainer, scope)
 }
 
 function openModal (name, data) {

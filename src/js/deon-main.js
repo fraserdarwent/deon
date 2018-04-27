@@ -35,7 +35,7 @@ var SOCIAL_LINKS_MAP = {
   }
 }
 
-Object.keys(SOCIAL_LINKS_MAP).forEach(function (key) {
+Object.keys(SOCIAL_LINKS_MAP).forEach((key) => {
   SOCIAL_LINKS_MAP[key].platform = key
 })
 
@@ -43,11 +43,12 @@ preLoadImage('/img/artwork.jpg')
 preLoadImage('/img/artwork-merch.jpg')
 preLoadImage('/img/artist.jpg')
 
-document.addEventListener("DOMContentLoaded", function (e) {
-
+document.addEventListener("DOMContentLoaded", (e) => {
   const routeNodes = findNodes('[data-route]')
+
   for (var i = 0; i < routeNodes.length; i++) {
-    let node = routeNodes[i]
+    const node = routeNodes[i]
+
     if (!node.dataset.template) {
       node.dataset.template = 'template_' + i
     }
@@ -69,7 +70,7 @@ document.addEventListener("DOMContentLoaded", function (e) {
     //document.addEventListener("keypress", interceptKeyPress)
     //document.addEventListener("submit", interceptSubmit);
 
-    document.addEventListener("click", function (e) {
+    document.addEventListener("click", (e) => {
       var t = e.target
       var action = t.getAttribute("click-action")
 
@@ -87,7 +88,7 @@ document.addEventListener("DOMContentLoaded", function (e) {
         recordEvent(action, opts)
       }
 
-      var testEl = findParentWith(t, "[ab-test]")
+      var testEl = findParentOrSelf(t, "[ab-test]")
 
       if (testEl) {
         var testName = testEl.getAttribute("ab-test")
@@ -115,12 +116,11 @@ document.addEventListener("DOMContentLoaded", function (e) {
   })
   document.querySelector('.credit [role=year]').innerText = new Date().getFullYear()
 
-  window.addEventListener('404', function (e) {
+  window.addEventListener('routenotfound', (e) => {
     renderContent('404')
   })
 
-
-  window.addEventListener('changestate', function (e) {
+  window.addEventListener('changestate', (e) => {
     recordPage()
     renderHeader()
     closeModal()
@@ -136,6 +136,7 @@ document.addEventListener("DOMContentLoaded", function (e) {
     }
     if (window.location.pathname.indexOf("search") == -1) {
       const searchFields = findNodes('[name=term]')
+
       if (searchFields) {
         searchFields.forEach((el) => {
           el.value = ''
@@ -145,9 +146,12 @@ document.addEventListener("DOMContentLoaded", function (e) {
   })
 })
 
-startState()
+function onPopState (e) {
+  console.log('pop state')
+  changeState(location.pathname + location.search, e.state, '')
+}
 
-//requestDetect.credentialDomains.push(endhost)
+window.addEventListener("popstate", onPopState)
 
 var releaseTypes = {
   album: { value: 'Album', name: "Albums", key: 'album' },
@@ -156,7 +160,12 @@ var releaseTypes = {
   podcast: { value: 'Podcast', name: "Podcasts", key: 'podcast' }
 }
 
-var releaseTypesList = [releaseTypes.album, releaseTypes.ep, releaseTypes.single, releaseTypes.podcast]
+var releaseTypesList = [
+  releaseTypes.album,
+  releaseTypes.ep,
+  releaseTypes.single,
+  releaseTypes.podcast
+]
 
 function preLoadImage (src) {
   (document.createElement('img')).src = src
@@ -224,7 +233,7 @@ function getSession (done) {
 }
 
 function loadSession (done) {
-  getSession(function (err, obj, xhr) {
+  getSession((err, obj, xhr) => {
     if (err) {
       // TODO handle this!
       console.warn(err.message)
@@ -294,8 +303,9 @@ function recordErrorAndGo (err, where, uri) {
   go(uri)
 }
 
-function recordGoldEvent (action, obj, done) {
-  obj = obj || {}
+function recordGoldEvent (action, aObj, done) {
+  const obj = aObj || {}
+
   obj.category = 'Gold'
   return recordEvent(action, obj, done)
 }
@@ -356,7 +366,7 @@ function showFront (e, el) {
 function renderFrontForm () {
   const front = document.getElementById('front-form')
 
-  render('front-form', front, cache('front-form'))
+  betterRender('front-form', front, cache('front-form'))
 }
 
 function closeFrontForm (e) {
@@ -418,7 +428,7 @@ function createCopycredit (title, links) {
   }
 
   links = links || []
-  links.forEach(function (link) {
+  links.forEach((link) => {
     var url = link.original
 
     if (!url) { return }
@@ -435,8 +445,8 @@ function getArtistsAtlas (tks, done) {
   var ids = []
 
   tks = tks || []
-  tks.forEach(function(track) {
-    ids = ids.concat((track.artists || []).map(function (artist) {
+  tks.forEach((track) => {
+    ids = ids.concat((track.artists || []).map( (artist) => {
       return artist.artistId || artist._id
     }))
   })
@@ -444,7 +454,7 @@ function getArtistsAtlas (tks, done) {
   if (!ids.length) { return done(null, []) }
   var url = endpoint + '/catalog/artists-by-users?ids=' + ids.join(',')
 
-  loadCache(url, function (err, aobj) {
+  requestCachedURL(url, (err, aobj) => {
     if (err) { return done(err) }
     return done(err, toAtlas(aobj.results, '_id'))
   })
@@ -455,7 +465,7 @@ function getArtistsTitle(artists) {
   { return '' }
   if (artists.length == 1)
   { return artists[0].name }
-  var names = artists.map(function(artist) {
+  var names = artists.map((artist) => {
     return artist.name
   })
 
@@ -502,11 +512,11 @@ function getTwitterLinkUsername (url) {
  *   trackId
  */
 function loadReleaseAndTrack (obj, done) {
-  loadCache(endpoint + '/catalog/track/' + obj.trackId, function(err, track) {
+  requestCachedURL(endpoint + '/catalog/track/' + obj.trackId, (err, track) => {
     if (err) {
       return done(err)
     }
-    loadCache(endpoint + '/catalog/release/' + obj.releaseId, function(err, release) {
+    requestCachedURL(endpoint + '/catalog/release/' + obj.releaseId, (err, release) => {
       if (err) {
         return done(err)
       }
@@ -567,9 +577,9 @@ function getGetGoldLink () {
 }
 
 function mapTrackArtists (track) {
-  var artistDetails = (track.artistDetails || []).filter(function (obj) {
+  var artistDetails = (track.artistDetails || []).filter((obj) => {
     return !!obj
-  }).map(function (details) {
+  }).map((details) => {
     details.uri = details.vanityUri || details.websiteDetailsId || details._id
     details.public = !!details.public
     details.artistPageUrl = window.location.protocol + '//' + window.location.hostname + (window.location.port ? ':' + window.location.port : '') + '/artist/' + details.uri
@@ -580,7 +590,7 @@ function mapTrackArtists (track) {
 
   var detailsAtlas = toAtlas(artistDetails, '_id')
 
-  var artists = track.artistUsers.map(function (artistUser) {
+  var artists = track.artistUsers.map((artistUser) => {
     if (artistUser.websiteDetailsId && detailsAtlas[artistUser.websiteDetailsId]) {
       return detailsAtlas[artistUser.websiteDetailsId]
     }
@@ -593,7 +603,7 @@ function mapTrackArtists (track) {
 
 function getSocials (linkObjs) {
   var arr = []
-  var socials = linkObjs.map(function (link) {
+  var socials = linkObjs.map((link) => {
     var social = {
       link: link.original,
       original: link.original
@@ -632,7 +642,7 @@ function getSocials (linkObjs) {
 
 function getSocialsAtlas (urls) {
   var socials = getSocials(urls)
-  var atlas = socials.reduce(function (at, value, index) {
+  var atlas = socials.reduce((at, value, index) => {
     at[value.icon] = value
     return at
   }, {})
@@ -644,7 +654,7 @@ function getReleaseShareLink (urls) {
   var link
   var re = /spotify\.com/
 
-  urls.forEach(function (url) {
+  urls.forEach((url) => {
     if (re.test(url)) {
       link = url
     }
@@ -654,7 +664,7 @@ function getReleaseShareLink (urls) {
 
 function getReleasePurchaseLinks (urls) {
   var hasAppleMusic = false
-  var links = urls.reduce(function (links, linkObj) {
+  var links = urls.reduce((links, linkObj) => {
     var extra = RELEASE_LINK_MAP[linkObj.platform]
 
     if (extra) {
@@ -671,7 +681,7 @@ function getReleasePurchaseLinks (urls) {
       links.push(link)
     }
     return links
-  }, []).sort(function (a, b) {
+  }, []).sort((a, b) => {
     if (a.priority == b.priority) {
       return 0
     }
@@ -680,12 +690,12 @@ function getReleasePurchaseLinks (urls) {
   })
 
   if (hasAppleMusic) {
-    links = links.filter(function (link) {
+    links = links.filter((link) => {
       return link.platform != 'itunes'
     })
   }
 
-  links = links.map(function (link) {
+  links = links.map((link) => {
     if (!link.icon) {
       link.icon = 'link'
     }
@@ -786,7 +796,7 @@ function mapRelease (release) {
   release.cover = release.coverUrl + '?image_width=512'
   release.coverBig = release.coverUrl + '?image_width=1024'
   if (release.urls instanceof Array) {
-    release.originalUrls = release.urls.reduce(function (urls, link) {
+    release.originalUrls = release.urls.reduce((urls, link) => {
       if (typeof (link) == 'string') {
         urls.push(link)
       }
@@ -825,7 +835,7 @@ function transformWebsiteDetails (wd) {
   }
   if (wd.urls) {
     wd.socials = getSocials(wd.urls)
-    Object.keys(wd.socials).forEach(function (key) {
+    Object.keys(wd.socials).forEach((key) => {
       wd.socials[key].artistName = wd.name
     })
   }
@@ -878,7 +888,7 @@ function processHomeFeatured (opts) {
       loading: false
     }
   }
-  render('home-featured', opts.node, scope)
+  betterRender('home-featured', opts.node, scope)
 }
 
 /* Transform Methods */
@@ -931,13 +941,13 @@ function processPodcasts (args) {
 
 function processHomeMerch (opts) {
   if (opts.state == 'start') {
-    render('home-merch', opts.node, {
+    betterRender('home-merch', opts.node, {
       loading: true
     })
   }
   else if (opts.state == 'finish') {
     if (opts.err) {
-      render('home-merch', opts.node, {
+      betterRender('home-merch', opts.node, {
         loading: false,
         err: opts.err
       })
@@ -951,7 +961,7 @@ function processHomeMerch (opts) {
       return prod
     })
 
-    render('home-merch', opts.node, {
+    betterRender('home-merch', opts.node, {
       products: products,
       loading: false
     })
@@ -988,7 +998,7 @@ function processRosterPage (args) {
 function processRosterYear (obj) {
   processor(obj, {
     start: function () {
-      render('loading-view', obj.node)
+      betterRender('loading-view', obj.node)
     },
     success: function (args) {
       var scope = args.result
@@ -1005,7 +1015,7 @@ function processRosterYear (obj) {
         if (a > b) { return 1 }
         return 0
       })
-      render(args.template, args.node, scope)
+      betterRender(args.template, args.node, scope)
     }
   })
 }
@@ -1062,7 +1072,7 @@ function isVariousArtistsRelease(obj) {
 function processUserReleases (args) {
   processor(args, {
     start: function () {
-      render(args.template, args.node, {
+      betterRender(args.template, args.node, {
         loading: true
       })
     },
@@ -1070,10 +1080,10 @@ function processUserReleases (args) {
       var scope = transformUserReleases(args.result)
 
       scope.loading = false
-      render(args.template, args.node, scope)
+      betterRender(args.template, args.node, scope)
     },
     error: function (args) {
-      render(args.template, args.node, {
+      betterRender(args.template, args.node, {
         error: args.err
       })
     }
@@ -1189,7 +1199,7 @@ function transformReleaseTracks (obj, done) {
 
   var trackIndex = 0
 
-  obj.results.forEach(function (track, index, arr) {
+  obj.results.forEach((track, index, arr) => {
     mapTrack(track)
     track.index = trackIndex
     track.trackNumber = trackIndex + 1
@@ -1204,7 +1214,7 @@ function transformReleaseTracks (obj, done) {
 }
 
 function transformTracks (results, done) {
-  var tracks = results.map(function (track, index, arr) {
+  var tracks = results.map((track, index, arr) => {
     mapTrack(track)
     track.index = index
     return track
@@ -1277,8 +1287,8 @@ function completedReleaseTracks (source, obj) {
     return
   }
   appendSongMetaData(obj.data.results)
-  var artistLinks = obj.data.results.reduce(function (links, track) {
-    track.artistDetails.forEach(function (ad) {
+  var artistLinks = obj.data.results.reduce((links, track) => {
+    track.artistDetails.forEach((ad) => {
       if (links.indexOf(ad.artistPageUrl) == -1) {
         links.push(ad.artistPageUrl)
       }
@@ -1292,7 +1302,7 @@ function completedReleaseTracks (source, obj) {
   pageIsReady()
   var embeds = document.querySelectorAll('[collection-id][role=shopify-embed]')
 
-  embeds.forEach(function (node) {
+  embeds.forEach((node) => {
     ShopifyBuyInit(node.getAttribute('collection-id'), node)
   })
   updateControls()
@@ -1439,31 +1449,6 @@ function transformCurrentUrl (data) {
   return data
 }
 
-function renderHeader () {
-  var data = transformCurrentUrl()
-
-  if (session) {
-    data.user = session ? session.user : null
-  }
-  render('navigation', '#navigation', {
-    data: data
-  })
-}
-
-function renderLoading () {
-  renderContent('loading-view')
-}
-
-function renderError (err) {
-  renderContent('error', {err: err})
-}
-
-function renderContent (template, scope) {
-  const content = findNode('[role=content]')
-
-  render(template, content, scope)
-}
-
 /**
  * General purpose processor for other processors to call so that they don't have
  * to rewrite stuff.
@@ -1503,11 +1488,11 @@ function processor (args, options) {
     }
 
     if (opts.hasLoading) {
-      render(args.template, args.node, {loading: true})
+      betterRender(args.template, args.node, {loading: true})
       return
     }
 
-    render('loading-view', args.node)
+    betterRender('loading-view', args.node)
     return
   }
 
@@ -1519,11 +1504,11 @@ function processor (args, options) {
         return
       }
       else if (opts.hasError) {
-        render(args.template, args.node, {error: args.err})
+        betterRender(args.template, args.node, {error: args.err})
         return
       }
 
-      render('error', args.node, {message: args.err.toString()})
+      betterRender('error', args.node, {message: args.err.toString()})
       return
     }
     if (opts.success) {
@@ -1539,7 +1524,7 @@ function processor (args, options) {
 
     const renderNode = opts.renderNode || args.node
 
-    render(args.template, renderNode, scope)
+    betterRender(args.template, renderNode, scope)
 
     if (opts.completed) {
       opts.completed(args)
@@ -1567,7 +1552,7 @@ function renderHeaderMobile () {
   if (session) {
     data.user = session ? session.user : null
   }
-  render('navigation', '#navigation-mobile', {
+  betterRender('navigation', '#navigation-mobile', {
     data: data
   })
 
@@ -1627,6 +1612,91 @@ function requestWithFormData (opts, done) {
   }
   opts.data = fd
   request(opts, done)
+}
+
+/**
+ * XHR request for JSON requests
+ *
+ * @param {Object|String} opts Optinos or the URL. If URL
+ * instead of object it defaults to GET withCredentials
+ * @params {requestCallback} done
+ */
+function requestJSON (opts, done) {
+  if (typeof opts == 'string') {
+    opts = {
+      method: 'GET',
+      withCredentials: true,
+      url: opts,
+      headers: {}
+    }
+  }
+
+  opts.headers = opts.headers || {}
+  opts.headers.Accept = 'application/json'
+
+  if (opts.data) {
+    opts.headers['Content-Type'] = 'application/json'
+    opts.data = JSON.stringify(opts.data)
+  }
+
+  request(opts, done)
+}
+
+function requestCachedURL (url, done) {
+  requestCached({
+    url: url,
+    method: 'GET',
+    withCredentials: true
+  }, done)
+}
+
+/**
+ * Request wrapper that uses local caching to not
+ * make multiple requests to the same URL
+ *
+ * @param {String} source The URL to get from
+ * @param {requestCallback} done
+ * @param {Boolean} reset
+ */
+function loadCache (source, done, reset) {
+  throw new Error('Replace this with requestCached')
+  let _ = loadCache._
+
+  if (!_) {
+    _ = {}
+    loadCache._ = _
+  }
+  const cached = cache(source)
+
+  if (!reset && cached) {
+    done(null, cached)
+    return
+  }
+  let callbacks = _[source]
+  let doit = false
+
+  if (!callbacks) {
+    callbacks = []
+    _[source] = callbacks
+    doit = true
+  }
+  callbacks.push(done)
+  if (doit == false) {
+    return
+  }
+  requestJSON({
+    url: source,
+    withCredentials: true
+  }, (err, obj, xhr) => {
+    if (obj) {
+      cache(source, Object.assign({}, obj))
+    }
+
+    callbacks.forEach((fn) => {
+      fn(err, obj)
+    })
+    delete _[source]
+  })
 }
 
 function getStats () {

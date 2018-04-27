@@ -14,7 +14,7 @@ function FormDataDeclare (form) {
   if (form) {
     var els = form.querySelectorAll('[name]')
 
-    els.forEach(function (el) {
+    els.forEach((el) => {
       var name = el.getAttribute('name')
       var val = el.value
 
@@ -22,7 +22,7 @@ function FormDataDeclare (form) {
         val = el.checked
       }
       this.data[name] = val
-    }.bind(this))
+    })
   }
 }
 
@@ -45,11 +45,11 @@ function formDataToObject(formData) {
   for (var pair of formData.entries()) {
     source[pair[0]] = pair[1]
   }
-  return Object.keys(source).reduce(function (output, key) {
+  return Object.keys(source).reduce((output, key) => {
     var parentKey = key.match(/[^\[]*/i)
     var paths = key.match(/\[.*?\]/g) || []
 
-    paths = [parentKey[0]].concat(paths).map(function (key) {
+    paths = [parentKey[0]].concat(paths).map((key) => {
       return key.replace(/\[|\]/g, '')
     })
     var currentPath = output
@@ -79,7 +79,7 @@ function formDataToObject(formData) {
 function objectToFormData(obj) {
   function recur(formData, propName, currVal) {
     if (Array.isArray(currVal) || Object.prototype.toString.call(currVal) === '[object Object]') {
-      Object.keys(currVal).forEach(function(v) {
+      Object.keys(currVal).forEach((v) => {
         recur(formData, propName + "[" + v + "]", currVal[v])
       })
       return formData
@@ -91,7 +91,7 @@ function objectToFormData(obj) {
 
   var keys = Object.keys(obj)
 
-  return keys.reduce(function(formData, propName) {
+  return keys.reduce((formData, propName) => {
     return recur(formData, propName, obj[propName])
   }, new FormData())
 }
@@ -103,7 +103,7 @@ function objectToFormData(obj) {
 * @returns {Object}
 */
 function fixFormDataIndexes (formData, fields) {
-  fields.forEach(function (name) {
+  fields.forEach((name) => {
     var ev = 'var value = formData.' + name
 
     eval(ev)
@@ -153,6 +153,26 @@ function formToObject (form) {
 }
 
 /**
+ * Wrapper for formToObject that can
+ * also take a querySelector
+ *
+ * @param {Object|String} nodeOrSel The node or selector to find the node
+ * @returns {Object}
+ */
+function getDataSet (nodeOrSel) {
+  let node
+
+  if (typeof nodeOrSel == 'string') {
+    node = findNode(nodeOrSel)
+  }
+  else {
+    node = nodeOrSel
+  }
+
+  return formToObject(node)
+}
+
+/**
  * A helper for submitting forms that has default functionality
  * you can override with options.
  *
@@ -161,8 +181,10 @@ function formToObject (form) {
  * @param {String} opts.successMsg - Optional message to display on success.
  * @param {Function} opts.success - Optional success function to run on success.
  * @param {Function} opts.error - Optional error function to run on erros.
- * @param {Function} opts.transformData - Optional function to transform json data object.
- * @param {Boolean} opts.formData - Optional flag to send data as FormData instead of JSON object.
+ * @param {Function} opts.transformData - Optional function to transform
+                                          json data object.
+ * @param {Boolean} opts.formData - Optional flag to send data as FormData
+                                    instead of JSON object.
  */
 function submitForm (e, opts = {}) {
   e.preventDefault()
@@ -259,44 +281,6 @@ function submitForm (e, opts = {}) {
   })
 }
 
-var TAG_MATCHER = 'tag\:([^ ]+)'
-
-/**
- * Handles a form submission that is meant to redirect to a page
- * with GET parameters for filtering. This would include
- * things like page, search, sortOrder, sortValue, etc
- *
- * @param {Object} e Browser submit event
- * @param {Object} opts Options
- * @param {Object} opts.url URL to redirect them to
- */
-function submitQueryForm (e, opts) {
-  e.preventDefault()
-  if (typeof (opts) == 'string') {
-    opts = {
-      url: opts
-    }
-  }
-  var data = formToObject(getEventForm(e))
-  var qo = {
-    limit: data.limit
-  }
-
-  if (data.search) {
-    var search = data.search
-    var re = new RegExp(TAG_MATCHER, 'g')
-    var matches = (search.match(re) || [])
-      .map(x => x.match(new RegExp(TAG_MATCHER))[1])
-
-    search = search.replace(re, '').trim()
-    qo.search = search
-    if (matches.length) { qo.tagged = matches }
-  }
-  var url = opts.url || '/'
-
-  go(url + '?' + objectToQueryString(qo))
-}
-
 /**
  * Helper function that prepends a list of error messages to a form.
  * It creates the error container if it doesn't exist
@@ -305,7 +289,8 @@ function submitQueryForm (e, opts) {
  * @param {Array[Object|String]} errs Array of errors
  * @returns {Boolean} True if there are errors
  */
-function formErrors (form, errs) {
+function formErrors (form, aErrs) {
+  let errs = aErrs || []
   var errDiv = form.querySelector('[role=form-errors]')
 
   if (!errDiv) {
@@ -317,19 +302,20 @@ function formErrors (form, errs) {
     return formErrors(form, errs)
   }
 
-  errs = errs || []
   if (errs.constructor != Array) {
     errs = [errs]
   }
-  errs = errs.map((err) => {
+  errs = errs.map((aErr) => {
+    let err = aErr
+
     if (typeof (err) == 'string') {
       err = {
-        msg: err
+        msg: aErr
       }
     }
     else if (!err.hasOwnProperty('msg')) {
       err = {
-        msg: err.toString()
+        msg: aErr.toString()
       }
     }
 
@@ -357,23 +343,4 @@ function makeFormControlFeedback (field) {
     feedback = parent.querySelector('.form-control-feedback')
   }
   return feedback
-}
-
-/**
- * Wrapper for formToObject that can
- * also take a querySelector
- *
- * @param {Object|String} nodeOrSel The node or selector to find the node
- * @returns {Object}
- */
-function getDataSet (nodeOrSel) {
-  let node
-  if (typeof nodeOrSel == 'string') {
-    node = findNode(nodeOrSel)
-  }
-  else {
-    node = nodeOrSel
-  }
-
-  return formToObject(node)
 }

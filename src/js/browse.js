@@ -31,7 +31,7 @@ function mapFilterString (str) {
 function processBrowseFilters (args) {
   processor(args, {
     success: function (args) {
-      render(args.template, args.node, {data: args.result})
+      betterRender(args.template, args.node, {data: args.result})
       renderBrowseFilters()
     }
   })
@@ -74,7 +74,7 @@ function createFilterItem (type, value) {
 
   const num = findNodes('[name^="' + type + 's"]').length
 
-  render('browse-filter-item', div, {
+  betterRender('browse-filter-item', div, {
     type: type,
     value: value,
     index: num
@@ -86,7 +86,7 @@ function openBrowsePage (q) {
   var cel = document.querySelector('[role="browse-pages"]')
   if (!cel) return
   var div = document.createElement('div')
-  render('browse-page', div, {
+  betterRender('browse-page', div, {
     source: endpoint + '/catalog/browse/?' + objectToQueryString(q)
   })
   var ul = div.firstElementChild

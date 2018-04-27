@@ -101,7 +101,7 @@ function processSyncTracks (args) {
 }
 
 function openSyncProjectModal (e) {
-  var anchor = findParentWith(e.target, 'a')
+  var anchor = findParentOrSelf(e.target, 'a')
   var youTubeId = anchor.getAttribute('youtube-id')
   var src = 'https://www.youtube.com/embed/' + youTubeId + '?autoplay=1'
   var scope = {

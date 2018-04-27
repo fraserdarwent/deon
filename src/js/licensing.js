@@ -57,8 +57,8 @@ function completedContentCreatorLicensing () {
   scrollToHighlightHash()
   var buyButtons = document.querySelectorAll('[role=licensing-cta]')
 
-  buyButtons.forEach(function (btn) {
-    btn.addEventListener('click', function (e) {
+  buyButtons.forEach((btn) => {
+    btn.addEventListener('click', (e) => {
       licensingABTest.convert()
       return true
     })
@@ -89,7 +89,7 @@ function copyCrediting (e, el){
 }
 
 function openTrackLicensing (e) {
-  const el = findParentWith(e.target, '[data-track-id]')
+  const el = findParentOrSelf(e.target, '[data-track-id]')
   const trackId = el.dataset.trackId
   const releaseId = el.dataset.releaseId
 

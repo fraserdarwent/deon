@@ -125,7 +125,7 @@ function processReleaseMerch (args) {
   processor(args, {
     success: function (args) {
       if (!args.result) {
-        render(args.template, args.node, {
+        betterRender(args.template, args.node, {
           loading: false
         })
         return
@@ -144,7 +144,7 @@ function processReleaseMerch (args) {
         return prod
       })
       scope.activeTest = cache(PAGE_RELEASE).activeTest
-      render(args.template, args.node, scope)
+      betterRender(args.template, args.node, scope)
     }
   })
 }
@@ -302,7 +302,7 @@ function processRelatedReleases (args) {
         artistsList: pageScope.releaseArtists
       }
 
-      render(args.template, args.node, scope)
+      betterRender(args.template, args.node, scope)
     }
   })
 }

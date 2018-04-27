@@ -54,7 +54,7 @@ function processEventPage (args) {
 function processHeaderEvent (args) {
   processor(args, {
     start: function () {
-      render('loading-view-black', args.node)
+      betterRender('loading-view-black', args.node)
     },
     transform: function (args) {
       const header = transformEvent(args.result.results[0])
@@ -290,7 +290,7 @@ function loadUpcomingEvents (options) {
   var div = document.createElement('div')
   var container = findNode('[role="events-tables"]')
 
-  render('events-table-container', div, {
+  betterRender('events-table-container', div, {
     upcomingQueryString: upcomingQS
   })
 
@@ -310,7 +310,7 @@ function clickLoadMoreUpcomingEvents (e, el) {
 function loadAndAppendFeaturedEvents () {
   var url = endpoint + '/events/upcoming?featured=1&skip=0&limit=20'
 
-  loadCache(url, (err, result) => {
+  requestCachedURL(url, (err, result) => {
     if (err) {
       checkNoFeaturedMessage()
       return console.error(err)
@@ -324,7 +324,7 @@ function loadAndAppendFeaturedEvents () {
     var trsToAdd = result.results.map((evt) => {
       const event = transformEvent(evt)
       const table = document.createElement('table')
-      render('upcoming-event-tr', table, event)
+      betterRender('upcoming-event-tr', table, event)
 
       const featuredTr = table.querySelector('tr')
 

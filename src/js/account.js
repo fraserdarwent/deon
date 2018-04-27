@@ -9,8 +9,6 @@ function transformSubmittedAccountData (data) {
   delete data.birthday_day
   delete data.birthday_month
   delete data.birthday_year
-  console.log('data', data)
-  console.log('str', str)
   return data;
 }
 
@@ -90,7 +88,7 @@ function submitJoinDiscord (e, el) {
     method: "POST",
     url: endpoint + "/self/discord/join",
     started: function () {
-      render('discord-response', responseEl, {loading: true})
+      betterRender('discord-response', responseEl, {loading: true})
     },
     validate: function (data, errs) {
       if (!data.discordId) {
@@ -112,7 +110,7 @@ function submitJoinDiscord (e, el) {
         }
       }
 
-      render('discord-response', responseEl, {
+      betterRender('discord-response', responseEl, {
         data: scope
       })
     }

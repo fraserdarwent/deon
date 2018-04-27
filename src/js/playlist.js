@@ -1,9 +1,15 @@
 const PLAYLIST_DOWNLOAD_LIMIT = 50 //Maximum tracks you can download at once from a playlist
 const PLAYLIST_PAGE_LIMIT = 100
 
-function createPlaylist (name, tracks, cb) {
-  if (!name) name = window.prompt(strings.createPlaylist)
-  if (!name) return
+function createPlaylist (aName, tracks, cb) {
+  let name = aName
+
+  if (!name) {
+    name = window.prompt(strings.createPlaylist)
+  }
+  if (!name) {
+    return
+  }
   create('playlist', {
     name: name,
     public: session.settings ? session.settings.playlistPublicByDefault : false,
@@ -13,6 +19,7 @@ function createPlaylist (name, tracks, cb) {
 
 function clickCreatePlaylist (e, el) {
   const name = window.prompt(strings.createPlaylist)
+
   createPlaylist(name, [])
 }
 
@@ -30,7 +37,7 @@ function createAndAddToPlaylist (e, el) {
     },
     action: function (opts) {
       actionier.on(opts.form)
-      createPlaylist(opts.data.name, opts.data.tracks, function (err, obj, xhr) {
+      createPlaylist(opts.data.name, opts.data.tracks, (err, obj, xhr) => {
         actionier.off(opts.form)
         if (terror(err)) {
           formErrors(opts.form, err)
@@ -46,8 +53,9 @@ function createAndAddToPlaylist (e, el) {
 function renamePlaylist (e, el) {
   var name = window.prompt(strings.renamePlaylist)
 
-  if (!name)
+  if (!name) {
     return
+  }
 
   update('playlist', el.dataset.playlistId, { name: name }, simpleUpdate)
 }
@@ -69,11 +77,12 @@ function clickRemoveFromPlaylist (e, el) {
 
   const url   = endpoint + '/playlist/' + id + '?fields=name,public,tracks,userId'
 
-  loadCache(url, (err, obj) => {
+  requestCachedURL(url, (err, obj) => {
     if (terror(err)) {
       return
     }
     const tracks = obj.tracks
+
     toasty('Track removed from playlist')
 
     tracks.splice(index, 1)
@@ -97,7 +106,7 @@ function openAddToPlaylist (e, el) {
     loading: true
   })
 
-  loadCache(endpoint + '/playlist', (err, playlists) => {
+  requestCachedURL(endpoint + '/playlist', (err, playlists) => {
     if (err) {
       renderModal(template, {
         error: err,
@@ -142,7 +151,7 @@ function addToPlaylist (e, el) {
   }
 
   actionier.on(el)
-  loadCache(url, (err, obj) => {
+  requestCachedURL(url, (err, obj) => {
     if (err) {
       actionier.off(el)
       toasty(new Error(err.message))
@@ -205,26 +214,6 @@ function isMyPlaylist (playlist) {
  */
 function processPlaylistsPage (args) {
   pageProcessor(args)
-  /*
-  processor(args, {
-    start: function start (args) {
-      renderContent(args.template, {
-        loading: true
-      })
-    },
-    error: function error (args) {
-      render(args.template, args.node, {
-        error: args.err,
-        loading: false
-      })
-    },
-    success: function (args) {
-      renderContent(args.template, {
-        data: args.result
-      })
-    }
-  })
-  */
 }
 
 function processPlaylistPage (args) {
@@ -362,7 +351,7 @@ function loadPlaylistTracksPage (playlistId, page, done) {
 
     table.appendChild(tbody)
 
-    render('playlist-tracks', tbody, {results: tracks})
+    betterRender('playlist-tracks', tbody, {results: tracks})
 
     tracksTable.insertBefore(table, placeHolderTBody)
     tracksTable.removeChild(placeHolderTBody)

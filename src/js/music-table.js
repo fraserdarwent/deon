@@ -56,7 +56,7 @@ function openCatalogPage (q) {
 
   const div = document.createElement('div')
 
-  render('catalog-rows-group', div, {
+  betterRender('catalog-rows-group', div, {
     source: endpoint + '/catalog/browse/?' + objectToQueryString(q)
   })
 

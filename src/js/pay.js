@@ -751,7 +751,7 @@ function addSub (obj) {
   var container = findNode('[role="new-subs"]')
   var div = document.createElement('tbody')
 
-  render('subscription-row', div, obj)
+  betterRender('subscription-row', div, obj)
   container.appendChild(div.firstElementChild)
   updateTotalCheckoutCost()
   showNewSubscriptions()
@@ -846,7 +846,7 @@ function alreadyInCart (data) {
 }
 
 function clickBuyoutNewLicense (e, el) {
-  var data = formToObject(findParentWith(el, 'form'))
+  var data = formToObject(findParentOrSelf(el, 'form'))
 
   if (!data) { return }
   if (!data.vendor) { return }
@@ -964,7 +964,7 @@ function togglePayPalGermanyWarning () {
 function servicesChangeSignOnMethod (e, newMethod) {
   var email = findNode('[name=email]').value
 
-  render('services-' + newMethod, findNode('[role=sign-on-fields]'))
+  betterRender('services-' + newMethod, findNode('[role=sign-on-fields]'))
   findNode('[name=email]').value = email
   if (newMethod == 'sign-up') {
     initLocationAutoComplete()
