@@ -24,6 +24,8 @@ function processBlogPage (args) {
       setPagination(obj, obj.limit)
 
       obj.results = obj.results.map((i, index, arr) => {
+        const date = new Date(i.date)
+
         i.featured = (index == 0 && !obj.tag) ? true : false
         i.date = formatDate(i.date)
         i.isOdd = !(index % 2 == 0)
@@ -31,6 +33,13 @@ function processBlogPage (args) {
         i.excerpt = (i.excerpt.length > maxExcerpt) ? i.excerpt.substr(0, maxExcerpt) + '...' : i.excerpt
         i.image = transformLegacyImages(i.image)
         i.url = i.path.split('/')[1].slice(0, -3) // remove 'posts/' and '.md'
+        i.link = '/blog/' + date.getFullYear()
+          + '-'
+          + zeroPad(date.getMonth() + 1, 2)
+          + '-' +
+          zeroPad(date.getDate(),2)
+          + '/' + i.url
+
         return i
       })
 

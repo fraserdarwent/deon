@@ -1,20 +1,12 @@
 <script type="text/template"
         data-route="^(?:news|blog)\/(?:article|posts|[\d+\-]+)\/([^\/\?]*)\/?"
         data-title="Article"
-<<<<<<< HEAD
-        data-source="$newshost/json/posts/$1.json">
-    {{#loading}}
-    {{>loading-view}}
-    {{/loading}}
-    {{#error}}
-=======
         data-source="$newshost/json/posts/$1.json"
         data-process="processBlogPostPage"
         data-template="blog-post-page"
         data-no-cors
         >
     {{#if error}}
->>>>>>> Static pages
     <div class="container panel">
         <p>Article not found.</p>
         {{#error}}
