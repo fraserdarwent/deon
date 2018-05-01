@@ -1498,17 +1498,17 @@ function processor (args, options) {
 
   //The ajax is done, and either succeeded or failed
   if (args.state == 'finish') {
-    if (args.err) {
+    if (args.error) {
       if (opts.error) {
         opts.error(args)
         return
       }
       else if (opts.hasError) {
-        betterRender(args.template, args.node, {error: args.err})
+        betterRender(args.template, args.node, {error: args.error})
         return
       }
 
-      betterRender('error', args.node, {message: args.err.toString()})
+      betterRender('error', args.node, {message: args.error.toString()})
       return
     }
     if (opts.success) {
@@ -1516,7 +1516,7 @@ function processor (args, options) {
       return
     }
 
-    var scope = {err: args.err, data: args.result, loading: false}
+    var scope = {err: args.error, data: args.result, loading: false}
 
     if (opts.transform) {
       scope.data = opts.transform(args)
@@ -1540,8 +1540,9 @@ function processor (args, options) {
  * @param {Object} args Arguments from declare's process steps
  * @param {Object} meths Method overrides
  */
-function pageProcessor (args, options) {
-  options = options || {}
+function pageProcessor (args, aOptions) {
+  const options = aOptions || {}
+
   options.renderNode = findNode('[role=content]')
   return processor(args, options)
 }
