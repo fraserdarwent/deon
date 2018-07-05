@@ -57,6 +57,7 @@
   padding: 0px 0.75em;
   display: block;
   transition: all 0.25s ease 0.5s, opacity 0.5s ease 0s;
+  overflow: hidden;
 }
 @media screen and (min-width: 1650px){
   .services .panel--dark{
