@@ -462,10 +462,6 @@ body.showing-notice .controls.fixed.playing {
   opacity: 1;
   pointer-events: auto;
 }
-.controls > .volume-slider-container,
-.controls > .volume-toggle{
-  display: none;
-}
 
 @media screen and (min-width:992px) {
   .controls > .volume-slider-container,
