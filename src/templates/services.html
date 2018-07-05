@@ -201,14 +201,16 @@ Already have an account? <a class="switch-sign-on" onclick="servicesChangeSignOn
 </script>
 
 <script type="text/template" data-partial data-template="payment-method">
-    <label>
-        <input type="radio" name="method" value="paypal">
-        <span><i class="fa fa-fw fa-cc-paypal"></i></span>
-    </label>
-    <label>
-        <input type="radio" name="method" value="stripe" checked>
-        <span><i class="fa fa-fw fa-cc-stripe"></i></span>
-    </label>
+    <div class="payment-methods">
+        <label>
+            <input type="radio" name="method" value="paypal">
+            <span><i class="fa fa-fw fa-cc-paypal"></i></span>
+        </label>
+        <label>
+            <input type="radio" name="method" value="stripe" checked>
+            <span><i class="fa fa-fw fa-cc-stripe"></i></span>
+        </label>
+    </div>
 </script>
 
 <script type="text/template" data-partial data-template="payment-method-recurring">

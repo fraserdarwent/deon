@@ -360,11 +360,13 @@ label[for] {
   transition: 0.5s ease all;
 }
 
+[type="radio"]:hover + span:before {
+  background: black;
+}
 [type="radio"]:checked + span:before {
   background: dodgerblue;
   box-shadow: 0 0 0 0.25em dodgerblue;
 }
-
 [type="radio"]:focus + span{
   transition: text-shadow 0.4s ease;
 }
