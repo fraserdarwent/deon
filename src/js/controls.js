@@ -79,6 +79,16 @@ document.addEventListener('DOMContentLoaded', (e) => {
   })
 })
 
+function bindVolumeEvents(){
+  var containers = findNodes(sel.volumeSliderContainer)
+
+  if (containers){
+    containers.forEach((container) => {
+      container.addEventListener('touchstart', initVolumeMobile.bind(null, container))
+    })
+  }
+}
+
 function recordPlayerEvent (e) {
   var opts = e.detail.item
 
@@ -166,8 +176,9 @@ function showVolumeSlider(e, el){
   el.parentNode.childNodes.forEach((node) => {
     if (node.classList && node.classList.contains('volume-slider-container')){
       var slider =  node.firstElementChild
+
       slider.addEventListener('mouseleave', hideVolumeSlider.bind(this, el))
-      slider.addEventListener('mousedown', startDragVolumeSlider.bind(this, slider),true)
+      slider.addEventListener('mousedown', startDragVolumeSlider.bind(this, slider), true)
     }
   })
   el.parentNode.classList.toggle('show-slider', true)
