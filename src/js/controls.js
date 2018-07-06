@@ -467,8 +467,8 @@ function updatePlayerProgress () {
   var scrubs = document.querySelectorAll(sel.scrub)
   var timestamps = document.querySelectorAll(sel.timestamp)
 
-  function pad(s){
-    return String("0" + s).slice(-2)
+  function pad(time){
+    return String("0" + time).slice(-2)
   }
 
   if (timestamps && player.audio.duration) {
