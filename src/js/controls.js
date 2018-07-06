@@ -156,51 +156,54 @@ function toggleVolume (e, el) {
   setVolumeDisplay()
 }
 
-function bindVolumeEvents (){
-  var container = findNode(sel.volumeSliderContainer)
-  var outer = findNode(sel.volumeOuterSlider)
-
-  // non-touch events
-  container.addEventListener('mouseover', volumeSliderRemain)
-  container.addEventListener('mouseleave', startVolumeSliderHide)
-  outer.addEventListener('mousedown', startVolumeDrag)
-  outer.addEventListener('mousemove', calculateVolumeDrag)
-
-  // touch events
-  container.addEventListener('touchstart', initVolumeMobile)
-}
-
-function initVolumeMobile(e){
+function initVolumeMobile(e, el){
   // if they're on touch devices, let's put the volume at 100%
   e.preventDefault()
   player.setVolume(1)
 }
 
-function startVolumeSliderShow (e) {
-  clearTimeout(startVolumeSliderHide.timeout)
-  var controls = findNode(sel.controls)
-
-  controls.classList.toggle('show-slider', true)
+function showVolumeSlider(e, el){
+  el.parentNode.childNodes.forEach((node) => {
+    if (node.classList && node.classList.contains('volume-slider-container')){
+      var slider =  node.firstElementChild
+      slider.addEventListener('mouseleave', hideVolumeSlider.bind(this, el))
+      slider.addEventListener('mousedown', startDragVolumeSlider.bind(this, slider),true)
+    }
+  })
+  el.parentNode.classList.toggle('show-slider', true)
 }
 
-function volumeSliderRemain (e) {
-  clearTimeout(startVolumeSliderHide.timeout)
+function hideVolumeSlider(el, e) {
+  el.parentNode.classList.toggle('show-slider', false)
 }
 
-function startVolumeSliderHide () {
-  if (startVolumeDrag.dragging) {
-    return false
+function startDragVolumeSlider(slider, e){
+  changeSlider(e.pageY - slider.getBoundingClientRect().y, slider)
+  var dragVolumeSliderBound = dragVolumeSlider.bind(this, slider)
+
+  slider.addEventListener('mousemove', dragVolumeSliderBound)
+  slider.addEventListener('mouseup', () => { slider.removeEventListener('mousemove', dragVolumeSliderBound) })
+}
+
+function dragVolumeSlider(slider, e){
+  preventSelection()
+  changeSlider(e.pageY - slider.getBoundingClientRect().y, slider)
+}
+
+function changeSlider(height, slider){
+  var volume = slider.offsetHeight < height ? 100 : (height / slider.offsetHeight) * 100
+
+  volume = volume < 0 ? 0 : volume
+  var sliders = findNodes(sel.volumeInnerSlider)
+
+  if (sliders){
+    sliders.forEach((slider) => {
+      slider.style.height = `${volume}%`
+    })
   }
-  startVolumeSliderHide.timeout = setTimeout(function () {
-    volumeSliderHide()
-  }, 500)
-}
-startVolumeSliderHide.timeout = null
-
-function volumeSliderHide () {
-  var controls = findNode(sel.controls)
-
-  controls.classList.toggle('show-slider', false)
+  player.setStoredVolume(volume)
+  player.setVolume(volume)
+  setCookie('volume', volume)
 }
 
 function preventSelection(){
@@ -219,60 +222,6 @@ function preventSelection(){
       return
     }
   }
-}
-
-function startVolumeDrag (e) {
-  startVolumeDrag.dragging = true
-  calculateVolumeDrag(e)
-  window.addEventListener("mouseup", stopVolumeDrag)
-  window.addEventListener("mousemove", preventSelection, false)
-}
-startVolumeDrag.dragging = false
-
-function calculateVolumeDrag (e) {
-  if (!e.path) {
-    addEventPath(e)
-  }
-  if (!startVolumeDrag.dragging || e.path[0].matches('.volume-slider-handle')) {
-    return
-  }
-  var outer = findNode(sel.volumeOuterSlider)
-  var style = window.getComputedStyle(outer)
-  var height = parseInt(style.getPropertyValue('height'))
-  var offset = e.offsetY
-  var newVolume = offset / height
-
-  //Dragging off the edge sometimes messes up, so we'll round for the user here
-  //TODO: Change this to check to see if the mouse is outside the range of offsetY (past the slider container)
-  if (height - offset <= 1) {
-    newVolume = 1
-  }
-
-  player.setStoredVolume(newVolume)
-  player.setVolume(newVolume)
-  setCookie('volume', newVolume)
-  setVolumeDisplay()
-}
-
-function stopVolumeDrag (e) {
-  window.removeEventListener("mouseup", stopVolumeDrag)
-  window.removeEventListener("mousemove", preventSelection, false)
-  startVolumeDrag.dragging = false
-}
-
-function setVolumeDisplay () {
-  var volume = player.getVolume()
-  var icon = findNode(sel.volumeI)
-  var innerSlide = findNode(sel.volumeInnerSlider)
-  var height = volume * 100
-
-  if (height < 2) {
-    height = 2
-  }
-  icon.classList.toggle('fa-volume-off', volume == 0)
-  icon.classList.toggle('fa-volume-down', volume < 0.75 && volume > 0)
-  icon.classList.toggle('fa-volume-up', volume >= 0.75)
-  innerSlide.style.height = parseInt(height) + '%'
 }
 
 function playSongDblC (e, el) {
