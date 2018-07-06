@@ -376,11 +376,15 @@ body.showing-notice .controls.fixed.playing {
   background: transparent;
 }
 
-.controls > a {
+.controls > a, span{
   width: 100%;
   display: block;
-  margin: .5rem 0;
+  margin: .5rem;
   text-align: center;
+}
+
+.controls > span {
+  margin: 0 0 .5rem 0;
 }
 
 .controls > button {
