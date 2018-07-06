@@ -212,6 +212,16 @@ function changeSlider(height, slider){
       slider.style.height = `${volume}%`
     })
   }
+  var icons = findNodes(sel.volumeI)
+
+  if (icons){
+    icons.forEach((icon) => {
+      icon.classList.toggle('fa-volume-off', volume === 0)
+      icon.classList.toggle('fa-volume-down', volume < 75 && volume > 0)
+      icon.classList.toggle('fa-volume-up', volume >= 75)
+    })
+  }
+
   player.setStoredVolume(volume)
   player.setVolume(volume)
   setCookie('volume', volume)

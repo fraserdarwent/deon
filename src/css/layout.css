@@ -417,12 +417,14 @@ body.showing-notice .controls.fixed.playing {
   background: #eee;
   z-index: 99;
   position: relative;
+  cursor: pointer;
 }
 
 .volume-slider-inner {
   background: dodgerblue;
   position: relative;
   border-radius: 0px;
+  height: 100%;
 }
 
 .volume-slider-handle {
