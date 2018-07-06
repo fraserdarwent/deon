@@ -150,20 +150,9 @@ function playSong (e, el) {
 }
 
 function toggleVolume (e, el) {
-  if (!el.matches(e.target, 'i,button')) {
-    return
-  }
-
-  var volume = player.getVolume()
-
-  if (volume > 0) {
-    player.setStoredVolume(volume)
-    player.setVolume(0)
-  }
-  else {
-    player.setVolume(player.getStoredVolume())
-  }
-  setVolumeDisplay()
+  player.setStoredVolume(0)
+  player.setVolume(0)
+  changeVolume(0)
 }
 
 function initVolumeMobile(e, el){
@@ -189,7 +178,7 @@ function hideVolumeSlider(el, e) {
 }
 
 function startDragVolumeSlider(slider, e){
-  changeSlider(e.pageY - slider.getBoundingClientRect().y, slider)
+  changeVolumeBySlider(e.pageY - slider.getBoundingClientRect().y, slider)
   var dragVolumeSliderBound = dragVolumeSlider.bind(this, slider)
 
   slider.addEventListener('mousemove', dragVolumeSliderBound)
@@ -198,13 +187,10 @@ function startDragVolumeSlider(slider, e){
 
 function dragVolumeSlider(slider, e){
   preventSelection()
-  changeSlider(e.pageY - slider.getBoundingClientRect().y, slider)
+  changeVolumeBySlider(e.pageY - slider.getBoundingClientRect().y, slider)
 }
 
-function changeSlider(height, slider){
-  var volume = slider.offsetHeight < height ? 100 : (height / slider.offsetHeight) * 100
-
-  volume = volume < 0 ? 0 : volume
+function changeVolume(volume){
   var sliders = findNodes(sel.volumeInnerSlider)
 
   if (sliders){
@@ -225,6 +211,13 @@ function changeSlider(height, slider){
   player.setStoredVolume(volume)
   player.setVolume(volume)
   setCookie('volume', volume)
+}
+
+function changeVolumeBySlider(height, slider){
+  var volume = slider.offsetHeight < height ? 100 : (height / slider.offsetHeight) * 100
+
+  volume = volume < 0 ? 0 : volume
+  changeVolume(volume)
 }
 
 function preventSelection(){
