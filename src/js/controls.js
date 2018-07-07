@@ -213,10 +213,9 @@ function changeVolume(volume){
 }
 
 function changeVolumeBySlider(height, slider){
-  var volume = slider.offsetHeight < height ? 100 : (height / slider.offsetHeight) * 100
+  var volume = slider.offsetHeight < height ? 1 : (height / slider.offsetHeight)
 
   volume = volume < 0 ? 0 : volume
-  volume = volume / 100
   changeVolume(volume)
 }
 
