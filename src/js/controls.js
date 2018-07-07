@@ -54,7 +54,6 @@ document.addEventListener('DOMContentLoaded', (e) => {
   player.setStoredVolume(volume)
   player.setVolume(volume)
   bindVolumeEvents()
-  setVolumeDisplay()
   document.addEventListener('keydown', (e) => {
     if (e.keyCode == 32) {
       const spaceFields = ['INPUT', 'TEXTAREA', 'BUTTON']
@@ -203,8 +202,8 @@ function changeVolume(volume){
   if (icons){
     icons.forEach((icon) => {
       icon.classList.toggle('fa-volume-off', volume === 0)
-      icon.classList.toggle('fa-volume-down', volume < 75 && volume > 0)
-      icon.classList.toggle('fa-volume-up', volume >= 75)
+      icon.classList.toggle('fa-volume-down', volume < 0.75 && volume > 0)
+      icon.classList.toggle('fa-volume-up', volume >= 0.75)
     })
   }
 
@@ -217,6 +216,7 @@ function changeVolumeBySlider(height, slider){
   var volume = slider.offsetHeight < height ? 100 : (height / slider.offsetHeight) * 100
 
   volume = volume < 0 ? 0 : volume
+  volume = volume / 100
   changeVolume(volume)
 }
 
