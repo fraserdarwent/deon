@@ -68,12 +68,10 @@ document.addEventListener('DOMContentLoaded', (e) => {
         togglePlay()
       }
       else {
-        const playButtons = findNodes('[onclick^="playSongs"],[onclick^="playSong"]')
+        const playButton = findNode('[onclick^="playSongs"],[onclick^="playSong"]')
 
-        if (playButtons) {
-          playButtons.forEach((playButton) => {
-            playButton.click()
-          })
+        if (playButton) {
+          playButton.click()
         }
       }
     }
@@ -255,13 +253,9 @@ function loadAndPlayTracks (index) {
     player.set(tracks)
     player.play(index)
 
-    var els = findNodes(sel.link)
+    var el = findNode(sel.link)
 
-    if (els) {
-      els.forEach((el) => {
-        el.setAttribute('href', window.location.pathname + window.location.search)
-      })
-    }
+    if (el) { el.setAttribute('href', window.location.pathname + window.location.search) }
   }
 
   updateControls()
@@ -270,7 +264,7 @@ function loadAndPlayTracks (index) {
 function buildTracks () {
   var els = Array.prototype.slice.call(document.querySelectorAll('[data-play-link]'))
 
-  els = els.sort((el1, el2) => {
+  els = els.sort(function (el1, el2) {
     var idx1 = parseInt(el1.dataset.index)
     var idx2 = parseInt(el2.dataset.index)
 
@@ -355,7 +349,7 @@ function updateControls () {
   var playEls = findNodes(sel.play)
 
   if (playEls) {
-    playEls.forEach((playEl) => {
+    playEls.forEach((playEl)=>{
       playEl.classList.toggle('fa-play', !player.playing && !player.loading)
       playEl.classList.toggle('fa-pause', player.playing)
       playEl.classList.toggle('fa-spin', player.loading && !player.playing)
@@ -373,23 +367,36 @@ function updateControls () {
   var item = player.items[player.index]
   var selector = '[role="play-song"][data-play-link="' + (item ? item.source : '') + '"]'
 
-  var pels = findNodes(sel.playPlaylist)
+  var allMatches = document.querySelectorAll(selector)
+  var el
 
-  if (pels) {
-    pels.forEach((pel) => {
-      var playlistPlaying = playing && !isPlaylistLoaded(pel.dataset.playlistId)
-
-      pel.classList.toggle('fa-pause', playlistPlaying)
-      pel.classList.toggle('fa-play', !playlistPlaying)
-    })
+  if (item) {
+    if (allMatches.length > 1) {
+      //try to find one with a matching index first
+      el = findNode(selector + '[data-index="' + player.index + '"]')
+    }
+    if (!el) {
+      el = allMatches[0]
+    }
   }
 
-  var rels = findNodes(sel.playRelease)
+  if (el) {
+    el.classList.toggle('active', playing)
+  }
 
-  if (rels) {
-    rels.forEach((rel) => {
-      rel.classList.toggle('active', playing && isReleaseLoaded(rel.dataset.releaseId))
-    })
+  var pel = findNode(sel.playPlaylist)
+
+  if (pel) {
+    var playlistPlaying = playing && !isPlaylistLoaded(pel.dataset.playlistId)
+
+    pel.classList.toggle('fa-pause', playlistPlaying)
+    pel.classList.toggle('fa-play', !playlistPlaying)
+  }
+
+  var rel = findNode(sel.playRelease)
+
+  if (rel) {
+    rel.classList.toggle('active', playing && isReleaseLoaded(rel.dataset.releaseId))
   }
 }
 
