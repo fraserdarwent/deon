@@ -68,10 +68,12 @@ document.addEventListener('DOMContentLoaded', (e) => {
         togglePlay()
       }
       else {
-        const playButton = findNode('[onclick^="playSongs"],[onclick^="playSong"]')
+        const playButtons = findNodes('[onclick^="playSongs"],[onclick^="playSong"]')
 
-        if (playButton) {
-          playButton.click()
+        if (playButtons) {
+          playButtons.forEach((playButton) => {
+            playButton.click()
+          })
         }
       }
     }
@@ -253,9 +255,13 @@ function loadAndPlayTracks (index) {
     player.set(tracks)
     player.play(index)
 
-    var el = findNode(sel.link)
+    var els = findNodes(sel.link)
 
-    if (el) { el.setAttribute('href', window.location.pathname + window.location.search) }
+    if (els) {
+      els.forEach((el) => {
+        el.setAttribute('href', window.location.pathname + window.location.search)
+      })
+    }
   }
 
   updateControls()
@@ -264,7 +270,7 @@ function loadAndPlayTracks (index) {
 function buildTracks () {
   var els = Array.prototype.slice.call(document.querySelectorAll('[data-play-link]'))
 
-  els = els.sort(function (el1, el2) {
+  els = els.sort((el1, el2) => {
     var idx1 = parseInt(el1.dataset.index)
     var idx2 = parseInt(el2.dataset.index)
 
@@ -349,7 +355,7 @@ function updateControls () {
   var playEls = findNodes(sel.play)
 
   if (playEls) {
-    playEls.forEach((playEl)=>{
+    playEls.forEach((playEl) => {
       playEl.classList.toggle('fa-play', !player.playing && !player.loading)
       playEl.classList.toggle('fa-pause', player.playing)
       playEl.classList.toggle('fa-spin', player.loading && !player.playing)
@@ -367,36 +373,23 @@ function updateControls () {
   var item = player.items[player.index]
   var selector = '[role="play-song"][data-play-link="' + (item ? item.source : '') + '"]'
 
-  var allMatches = document.querySelectorAll(selector)
-  var el
+  var pels = findNodes(sel.playPlaylist)
 
-  if (item) {
-    if (allMatches.length > 1) {
-      //try to find one with a matching index first
-      el = findNode(selector + '[data-index="' + player.index + '"]')
-    }
-    if (!el) {
-      el = allMatches[0]
-    }
+  if (pels) {
+    pels.forEach((pel) => {
+      var playlistPlaying = playing && !isPlaylistLoaded(pel.dataset.playlistId)
+
+      pel.classList.toggle('fa-pause', playlistPlaying)
+      pel.classList.toggle('fa-play', !playlistPlaying)
+    })
   }
 
-  if (el) {
-    el.classList.toggle('active', playing)
-  }
+  var rels = findNodes(sel.playRelease)
 
-  var pel = findNode(sel.playPlaylist)
-
-  if (pel) {
-    var playlistPlaying = playing && !isPlaylistLoaded(pel.dataset.playlistId)
-
-    pel.classList.toggle('fa-pause', playlistPlaying)
-    pel.classList.toggle('fa-play', !playlistPlaying)
-  }
-
-  var rel = findNode(sel.playRelease)
-
-  if (rel) {
-    rel.classList.toggle('active', playing && isReleaseLoaded(rel.dataset.releaseId))
+  if (rels) {
+    rels.forEach((rel) => {
+      rel.classList.toggle('active', playing && isReleaseLoaded(rel.dataset.releaseId))
+    })
   }
 }
 
