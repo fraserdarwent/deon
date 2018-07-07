@@ -287,13 +287,26 @@ function playSongs (e, el) {
 }
 
 function onNewSong (e) {
-  var el = findNode(sel.title)
-  var elContainer = findNode(sel.link)
-  var controls = findNode(sel.controls)
+  var els = findNodes(sel.title)
+  var elContainers = findNodes(sel.link)
+  var controls = findNodes(sel.controls)
 
-  el.textContent = prepareTrackTitle(e.detail.item)
-  elContainer.classList.add('playing-track')
-  controls.classList.add('playing')
+  if (els){
+    els.forEach((el) => {
+      el.textContent = prepareTrackTitle(e.detail.item)
+    })
+  }
+  if (elContainers){
+    elContainers.forEach((elContainer) => {
+      elContainer.classList.add('playing-track')
+    })
+  }
+
+  if (controls){
+    controls.forEach((control) => {
+      control.classList.add('playing')
+    })
+  }
   if (typeof autoBrowseMore == 'function') { autoBrowseMore() }
 }
 
@@ -333,13 +346,15 @@ function removeScrollTrackTitle(elementContainer){
 }
 
 function updateControls () {
-  var playEl = findNode(sel.play)
+  var playEls = findNodes(sel.play)
 
-  if (playEl) {
-    playEl.classList.toggle('fa-play', !player.playing && !player.loading)
-    playEl.classList.toggle('fa-pause', player.playing)
-    playEl.classList.toggle('fa-spin', player.loading && !player.playing)
-    playEl.classList.toggle('fa-refresh', player.loading && !player.playing)
+  if (playEls) {
+    playEls.forEach((playEl)=>{
+      playEl.classList.toggle('fa-play', !player.playing && !player.loading)
+      playEl.classList.toggle('fa-pause', player.playing)
+      playEl.classList.toggle('fa-spin', player.loading && !player.playing)
+      playEl.classList.toggle('fa-refresh', player.loading && !player.playing)
+    })
   }
 
   var buttons = document.querySelectorAll('[role="play-song"],[role="play-release"]')
