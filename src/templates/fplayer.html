@@ -1,0 +1,16 @@
+<script type="text/template"
+        data-route="^player"
+        data-title="Global Player"
+        data-process="processCatalogPage"
+        data-template="catalog-page"
+        >
+    <div class="container" style="height: 70vh; overflow: scroll">
+        <div class="flex" data-set="browse-filters">
+            <div class="col-xs-12 browse-filters browse-filters--table"
+                 data-source="$endpoint/catalog/browse/filters"
+                 data-process="processCatalogFilters">
+            </div>
+            <div class="col-xs-12 catalog-table" role="catalog-pages"></div>
+        </div>
+    </div>
+</script>
