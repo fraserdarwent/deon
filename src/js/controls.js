@@ -128,7 +128,6 @@ function toggleRepeat (e, el) {
   var i = (options.indexOf(player.repeat) + 1) % options.length
 
   player.repeat = options[i]
-
   el.classList.toggle('repeat-one', player.repeat == 'one')
   el.classList.toggle('repeat-all', player.repeat == 'all')
 }
