@@ -183,6 +183,7 @@ function startDragVolumeSlider(slider, e){
 
   slider.addEventListener('mousemove', dragVolumeSliderBound)
   slider.addEventListener('mouseup', () => { slider.removeEventListener('mousemove', dragVolumeSliderBound) })
+  slider.addEventListener('mouseleave', () => { slider.removeEventListener('mousemove', dragVolumeSliderBound) })
 }
 
 function dragVolumeSlider(slider, e){
