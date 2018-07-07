@@ -194,7 +194,7 @@ function changeVolume(volume){
 
   if (sliders){
     sliders.forEach((slider) => {
-      slider.style.height = `${volume}%`
+      slider.style.height = `${volume * 100}%`
     })
   }
   var icons = findNodes(sel.volumeI)
