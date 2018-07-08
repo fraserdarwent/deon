@@ -3,14 +3,69 @@
         data-title="Global Player"
         data-process="processCatalogPage"
         data-template="catalog-page"
-        >
-    <div class="container" style="height: 70vh; overflow: scroll">
-        <div class="flex" data-set="browse-filters">
+>
+    <div class="fplayer">
+        <div class="container fcontainer">
             <div class="col-xs-12 browse-filters browse-filters--table"
                  data-source="$endpoint/catalog/browse/filters"
                  data-process="processCatalogFilters">
             </div>
-            <div class="col-xs-12 catalog-table" role="catalog-pages"></div>
+            <div class="flex" data-set="browse-filters">
+                <div class="col-xs-12 catalog-table" role="catalog-pages"></div>
+            </div>
+        </div>
+        <div class="ftrack" role="track-title">
+        </div>
+        <div class="fcontrols">
+            <button class="faux" onclick="toggleShuffle(event, this)" role="mode">
+                <i class="fa fa-random"></i>
+            </button>
+            <button class="faux" onclick="previous(event, this)" role="previous">
+                <i class="fa fa-step-backward"></i>
+            </button>
+            <button class="faux" onclick="togglePlay(event, this)">
+                <i class="fa fa-play" role="play"></i>
+            </button>
+            <button class="faux" onclick="next(event, this)" role="next">
+                <i class="fa fa-step-forward"></i>
+            </button>
+            <button class="faux" onclick="toggleRepeat(event, this)">
+                <i class="fa fa-repeat"></i>
+            </button>
+            <div>
+                <div class="fvolumeslider">
+                    <div class="slider vertical">
+                        <div class="progress"></div>
+                        <div class="handle">
+                            <div class="inner"></div>
+                        </div>
+                    </div>
+                </div>
+                <button class="faux volume-toggle" onmouseover="showVolumeSlider(event, this)" onclick="toggleVolume(event, this)" role="volumeControl">
+                    <i class="fa fa-volume-up"></i>
+                </button>
+
+                <!--<div class="flex controls" role='fixed'>-->
+                <!--<div class="volume-slider-container" unselectable="on" onselectstart="return false;">-->
+                <!--<div class="volume-slider-outer">-->
+                <!--<div class="volume-slider-inner">-->
+                <!--<div class="volume-slider-handle"></div>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--<div class="col-md-hidden scrub-container scrub-container--mobile">-->
+                <!--<div class="scrub" onclick="scrub(event, this)">-->
+                <!--<div class="progress" role="scrub-progress"></div>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--</div>-->
+            </div>
+        </div>
+        <div class="fscrub slider horizontal" onclick="scrub(event, this)">
+            <div class="progress" role="scrub-progress"></div>
+            <div class="handle">
+                <div class="inner"></div>
+            </div>
         </div>
     </div>
 </script>

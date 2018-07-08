@@ -2,15 +2,16 @@ var sel = {
   play: '[role="play"]',
   playPlaylist: '[role="play-playlist"]',
   playRelease: '[role="play-release"]',
-  scrub: '[role="scrub-progress"]',
+  scrub: '.fscrub .progress',
   link: '[role="track-link"]',
   title: '[role="track-title"]',
   volume: '[role="volumeControl"]',
   volumeI: '[role="volumeControl"] > i',
-  volumeInnerSlider: '.volume-slider-inner',
+  volumeInnerSlider: '.fvolumeslider .slider .progress',
   volumeOuterSlider: '.volume-slider-outer',
   volumeSliderContainer: '.volume-slider-container',
-  controls: '.controls'
+  controls: '.controls',
+  ftracks: '.ftrack'
 }
 
 var playerEvents = {
@@ -349,7 +350,7 @@ function updateControls () {
   var playEls = findNodes(sel.play)
 
   if (playEls) {
-    playEls.forEach((playEl)=>{
+    playEls.forEach((playEl) => {
       playEl.classList.toggle('fa-play', !player.playing && !player.loading)
       playEl.classList.toggle('fa-pause', player.playing)
       playEl.classList.toggle('fa-spin', player.loading && !player.playing)
@@ -443,8 +444,8 @@ function updatePlayerProgress () {
   var scrubs = document.querySelectorAll(sel.scrub)
 
   if (scrubs) {
-    for (var i = 0; i < scrubs.length; i++){
-      scrubs[i].style.width = player.progress * 100 + '%'
-    }
+    scrubs.forEach((scrub) => {
+      scrub.style.width = player.progress * 100 + '%'
+    })
   }
 }
