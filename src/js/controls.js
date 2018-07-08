@@ -341,7 +341,6 @@ function prepareTrackTitle(item) {
 }
 
 function scrollTrackTitle(elementContainer) {
-  console.log(elementContainer)
   var scrollingElement = elementContainer.querySelector('.scroll-title')
 
   if (scrollingElement.scrollWidth > elementContainer.scrollWidth) {
@@ -496,10 +495,10 @@ function changePlayerBySlider(location) {
   player.seek(location)
 }
 
-function startScroll(e, el){
-
+function startScroll(e, el) {
+  el.style.textIndent = `${el.clientWidth < el.scrollWidth ? el.clientWidth - el.scrollWidth : 0}px`
 }
 
 function stopScroll(e, el) {
-
+  el.style.textIndent = '0'
 }

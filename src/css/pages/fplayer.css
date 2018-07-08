@@ -35,11 +35,11 @@ section {
     overflow: hidden;
 }
 
-.fplayer .ftrack .title:hover{
+.fplayer .ftrack:hover {
     cursor: pointer;
     color: dodgerblue;
+    transition: text-indent 2s linear;
 }
-
 .fplayer.playing{
     max-height: 50%
 }
