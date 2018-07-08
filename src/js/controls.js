@@ -12,7 +12,9 @@ var sel = {
   volumeSliderContainer: '.volume-slider-container',
   controls: '.controls',
   ftracks: '.ftrack',
-  timestamp: '[role="timestamp"]'
+  position: '[role="position"]',
+  duration: '[role="duration"]'
+
 }
 
 var playerEvents = {
@@ -53,7 +55,7 @@ document.addEventListener('DOMContentLoaded', (e) => {
   if (!volume) {
     volume = 1
   }
-  changeVolume(volume)
+  updateVolumeControls(volume)
   bindVolumeEvents()
   document.addEventListener('keydown', (e) => {
     if (e.keyCode == 32) {
@@ -151,7 +153,7 @@ function playSong(e, el) {
 function toggleVolume(e, el) {
   player.setStoredVolume(0)
   player.setVolume(0)
-  changeVolume(0)
+  updateVolumeControls(0)
 }
 
 function initVolumeMobile(e, el) {
@@ -194,10 +196,10 @@ function dragVolumeSlider(slider, e) {
   changeVolumeBySlider((slider.getBoundingClientRect().bottom - e.clientY), slider)
 }
 
-function changeVolume(volume) {
+function updateVolumeControls(volume) {
   var sliders = findNodes(sel.volumeInnerSlider)
 
-  if (sliders){
+  if (sliders) {
     sliders.forEach((slider) => {
       slider.style.height = `${volume * 100}%`
     })
@@ -223,7 +225,7 @@ function changeVolumeBySlider(height, slider) {
   var volume = slider.offsetHeight < height ? 1 : (height / slider.offsetHeight)
 
   volume = volume < 0 ? 0 : volume
-  changeVolume(volume)
+  updateVolumeControls(volume)
 }
 
 function preventSelection() {
@@ -463,14 +465,16 @@ function scrub(e, el) {
 
 function updatePlayerProgress() {
   requestAnimationFrame(updatePlayerProgress)
-  var scrubs = document.querySelectorAll(sel.scrub)
-  var timestamps = document.querySelectorAll(sel.timestamp)
+  var scrubs = findNodes(sel.scrub)
+  var positionTexts = findNodes(sel.position)
+  var durationTexts = findNodes(sel.duration)
 
-  function pad(time){
-    return String("0" + time).slice(-2)
+  function pad(time) {
+    return String("0" + time)
+      .slice(-2)
   }
 
-  if (timestamps && player.audio.duration) {
+  if (positionTexts && durationTexts && player.audio.currentTime && player.audio.duration) {
     position = {
       minutes: Math.floor(player.audio.currentTime / 60),
       seconds: pad(Math.floor(player.audio.currentTime - Math.floor(player.audio.currentTime / 60) * 60))
@@ -481,13 +485,39 @@ function updatePlayerProgress() {
       seconds: pad(Math.floor(player.audio.duration - Math.floor(player.audio.duration / 60) * 60))
     }
 
-    for (var i = 0; i < timestamps.length; i++){
-      timestamps[i].textContent = `${position.minutes}:${position.seconds} / ${duration.minutes}:${duration.seconds}`
-    }
+    positionTexts.forEach((positionText) => {
+      positionText.textContent = `${position.minutes}:${position.seconds}`
+    })
+
+    durationTexts.forEach((durationText) => {
+      durationText.textContent = `${duration.minutes}:${duration.seconds}`
+    })
   }
   if (scrubs) {
     scrubs.forEach((scrub) => {
       scrub.style.width = player.progress * 100 + '%'
     })
   }
+}
+
+function startDragPlayerSlider(e, slider) {
+  changePlayerBySlider((e.clientX - slider.getBoundingClientRect().left) / slider.clientWidth, slider)
+
+  var dragPlayerSliderBound = dragPlayerSlider.bind(this, slider)
+
+  document.addEventListener('mousemove', dragPlayerSliderBound)
+  document.addEventListener('mouseup', () => {
+    document.removeEventListener('mousemove', dragPlayerSliderBound)
+  })
+}
+
+function dragPlayerSlider(slider, e) {
+  preventSelection()
+  changePlayerBySlider((e.clientX - slider.getBoundingClientRect().left) / slider.clientWidth, slider)
+}
+
+function changePlayerBySlider(location) {
+  location = 1 < location ? 1 : location
+  location = location < 0 ? 0 : location
+  player.seek(location)
 }
