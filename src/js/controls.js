@@ -110,17 +110,17 @@ function recordPlayerPlayLegacy(e) {
   recordEvent('Audio Player Play Server Side', e.detail.item)
 }
 
-function togglePlay(e, el) {
+function togglePlay() {
   player.toggle()
   updateControls()
 }
 
-function next(e, el) {
+function next() {
   player.next()
   updateControls()
 }
 
-function previous(e, el) {
+function previous() {
   player.previous()
   updateControls()
 }
@@ -150,7 +150,7 @@ function playSong(e, el) {
   }
 }
 
-function toggleVolume(e, el) {
+function toggleVolume() {
   player.setStoredVolume(0)
   player.setVolume(0)
   updateVolumeControls(0)
@@ -244,12 +244,6 @@ function preventSelection() {
       return
     }
   }
-}
-
-function playSongDblC(e, el) {
-  var button = el.querySelector('[role="play-song"]')
-
-  playSong(e, button)
 }
 
 function loadAndPlayTracks(index) {
@@ -347,14 +341,11 @@ function prepareTrackTitle(item) {
 }
 
 function scrollTrackTitle(elementContainer) {
+  console.log(elementContainer)
   var scrollingElement = elementContainer.querySelector('.scroll-title')
 
-  if (!elementContainer || !scrollingElement) {
-    return
-  }
-  if (scrollingElement.offsetWidth > elementContainer.offsetWidth) {
-    var scrollDistance = scrollingElement.offsetWidth - elementContainer.offsetWidth + 1
-
+  if (scrollingElement.scrollWidth > elementContainer.scrollWidth) {
+    var scrollDistance = scrollingElement.scrollWidth - elementContainer.scrollWidth + 1
     scrollingElement.style.textIndent = -scrollDistance + 'px'
   }
 }
@@ -446,23 +437,6 @@ function mapTrackElToPlayer(el) {
   }
 }
 
-function scrub(e, el) {
-  var seekTo
-
-  if (e.clientY > 100) {
-    var margin = 0
-
-    if (document.body) {
-      margin = document.body.clientWidth - el.offsetWidth || 0
-    }
-    seekTo = (e.clientX - margin / 2) / el.offsetWidth
-  } else {
-    seekTo = e.clientX / el.offsetWidth
-  }
-  player.seek(seekTo)
-  //TODO: Add google analytics event to track from here
-}
-
 function updatePlayerProgress() {
   requestAnimationFrame(updatePlayerProgress)
   var scrubs = findNodes(sel.scrub)
@@ -520,4 +494,12 @@ function changePlayerBySlider(location) {
   location = 1 < location ? 1 : location
   location = location < 0 ? 0 : location
   player.seek(location)
+}
+
+function startScroll(e, el){
+
+}
+
+function stopScroll(e, el) {
+
 }
