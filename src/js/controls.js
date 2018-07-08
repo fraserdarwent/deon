@@ -52,8 +52,7 @@ document.addEventListener('DOMContentLoaded', (e) => {
   if (!volume) {
     volume = 1
   }
-  player.setStoredVolume(volume)
-  player.setVolume(volume)
+  changeVolume(volume)
   bindVolumeEvents()
   document.addEventListener('keydown', (e) => {
     if (e.keyCode == 32) {
@@ -79,17 +78,17 @@ document.addEventListener('DOMContentLoaded', (e) => {
   })
 })
 
-function bindVolumeEvents(){
+function bindVolumeEvents() {
   var containers = findNodes(sel.volumeSliderContainer)
 
-  if (containers){
+  if (containers) {
     containers.forEach((container) => {
       container.addEventListener('touchstart', initVolumeMobile.bind(null, container))
     })
   }
 }
 
-function recordPlayerEvent (e) {
+function recordPlayerEvent(e) {
   var opts = e.detail.item
 
   opts.label = opts.title + ' by ' + opts.artistTitle
@@ -99,31 +98,31 @@ function recordPlayerEvent (e) {
   recordEvent('Deon AP ' + capitalizeFirstLetter(e.type), opts)
 }
 
-function recordPlayerError (e) {
+function recordPlayerError(e) {
   e.category = 'Music Player'
   recordEvent('Deon AP Error', e)
 }
 
-function recordPlayerPlayLegacy (e) {
+function recordPlayerPlayLegacy(e) {
   recordEvent('Audio Player Play Server Side', e.detail.item)
 }
 
-function togglePlay (e, el) {
+function togglePlay(e, el) {
   player.toggle()
   updateControls()
 }
 
-function next (e, el) {
+function next(e, el) {
   player.next()
   updateControls()
 }
 
-function previous (e, el) {
+function previous(e, el) {
   player.previous()
   updateControls()
 }
 
-function toggleRepeat (e, el) {
+function toggleRepeat(e, el) {
   var options = ['none', 'one', 'all']
   var i = (options.indexOf(player.repeat) + 1) % options.length
 
@@ -132,12 +131,12 @@ function toggleRepeat (e, el) {
   el.classList.toggle('repeat-all', player.repeat == 'all')
 }
 
-function toggleShuffle (e, el) {
+function toggleShuffle(e, el) {
   player.shuffle = !player.shuffle
   el.classList.toggle('active', player.shuffle)
 }
 
-function playSong (e, el) {
+function playSong(e, el) {
   if (!el) {
     return
   }
@@ -148,49 +147,53 @@ function playSong (e, el) {
   }
 }
 
-function toggleVolume (e, el) {
+function toggleVolume(e, el) {
   player.setStoredVolume(0)
   player.setVolume(0)
   changeVolume(0)
 }
 
-function initVolumeMobile(e, el){
+function initVolumeMobile(e, el) {
   // if they're on touch devices, let's put the volume at 100%
   e.preventDefault()
   player.setVolume(1)
 }
 
-function showVolumeSlider(e, el){
-  el.parentNode.childNodes.forEach((node) => {
-    if (node.classList && node.classList.contains('volume-slider-container')){
-      var slider =  node.firstElementChild
+function showVolumeSlider(e, el) {
+  var slider = el.firstElementChild
 
-      slider.addEventListener('mouseleave', hideVolumeSlider.bind(this, el))
-      slider.addEventListener('mousedown', startDragVolumeSlider.bind(this, slider), true)
-    }
-  })
-  el.parentNode.classList.toggle('show-slider', true)
+  slider.classList.toggle('show', true)
+  if (!slider.timeout) {
+    slider.addEventListener('mousedown', startDragVolumeSlider.bind(this, slider.firstElementChild), true)
+  }
 }
 
-function hideVolumeSlider(el, e) {
-  el.parentNode.classList.toggle('show-slider', false)
+function hideVolumeSlider(e, el) {
+  var slider = el.firstElementChild
+
+  clearTimeout(slider.timeout)
+  slider.timeout = setTimeout(() => {
+    slider.classList.toggle('show', false)
+  }, 1500)
 }
 
-function startDragVolumeSlider(slider, e){
-  changeVolumeBySlider(e.pageY - slider.getBoundingClientRect().y, slider)
+function startDragVolumeSlider(slider, e) {
+  changeVolumeBySlider((slider.getBoundingClientRect().bottom - e.clientY), slider)
+
   var dragVolumeSliderBound = dragVolumeSlider.bind(this, slider)
 
-  slider.addEventListener('mousemove', dragVolumeSliderBound)
-  slider.addEventListener('mouseup', () => { slider.removeEventListener('mousemove', dragVolumeSliderBound) })
-  slider.addEventListener('mouseleave', () => { slider.removeEventListener('mousemove', dragVolumeSliderBound) })
+  document.addEventListener('mousemove', dragVolumeSliderBound)
+  document.addEventListener('mouseup', () => {
+    document.removeEventListener('mousemove', dragVolumeSliderBound)
+  })
 }
 
-function dragVolumeSlider(slider, e){
+function dragVolumeSlider(slider, e) {
   preventSelection()
-  changeVolumeBySlider(e.pageY - slider.getBoundingClientRect().y, slider)
+  changeVolumeBySlider((slider.getBoundingClientRect().bottom - e.clientY), slider)
 }
 
-function changeVolume(volume){
+function changeVolume(volume) {
   var sliders = findNodes(sel.volumeInnerSlider)
 
   if (sliders){
@@ -198,9 +201,10 @@ function changeVolume(volume){
       slider.style.height = `${volume * 100}%`
     })
   }
+
   var icons = findNodes(sel.volumeI)
 
-  if (icons){
+  if (icons) {
     icons.forEach((icon) => {
       icon.classList.toggle('fa-volume-off', volume === 0)
       icon.classList.toggle('fa-volume-down', volume < 0.75 && volume > 0)
@@ -213,14 +217,15 @@ function changeVolume(volume){
   setCookie('volume', volume)
 }
 
-function changeVolumeBySlider(height, slider){
+function changeVolumeBySlider(height, slider) {
+  hideVolumeSlider(null, slider.parentElement.parentElement)
   var volume = slider.offsetHeight < height ? 1 : (height / slider.offsetHeight)
 
   volume = volume < 0 ? 0 : volume
   changeVolume(volume)
 }
 
-function preventSelection(){
+function preventSelection() {
   var selection = {}
 
   if (window.getSelection) {
@@ -238,13 +243,13 @@ function preventSelection(){
   }
 }
 
-function playSongDblC (e, el) {
+function playSongDblC(e, el) {
   var button = el.querySelector('[role="play-song"]')
 
   playSong(e, button)
 }
 
-function loadAndPlayTracks (index) {
+function loadAndPlayTracks(index) {
   var tracks = buildTracks()
 
   if (areTracksLoaded(tracks)) {
@@ -256,13 +261,15 @@ function loadAndPlayTracks (index) {
 
     var el = findNode(sel.link)
 
-    if (el) { el.setAttribute('href', window.location.pathname + window.location.search) }
+    if (el) {
+      el.setAttribute('href', window.location.pathname + window.location.search)
+    }
   }
 
   updateControls()
 }
 
-function buildTracks () {
+function buildTracks() {
   var els = Array.prototype.slice.call(document.querySelectorAll('[data-play-link]'))
 
   els = els.sort(function (el1, el2) {
@@ -277,50 +284,57 @@ function buildTracks () {
   return els.map(mapTrackElToPlayer)
 }
 
-function areTracksLoaded (tracks) {
-  return tracks.every(function(track, index) {
+function areTracksLoaded(tracks) {
+  return tracks.every(function (track, index) {
     return player.items[index] && player.items[index].source == track.source
   })
 }
 
-function playSongs (e, el) {
+function playSongs(e, el) {
   loadAndPlayTracks()
 }
 
-function onNewSong (e) {
+function onNewSong(e) {
   var els = findNodes(sel.title)
   var elContainers = findNodes(sel.link)
   var controls = findNodes(sel.controls)
 
-  if (els){
+  if (els) {
     els.forEach((el) => {
       el.textContent = prepareTrackTitle(e.detail.item)
     })
   }
-  if (elContainers){
+  if (elContainers) {
     elContainers.forEach((elContainer) => {
       elContainer.classList.add('playing-track')
     })
   }
 
-  if (controls){
+  if (controls) {
     controls.forEach((control) => {
       control.classList.add('playing')
     })
   }
-  if (typeof autoBrowseMore == 'function') { autoBrowseMore() }
+  if (typeof autoBrowseMore == 'function') {
+    autoBrowseMore()
+  }
 }
 
-function prepareTrackTitle(item){
+function prepareTrackTitle(item) {
   var artistNames = item.artist
 
-  if (!artistNames) { return item.title }
+  if (!artistNames) {
+    return item.title
+  }
 
   var trackTitle = ""
 
-  artistNames = artistNames.split(", ").filter(function(n){ return n != "" })
+  artistNames = artistNames.split(", ")
+    .filter(function (n) {
+      return n != ""
+    })
 
-  if (artistNames.length > 2){
+  if (artistNames.length > 2) {
     trackTitle = "Various Artists"
   } else {
     trackTitle = artistNames.join(" & ")
@@ -329,24 +343,29 @@ function prepareTrackTitle(item){
   return trackTitle
 }
 
-function scrollTrackTitle(elementContainer){
+function scrollTrackTitle(elementContainer) {
   var scrollingElement = elementContainer.querySelector('.scroll-title')
 
-  if (!elementContainer || !scrollingElement) { return }
-  if (scrollingElement.offsetWidth > elementContainer.offsetWidth){
+  if (!elementContainer || !scrollingElement) {
+    return
+  }
+  if (scrollingElement.offsetWidth > elementContainer.offsetWidth) {
     var scrollDistance = scrollingElement.offsetWidth - elementContainer.offsetWidth + 1
 
     scrollingElement.style.textIndent = -scrollDistance + 'px'
   }
 }
-function removeScrollTrackTitle(elementContainer){
+
+function removeScrollTrackTitle(elementContainer) {
   var scrollingElement = elementContainer.querySelector('.scroll-title')
 
-  if (!elementContainer || !scrollingElement) { return }
+  if (!elementContainer || !scrollingElement) {
+    return
+  }
   scrollingElement.style.textIndent = '0px'
 }
 
-function updateControls () {
+function updateControls() {
   var playEls = findNodes(sel.play)
 
   if (playEls) {
@@ -401,36 +420,38 @@ function updateControls () {
   }
 }
 
-function isPlaylistLoaded (id) {
+function isPlaylistLoaded(id) {
   return player.items.length && player.items[0].playlistId == id
 }
 
-function isReleaseLoaded (id) {
+function isReleaseLoaded(id) {
   return player.items.length && player.items[0].releaseId == id
 }
 
-function mapTrackElToPlayer (el) {
+function mapTrackElToPlayer(el) {
   return {
-    source:     el.dataset.playLink,
-    skip:       isSignedIn() && !el.hasAttribute('data-licensable') && (session.settings || {}).hideNonLicensableTracks,
-    block:       isSignedIn() && !el.hasAttribute('data-licensable') && (session.settings || {}).blockNonLicensableTracks,
-    title:      el.dataset.title,
-    index:      el.dataset.index,
-    artist:      el.dataset.artist,
+    source: el.dataset.playLink,
+    skip: isSignedIn() && !el.hasAttribute('data-licensable') && (session.settings || {}).hideNonLicensableTracks,
+    block: isSignedIn() && !el.hasAttribute('data-licensable') && (session.settings || {}).blockNonLicensableTracks,
+    title: el.dataset.title,
+    index: el.dataset.index,
+    artist: el.dataset.artist,
     artistTitle: el.dataset.artistsTitle,
-    trackId:    el.dataset.trackId,
+    trackId: el.dataset.trackId,
     playlistId: el.dataset.playlistId,
-    releaseId:  el.dataset.releaseId
+    releaseId: el.dataset.releaseId
   }
 }
 
-function scrub (e, el) {
+function scrub(e, el) {
   var seekTo
 
-  if (e.clientY > 100){
+  if (e.clientY > 100) {
     var margin = 0
 
-    if (document.body) { margin = document.body.clientWidth - el.offsetWidth || 0 }
+    if (document.body) {
+      margin = document.body.clientWidth - el.offsetWidth || 0
+    }
     seekTo = (e.clientX - margin / 2) / el.offsetWidth
   } else {
     seekTo = e.clientX / el.offsetWidth
@@ -439,7 +460,7 @@ function scrub (e, el) {
   //TODO: Add google analytics event to track from here
 }
 
-function updatePlayerProgress () {
+function updatePlayerProgress() {
   requestAnimationFrame(updatePlayerProgress)
   var scrubs = document.querySelectorAll(sel.scrub)
 

@@ -175,7 +175,7 @@ a:hover{
 
 a:focus,
 button:focus{
-  text-shadow: 0 0 20px dodgerblue;
+  /*text-shadow: 0 0 20px dodgerblue;*/
 }
 a.no-hover,
 a.no-hover:active,
@@ -206,21 +206,21 @@ th, td {
 }
 
 table select {
-  max-width: 100%; /* make sure selects don't make table collapse beyond parent width */ 
+  max-width: 100%; /* make sure selects don't make table collapse beyond parent width */
   height: auto;
   padding: 0;
 }
 
 ::selection {
-  background: rgba(0,0,0,0.7); 
+  background: rgba(0,0,0,0.7);
   color: #fff;
 }
 ::-moz-selection {
-  background: rgba(0,0,0,0.7); 
+  background: rgba(0,0,0,0.7);
   color: #fff;
 }
 /* youtube-play */
-.fa-social-y:before{ 
+.fa-social-y:before{
   content: "\f16a";
 }
 /* twitter */

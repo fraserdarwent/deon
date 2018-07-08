@@ -32,7 +32,7 @@
             <button class="faux" onclick="toggleRepeat(event, this)">
                 <i class="fa fa-repeat"></i>
             </button>
-            <div>
+            <div onmouseover="showVolumeSlider(event, this)" onmouseleave="hideVolumeSlider(event, this)" style="z-index: 0" >
                 <div class="fvolumeslider">
                     <div class="slider vertical">
                         <div class="progress"></div>
@@ -41,24 +41,9 @@
                         </div>
                     </div>
                 </div>
-                <button class="faux volume-toggle" onmouseover="showVolumeSlider(event, this)" onclick="toggleVolume(event, this)" role="volumeControl">
-                    <i class="fa fa-volume-up"></i>
+                <button class="faux volume-toggle" role="volumeControl" onclick="toggleVolume(event, this)">
+                <i class="fa fa-volume-up"></i>
                 </button>
-
-                <!--<div class="flex controls" role='fixed'>-->
-                <!--<div class="volume-slider-container" unselectable="on" onselectstart="return false;">-->
-                <!--<div class="volume-slider-outer">-->
-                <!--<div class="volume-slider-inner">-->
-                <!--<div class="volume-slider-handle"></div>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--<div class="col-md-hidden scrub-container scrub-container--mobile">-->
-                <!--<div class="scrub" onclick="scrub(event, this)">-->
-                <!--<div class="progress" role="scrub-progress"></div>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--</div>-->
             </div>
         </div>
         <div class="fscrub slider horizontal" onclick="scrub(event, this)">
