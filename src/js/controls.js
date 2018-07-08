@@ -11,7 +11,8 @@ var sel = {
   volumeOuterSlider: '.volume-slider-outer',
   volumeSliderContainer: '.volume-slider-container',
   controls: '.controls',
-  ftracks: '.ftrack'
+  ftracks: '.ftrack',
+  timestamp: '[role="timestamp"]'
 }
 
 var playerEvents = {
@@ -463,7 +464,27 @@ function scrub(e, el) {
 function updatePlayerProgress() {
   requestAnimationFrame(updatePlayerProgress)
   var scrubs = document.querySelectorAll(sel.scrub)
+  var timestamps = document.querySelectorAll(sel.timestamp)
 
+  function pad(time){
+    return String("0" + time).slice(-2)
+  }
+
+  if (timestamps && player.audio.duration) {
+    position = {
+      minutes: Math.floor(player.audio.currentTime / 60),
+      seconds: pad(Math.floor(player.audio.currentTime - Math.floor(player.audio.currentTime / 60) * 60))
+    }
+
+    duration = {
+      minutes: Math.floor(player.audio.duration / 60),
+      seconds: pad(Math.floor(player.audio.duration - Math.floor(player.audio.duration / 60) * 60))
+    }
+
+    for (var i = 0; i < timestamps.length; i++){
+      timestamps[i].textContent = `${position.minutes}:${position.seconds} / ${duration.minutes}:${duration.seconds}`
+    }
+  }
   if (scrubs) {
     scrubs.forEach((scrub) => {
       scrub.style.width = player.progress * 100 + '%'
