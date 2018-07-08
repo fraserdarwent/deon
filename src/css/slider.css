@@ -1,0 +1,45 @@
+.slider{
+    background: #ccc;
+    cursor: pointer;
+    display: flex;
+    align-content: center;
+    justify-items: center;
+}
+
+.slider .progress{
+    background-color: dodgerblue;
+}
+
+.slider .handle .inner{
+    height: 20px;
+    width: 20px;
+    border-radius: 20px;
+    background-color: #383838;
+    top: calc(50% - 10px);
+    left: calc(50% - 10px);
+    position: relative;
+}
+
+.slider.vertical{
+    flex-flow: column-reverse nowrap;
+}
+
+.slider.horizontal{
+    flex-flow: row nowrap;
+}
+
+.slider.vertical .progress {
+    width: 100%;
+}
+
+.slider.horizontal .progress{
+    height: 100%;
+}
+
+.slider.vertical .handle{
+    height: 0;
+}
+
+.slider.horizontal .handle{
+    width: 0;
+}

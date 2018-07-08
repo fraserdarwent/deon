@@ -390,7 +390,9 @@ body.showing-notice .controls.fixed.playing {
   flex: 1;
   border: 1px solid #eee;
 }
-
+.controls > div {
+  float: right;
+}
 .controls > .volume-toggle {
   width: 16px;
   position: relative;
@@ -453,12 +455,12 @@ body.showing-notice .controls.fixed.playing {
 }
 .controls > .toggle-repeat {
   margin-right: 1em;
-}  
+}
 .controls > .volume-slider-container {
   opacity: 0;
   transition: opacity 0.2s ease;
   pointer-events: none;
-}  
+}
 .show-slider .volume-slider-container {
   opacity: 1;
   pointer-events: auto;
@@ -1335,6 +1337,34 @@ footer .footer-items li:first-child button::before{
 
 .modal.modal--complete-profile .modal-content {
   margin-bottom: 0px;
+}
+.volume{
+  align-items: center;
+  display: none;
+}
+@media screen and (min-width: 992px) {
+    .volume{
+        display: flex;
+    }
+}
+.volumeslider {
+  width: 0;
+  height: 0;
+  right: -50%;
+  position: relative;
+  display: none;
+  z-index: 1;
+}
+.volumeslider .slider {
+    height: 100px;
+    width: 8px;
+    right: -4px;
+    top: 20px;
+    position: absolute;
+}
+
+.volumeslider.show {
+  display: block;
 }
 
 @media screen and (min-width: 992px) {

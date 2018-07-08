@@ -127,13 +127,6 @@ window.fbAsyncInit = function() {
 
         <!-- Player -->
         <div class="flex controls push-right" role='fixed'>
-            <div class="volume-slider-container" unselectable="on" onselectstart="return false;">
-                <div class="volume-slider-outer">
-                    <div class="volume-slider-inner">
-                        <div class="volume-slider-handle"></div>
-                    </div>
-                </div>
-            </div>
             <a href="#" class="silent scroll-container" role="track-link"
                onmouseover="scrollTrackTitle(this)" onmouseleave="removeScrollTrackTitle(this)">
                 <span class="scroll-title" role="track-title"></span>
@@ -158,9 +151,20 @@ window.fbAsyncInit = function() {
             <button class="faux" onclick="toggleRepeat(event, this)">
                 <i class="fa fa-repeat"></i>
             </button>
-            <button class="faux volume-toggle" onclick="toggleVolume(event)" role="volumeControl" onmouseover="startVolumeSliderShow(event)" onmouseleave="startVolumeSliderHide()">
-                <i class="fa fa-volume-up"></i>
-            </button>
+            <div class="faux volume" onmouseover="showVolumeSlider(event, this)" onmouseleave="hideVolumeSlider(event, this)"
+                 style="z-index: 0">
+                <div class="volumeslider">
+                    <div class="slider vertical">
+                        <div class="progress"></div>
+                        <div class="handle">
+                            <div class="inner"></div>
+                        </div>
+                    </div>
+                </div>
+                <button class="faux volume-toggle" role="volumeControl" onclick="toggleVolume(event, this)">
+                    <i class="fa fa-volume-up"></i>
+                </button>
+            </div>
         </div>
     </div>
 </header>
