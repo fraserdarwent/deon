@@ -14,17 +14,19 @@ var selectors = {
   controls: '.controls',
   ftracks: '.ftrack',
   currentTime: '.currentTime',
-  duration: '.duration'
+  duration: '.duration',
+  progress: '.progress'
 }
 
 var controls = {
-    get: {
-        playPause:  () => { return findNodes(selectors.playPause) },
-        next: () => { return findNodes(selectors.next) },
-        previous: () => { return findNodes(selectors.previous) },
-        currentTime: () => { return findNodes(selectors.currentTime) },
-        duration: () => { return findNodes(selectors.duration) }
-    }
+  get: {
+    playPause:  () => { return findNodes(selectors.playPause) },
+    next: () => { return findNodes(selectors.next) },
+    previous: () => { return findNodes(selectors.previous) },
+    currentTime: () => { return findNodes(selectors.currentTime) },
+    duration: () => { return findNodes(selectors.duration) },
+    progress: () => { return findNodes(selectors.progress) }
+  }
 }
 
 //

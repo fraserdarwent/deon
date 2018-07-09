@@ -96,9 +96,10 @@ player.audio.addEventListener('timeupdate', function timeupdate(event) {
   this.progress.currentTime.raw = event.target.currentTime
   this.progress.currentTime.pretty.minutes = Math.floor(this.progress.currentTime.raw / 60)
   this.progress.currentTime.pretty.seconds = pad(Math.floor(this.progress.currentTime.raw - Math.floor(this.progress.currentTime.raw / 60) * 60))
-  this.progress.percent = this.progress.currentTime / this.progress.duration * 100
+  this.progress.percent = this.progress.currentTime.raw / this.progress.duration.raw * 100
   requestAnimationFrame(function timeupdate() {
     controls.get.currentTime().forEach((control) => { control.textContent = `${this.progress.currentTime.pretty.minutes}:${this.progress.currentTime.pretty.seconds}` })
+    controls.get.progress().forEach((control) => { control.style.width = `${this.progress.percent}%` })
   }.bind(this))
 }.bind(player))
 
