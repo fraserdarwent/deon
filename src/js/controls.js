@@ -10,7 +10,9 @@ var sel = {
   volumeInnerSlider: '.volume-slider-inner',
   volumeOuterSlider: '.volume-slider-outer',
   volumeSliderContainer: '.volume-slider-container',
-  controls: '.controls'
+  controls: '.controls',
+  currentTime: '.currentTime',
+  duration: '.duration'
 }
 
 var playerEvents = {
@@ -464,10 +466,26 @@ function scrub (e, el) {
 function updatePlayerProgress () {
   requestAnimationFrame(updatePlayerProgress)
   var scrubs = document.querySelectorAll(sel.scrub)
+  var currentTimes = findNodes(sel.currentTime)
+  var durations = findNodes(sel.duration)
 
   if (scrubs) {
     for (var i = 0; i < scrubs.length; i++){
       scrubs[i].style.width = player.progress * 100 + '%'
     }
+  }
+  if (player.audio.duration) {
+    var currentTime = {
+      minutes: zeroPad(Math.floor(player.audio.currentTime / 60), 2),
+      seconds: zeroPad(Math.floor(player.audio.currentTime - Math.floor(player.audio.currentTime / 60) * 60), 2)
+    }
+
+    var duration = {
+      minutes: zeroPad(Math.floor(player.audio.duration / 60), 2),
+      seconds: zeroPad(Math.floor(player.audio.duration - Math.floor(player.audio.duration / 60) * 60), 2)
+    }
+
+    currentTimes.forEach((t) => { t.textContent = `${currentTime.minutes}:${currentTime.seconds} ` })
+    durations.forEach((t) => { t.textContent = `/ ${duration.minutes}:${duration.seconds}` })
   }
 }

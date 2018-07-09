@@ -446,18 +446,23 @@ body.showing-notice .controls.fixed.playing {
   border-radius: 0 0 10px 10px;
   transform: rotate(180deg);
 }
-.controls > .volume-toggle {
+.controls > .volume-toggle, .timestamp {
   text-align: center;
   display: inline-block;
 }
+
+.controls > .timestamp{
+  margin-bottom: 15px;
+}
+
 .controls > .toggle-repeat {
   margin-right: 1em;
-}  
+}
 .controls > .volume-slider-container {
   opacity: 0;
   transition: opacity 0.2s ease;
   pointer-events: none;
-}  
+}
 .show-slider .volume-slider-container {
   opacity: 1;
   pointer-events: auto;
@@ -475,6 +480,11 @@ body.showing-notice .controls.fixed.playing {
   .controls > .volume-toggle{
     text-align: left;
   }
+
+  .controls > .timestamp{
+    margin-bottom: 0;
+  }
+
   .volume-slider-container > .volume-slider-outer {
     top: 0px;
     right: 0px;
