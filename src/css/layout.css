@@ -453,6 +453,7 @@ body.showing-notice .controls.fixed.playing {
 
 .controls > .timestamp{
   margin-bottom: 15px;
+  min-width: 100px;
 }
 
 .controls > .toggle-repeat {
