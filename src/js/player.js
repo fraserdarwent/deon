@@ -4,7 +4,8 @@ var player = {
   listeners: {
     playing: new Event('playing'),
     paused: new Event('paused'),
-    changedSong: new Event('changedSong')
+    changedSong: new Event('changedSong'),
+    changedVolume: new Event('changedVolume')
   },
   currentSong: {
     currentTime: {
@@ -83,6 +84,10 @@ var player = {
   },
   seek: function(fraction) {
     this.audio.currentTime = Math.floor(fraction * this.currentSong.duration.raw)
+  },
+  setVolume: function(fraction) {
+    this.audio.volume = fraction
+    this.dispatchEvent(this.listeners.changedVolume)
   }
 }
 
@@ -91,6 +96,12 @@ player.audio.autoplay = true
 
 player.addEventListener(player.listeners.changedSong, function changedSong() {
   this.play()
+}.bind(player))
+
+player.addEventListener(player.listeners.changedVolume, function changedVolume() {
+  requestAnimationFrame(function changedVolume(){
+    controls.get.volume().forEach((control) => { control.style.height = `${this.audio.volume * 100}%` })
+  }.bind(this))
 }.bind(player))
 
 player.addEventListener(player.listeners.paused, function paused() {

@@ -6,7 +6,6 @@ var selectors = {
   scrub: '.fscrub .progress',
   link: '[role="track-link"]',
   titles: '.title',
-  volume: '[role="volumeControl"]',
   volumeI: '[role="volumeControl"] > i',
   volumeInnerSlider: '.fvolumeslider .slider .progress',
   volumeOuterSlider: '.volume-slider-outer',
@@ -16,7 +15,8 @@ var selectors = {
   currentTime: '.currentTime',
   duration: '.duration',
   progress: '.progress',
-  selectPlayPause: '.selectPlayPause'
+  selectPlayPause: '.selectPlayPause',
+  volumes: '.volume'
 }
 
 var controls = {
@@ -28,7 +28,9 @@ var controls = {
     duration: () => { return findNodes(selectors.duration) },
     progress: () => { return findNodes(selectors.progress) },
     selectPlayPause: () => { return findNodes(selectors.selectPlayPause) },
-    title: () => { return findNodes(selectors.titles) }
+    title: () => { return findNodes(selectors.titles) },
+    volume: () => { return findNodes(selectors.volumes) }
+
   }
 }
 
@@ -162,39 +164,7 @@ var controls = {
 //   player.setVolume(1)
 // }
 //
-// function showVolumeSlider(e, el) {
-//   var slider = el.firstElementChild
-//
-//   slider.classList.toggle('show', true)
-//   if (!slider.timeout) {
-//     slider.addEventListener('mousedown', startDragVolumeSlider.bind(this, slider.firstElementChild), true)
-//   }
-// }
-//
-// function hideVolumeSlider(e, el) {
-//   var slider = el.firstElementChild
-//
-//   clearTimeout(slider.timeout)
-//   slider.timeout = setTimeout(() => {
-//     slider.classList.toggle('show', false)
-//   }, 1500)
-// }
-//
-// function startDragVolumeSlider(slider, e) {
-//   changeVolumeBySlider((slider.getBoundingClientRect().bottom - e.clientY), slider)
-//
-//   var dragVolumeSliderBound = dragVolumeSlider.bind(this, slider)
-//
-//   document.addEventListener('mousemove', dragVolumeSliderBound)
-//   document.addEventListener('mouseup', () => {
-//     document.removeEventListener('mousemove', dragVolumeSliderBound)
-//   })
-// }
-//
-// function dragVolumeSlider(slider, e) {
-//   preventSelection()
-//   changeVolumeBySlider((slider.getBoundingClientRect().bottom - e.clientY), slider)
-// }
+
 //
 // function updateVolumeControls(volume) {
 //   var sliders = findNodes(sel.volumeInnerSlider)
@@ -220,13 +190,7 @@ var controls = {
 //   setCookie('volume', volume)
 // }
 //
-// function changeVolumeBySlider(height, slider) {
-//   hideVolumeSlider(null, slider.parentElement.parentElement)
-//   var volume = slider.offsetHeight < height ? 1 : (height / slider.offsetHeight)
-//
-//   volume = volume < 0 ? 0 : volume
-//   updateVolumeControls(volume)
-// }
+
 //
 
 //
@@ -460,7 +424,7 @@ function preventSelection() {
 }
 
 function scrub(slider, event) {
-  changePlayerBySlider((event.clientX - slider.getBoundingClientRect().left) / slider.clientWidth, slider)
+    player.seek(normalize((event.clientX - slider.getBoundingClientRect().left) / slider.clientWidth, slider))
 
   // var dragPlayerSliderBound = dragPlayerSlider.bind(this, slider)
   // document.addEventListener('mousemove', dragPlayerSliderBound)
@@ -473,8 +437,48 @@ function scrub(slider, event) {
 //   changePlayerBySlider((event.clientX - slider.getBoundingClientRect().left) / slider.clientWidth, slider)
 }
 
-function changePlayerBySlider(location) {
+function normalize(location) {
   location = 1 < location ? 1 : location
-  location = location < 0 ? 0 : location
-  player.seek(location)
+  return location < 0 ? 0 : location
+}
+
+function showVolumeSlider(e, el) {
+  var slider = el.firstElementChild
+
+  slider.classList.toggle('show', true)
+  if (!slider.timeout) {
+    slider.addEventListener('mousedown', startDragVolumeSlider.bind(this, slider.firstElementChild), true)
+  }
+}
+
+function hideVolumeSlider(e, el) {
+  var slider = el.firstElementChild
+
+  clearTimeout(slider.timeout)
+  slider.timeout = setTimeout(() => {
+    slider.classList.toggle('show', false)
+  }, 1500)
+}
+
+function startDragVolumeSlider(slider, e) {
+  changeVolumeBySlider((slider.getBoundingClientRect().bottom - e.clientY), slider)
+
+  var dragVolumeSliderBound = dragVolumeSlider.bind(this, slider)
+
+  document.addEventListener('mousemove', dragVolumeSliderBound)
+  document.addEventListener('mouseup', () => {
+    document.removeEventListener('mousemove', dragVolumeSliderBound)
+  })
+}
+
+function dragVolumeSlider(slider, e) {
+  preventSelection()
+  changeVolumeBySlider((slider.getBoundingClientRect().bottom - e.clientY), slider)
+}
+function changeVolumeBySlider(height, slider) {
+  hideVolumeSlider(null, slider.parentElement.parentElement)
+  var volume = slider.offsetHeight < height ? 1 : (height / slider.offsetHeight)
+
+  volume = volume < 0 ? 0 : volume
+  player.setVolume(volume)
 }
