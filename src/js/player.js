@@ -81,8 +81,8 @@ var player = {
       this.dispatchEvent(player.listeners.changedSong)
     }
   },
-  seek: function(percent) {
-    this.audio.currentTime = Math.floor(percent * this.currentSong.duration.raw)
+  seek: function(fraction) {
+    this.audio.currentTime = Math.floor(fraction * this.currentSong.duration.raw)
   }
 }
 
@@ -123,6 +123,7 @@ player.audio.addEventListener('durationchange', function durationchange(event){
   this.currentSong.duration.pretty.seconds = pad(Math.floor(this.currentSong.duration.raw - Math.floor(this.currentSong.duration.raw / 60) * 60))
   requestAnimationFrame(function durationchange(){
     controls.get.duration().forEach((control) => { control.textContent = `${this.currentSong.duration.pretty.minutes}:${this.currentSong.duration.pretty.seconds}` })
+    controls.get.title().forEach((control) => { control.textContent = `${this.songQueue.songs[this.songQueue.currentIndex].attributes.getNamedItem('data-title').textContent}` })
   }.bind(this))
 }.bind(player))
 

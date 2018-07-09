@@ -5,7 +5,7 @@ var selectors = {
   playRelease: '[role="play-release"]',
   scrub: '.fscrub .progress',
   link: '[role="track-link"]',
-  title: '[role="track-title"]',
+  titles: '.title',
   volume: '[role="volumeControl"]',
   volumeI: '[role="volumeControl"] > i',
   volumeInnerSlider: '.fvolumeslider .slider .progress',
@@ -27,7 +27,8 @@ var controls = {
     currentTime: () => { return findNodes(selectors.currentTime) },
     duration: () => { return findNodes(selectors.duration) },
     progress: () => { return findNodes(selectors.progress) },
-    selectPlayPause: () => { return findNodes(selectors.selectPlayPause) }
+    selectPlayPause: () => { return findNodes(selectors.selectPlayPause) },
+    title: () => { return findNodes(selectors.titles) }
   }
 }
 
@@ -323,24 +324,6 @@ var controls = {
 //   return trackTitle
 // }
 //
-// function scrollTrackTitle(elementContainer) {
-//   var scrollingElement = elementContainer.querySelector('.scroll-title')
-//
-//   if (scrollingElement.scrollWidth > elementContainer.scrollWidth) {
-//     var scrollDistance = scrollingElement.scrollWidth - elementContainer.scrollWidth + 1
-//
-//     scrollingElement.style.textIndent = -scrollDistance + 'px'
-//   }
-// }
-//
-// function removeScrollTrackTitle(elementContainer) {
-//   var scrollingElement = elementContainer.querySelector('.scroll-title')
-//
-//   if (!elementContainer || !scrollingElement) {
-//     return
-//   }
-//   scrollingElement.style.textIndent = '0px'
-// }
 //
 // function updateControls() {
 //   var playEls = findNodes(sel.play)
@@ -476,32 +459,22 @@ function preventSelection() {
   }
 }
 
-function startDragPlayerSlider(slider, event) {
+function scrub(slider, event) {
   changePlayerBySlider((event.clientX - slider.getBoundingClientRect().left) / slider.clientWidth, slider)
 
-  var dragPlayerSliderBound = dragPlayerSlider.bind(this, slider)
-
-  document.addEventListener('mousemove', dragPlayerSliderBound)
-  document.addEventListener('mouseup', () => {
-    document.removeEventListener('mousemove', dragPlayerSliderBound)
-  })
-}
-
-function dragPlayerSlider(slider, event) {
-  preventSelection()
-  changePlayerBySlider((event.clientX - slider.getBoundingClientRect().left) / slider.clientWidth, slider)
+  // var dragPlayerSliderBound = dragPlayerSlider.bind(this, slider)
+  // document.addEventListener('mousemove', dragPlayerSliderBound)
+  // document.addEventListener('mouseup', () => {
+  //   document.removeEventListener('mousemove', dragPlayerSliderBound)
+  // })
+// }
+// function dragPlayerSlider(slider, event) {
+//   preventSelection()
+//   changePlayerBySlider((event.clientX - slider.getBoundingClientRect().left) / slider.clientWidth, slider)
 }
 
 function changePlayerBySlider(location) {
   location = 1 < location ? 1 : location
   location = location < 0 ? 0 : location
   player.seek(location)
-}
-
-function startScroll(e, el) {
-  el.style.textIndent = `${el.clientWidth < el.scrollWidth ? el.clientWidth - el.scrollWidth : 0}px`
-}
-
-function stopScroll(e, el) {
-  el.style.textIndent = '0'
 }
