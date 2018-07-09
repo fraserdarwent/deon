@@ -142,8 +142,8 @@
         data-partial
         data-template="play-song">
 {{#streamable}}
-<button class="faux button--mobile{{#inEarlyAccess}} in-early-access{{/inEarlyAccess}}"
-        onclick="player.dispatchEvent(player.events.playPause,this)"
+<button class="faux selectPlayPause button--mobile{{#inEarlyAccess}} in-early-access{{/inEarlyAccess}}"
+        onclick="player.selectPlayPause(event, this)"
         role="play-song"
         data-play-link="{{playUrl}}"
         data-title="{{title}}"

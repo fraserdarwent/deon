@@ -280,7 +280,7 @@ function recordEvent (name, obj, done) {
     withCredentials: true,
     method: 'POST',
     data: {
-      event: name,
+      events: name,
       properties: obj
     }
   }, done)

@@ -15,7 +15,8 @@ var selectors = {
   ftracks: '.ftrack',
   currentTime: '.currentTime',
   duration: '.duration',
-  progress: '.progress'
+  progress: '.progress',
+  selectPlayPause: '.selectPlayPause'
 }
 
 var controls = {
@@ -25,7 +26,8 @@ var controls = {
     previous: () => { return findNodes(selectors.previous) },
     currentTime: () => { return findNodes(selectors.currentTime) },
     duration: () => { return findNodes(selectors.duration) },
-    progress: () => { return findNodes(selectors.progress) }
+    playing: () => { return findNodes(selectors.progress) },
+    selectPlayPause: () => { return findNodes(selectors.selectPlayPause) }
   }
 }
 

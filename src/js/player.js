@@ -1,17 +1,15 @@
+// Configure player object
 var player = {
   audio: new Audio(),
-  events: {
-    playPause: new Event('playPause'),
-    play: new Event('play'),
-    pause: new Event('pause'),
+  listeners: {
     playing: new Event('playing'),
     paused: new Event('paused'),
-    next: new Event('next'),
-    previous: new Event('previous'),
+    changedSong: new Event('changedSong')
   },
-  progress: {
+  currentSong: {
     currentTime: {
       raw: 0,
+      percent: 0,
       pretty: {
         seconds: '0',
         minutes: '0'
@@ -24,91 +22,105 @@ var player = {
         minutes: '0'
       }
     },
-    percent: 0
   },
-  listeners: {},
+  events: {},
   playing: false,
-  dispatchEvent: function(listener, element) {
-    this.listeners[listener.type].forEach((event) => { event(element) })
+  songQueue: {
+    currentIndex: 0,
+    songs: []
+  },
+  dispatchEvent: function(listener) {
+    if (this.events[listener.type]) {
+      this.events[listener.type].forEach((event) => {
+        event()
+      })
+    }
   },
   addEventListener: function(listener, event) {
-    this.listeners[listener.type] = this.listeners[listener.type] ? this.listeners[listener.type].push(event) : [event]
+    this.events[listener.type] = this.events[listener.type] ? this.events[listener.type].push(event) : [event]
+  },
+  selectPlayPause: function(event, element) {
+    //If the song is already playing, pause it instead of playing a new song
+    if (element.classList.contains('playPause')) {
+      this.pause()
+    } else {
+      // this.songQueue = element.parentElement.parentElement.parentElement.querySelectorAll(selectors.song)
+      this.songQueue.currentIndex = element.attributes.getNamedItem('data-index').textContent
+      this.songQueue.songs = findNodes(selectors.selectPlayPause)
+      this.audio.src = this.songQueue.songs[this.songQueue.currentIndex].attributes.getNamedItem('data-play-link').textContent
+      this.dispatchEvent(player.listeners.changedSong)
+    }
+  },
+  playPause: function() {
+    if (this.playing){
+      this.pause()
+    } else {
+      this.play()
+    }
+  },
+  play: function(){
+    this.audio.play()
+    this.dispatchEvent(player.listeners.playing)
+  },
+  pause: function(){
+    this.audio.pause()
+    this.dispatchEvent(player.listeners.paused)
+  },
+  previous: function(element) {
+    this.songQueue.currentIndex = element.attributes.index
+    if (0 <= this.songQueue.currentIndex && 0 < this.songQueue.songs.length){
+      this.songQueue.currentIndex--
+      this.currentSong = this.songQueue.songs[this.songQueue.currentIndex]
+      this.dispatchEvent(player.listeners.changedSong)
+    }
+  },
+  next: function(element) {
+    this.songQueue.currentIndex = element.attributes.index
+    if (this.songQueue.currentIndex + 1 < this.songQueue.songs.length && 0 < this.songQueue.songs.length){
+      this.songQueue.currentIndex++
+      this.currentSong = this.songQueue.songs[this.songQueue.currentIndex]
+      this.dispatchEvent(player.listeners.changedSong)
+    }
   }
 }
 
+// Configure audio object defaults
 player.audio.autoplay = true
 
-player.addEventListener(player.events.playPause, function playPause(element) {
-  if (this.playing){
-    this.dispatchEvent(this.events.pause)
-  } else {
-    this.dispatchEvent(this.events.play, element)
-  }
+player.addEventListener(player.listeners.changedSong, function changedSong() {
+  this.play()
 }.bind(player))
 
-player.addEventListener(player.events.next, function next(element) {
-  //     MusicPlayer.prototype.next = function () {
-//         var old = this.currentItem
-//         this.advance(1)
-//         this.dispatchEvent(createEvent('next', {detail: {
-//                 was: old,
-//                 item: this.currentItem
-//             }}))
-//     }
-  // Implement
-})
-
-player.addEventListener(player.events.previous, function previous(element) {
-  // Implement
-  //
-//     MusicPlayer.prototype.previous = function () {
-//         var old = this.currentItem
-//         this.advance(-1)
-//         this.dispatchEvent(createEvent('previous', {detail: {
-//                 was: old,
-//                 item: this.currentItem
-//             }}))
-//     }
-})
-
-player.addEventListener(player.events.pause, function pause() {
-  this.audio.pause()
-  this.dispatchEvent(this.events.paused)
-}.bind(player))
-
-player.addEventListener(player.events.play, function play(element) {
-  this.audio.src = element.attributes['data-play-link'].textContent
-  this.audio.play()
-  this.dispatchEvent(this.events.playing)
-}.bind(player))
-
-player.addEventListener(player.events.paused, function paused() {
+player.addEventListener(player.listeners.paused, function paused() {
   this.playing = false
   controls.get.playPause().forEach((button) => { button.textContent = 'paused' })
+  controls.get.selectPlayPause().forEach((button) => { button.textContent = 'paused' })
 }.bind(player))
 
-player.addEventListener(player.events.playing, function playing() {
+player.addEventListener(player.listeners.playing, function playing() {
   this.playing = true
   controls.get.playPause().forEach((button) => { button.textContent = 'playing' })
+  controls.get.selectPlayPause().forEach((button) => { if (button.attributes.getNamedItem('data-play-link') === this.songQueue.songs[this.songQueue.currentIndex].attributes.getNamedItem('data-play-link')){ button.textContent = 'playing' } })
 }.bind(player))
 
-player.audio.addEventListener('timeupdate', function timeupdate(event) {
-  this.progress.currentTime.raw = event.target.currentTime
-  this.progress.currentTime.pretty.minutes = Math.floor(this.progress.currentTime.raw / 60)
-  this.progress.currentTime.pretty.seconds = pad(Math.floor(this.progress.currentTime.raw - Math.floor(this.progress.currentTime.raw / 60) * 60))
-  this.progress.percent = this.progress.currentTime.raw / this.progress.duration.raw * 100
-  requestAnimationFrame(function timeupdate() {
-    controls.get.currentTime().forEach((control) => { control.textContent = `${this.progress.currentTime.pretty.minutes}:${this.progress.currentTime.pretty.seconds}` })
-    controls.get.progress().forEach((control) => { control.style.width = `${this.progress.percent}%` })
+// Add event listeners to respond to changes in the audio object
+player.audio.addEventListener('seek', function seek(event) {
+  this.currentSong.currentTime.raw = event.target.currentTime
+  this.currentSong.currentTime.pretty.minutes = Math.floor(this.currentSong.currentTime.raw / 60)
+  this.currentSong.currentTime.pretty.seconds = pad(Math.floor(this.currentSong.currentTime.raw - Math.floor(this.currentSong.currentTime.raw / 60) * 60))
+  this.currentSong.currentTime.percent = this.currentSong.currentTime.raw / this.currentSong.duration.raw * 100
+  requestAnimationFrame(function seek() {
+    controls.get.currentTime().forEach((control) => { control.textContent = `${this.currentSong.currentTime.pretty.minutes}:${this.currentSong.currentTime.pretty.seconds}` })
+    controls.get.progress().forEach((control) => { control.style.width = `${this.currentSong.currentTime.percent}%` })
   }.bind(this))
 }.bind(player))
 
 player.audio.addEventListener('durationchange', function durationchange(event){
-  this.progress.duration.raw = event.target.duration
-  this.progress.duration.pretty.minutes = Math.floor(this.progress.duration.raw / 60)
-  this.progress.duration.pretty.seconds = pad(Math.floor(this.progress.duration.raw - Math.floor(this.progress.duration.raw / 60) * 60))
+  this.currentSong.duration.raw = event.target.duration
+  this.currentSong.duration.pretty.minutes = Math.floor(this.currentSong.duration.raw / 60)
+  this.currentSong.duration.pretty.seconds = pad(Math.floor(this.currentSong.duration.raw - Math.floor(this.currentSong.duration.raw / 60) * 60))
   requestAnimationFrame(function durationchange(){
-    controls.get.duration().forEach((control) => { control.textContent = `${this.progress.duration.pretty.minutes}:${this.progress.duration.pretty.seconds}` })
+    controls.get.duration().forEach((control) => { control.textContent = `${this.currentSong.duration.pretty.minutes}:${this.currentSong.duration.pretty.seconds}` })
   }.bind(this))
 }.bind(player))
 
