@@ -55,7 +55,7 @@ section {
 
 .fplayer .fscrub {
     flex:2;
-    height: 10px;
+    height: 5px;
 }
 
 .fvolumeslider {
@@ -73,8 +73,8 @@ section {
 .fplayer .fvolumeslider .slider{
     height: 100px;
     top: calc(-10px - 100px);
-    width: 10px;
-    left: -5px;
+    width: 5px;
+    left: -2px;
     position: absolute;
 }
 
