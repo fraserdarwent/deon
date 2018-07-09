@@ -26,7 +26,7 @@ var controls = {
     previous: () => { return findNodes(selectors.previous) },
     currentTime: () => { return findNodes(selectors.currentTime) },
     duration: () => { return findNodes(selectors.duration) },
-    playing: () => { return findNodes(selectors.progress) },
+    progress: () => { return findNodes(selectors.progress) },
     selectPlayPause: () => { return findNodes(selectors.selectPlayPause) }
   }
 }
@@ -227,23 +227,7 @@ var controls = {
 //   updateVolumeControls(volume)
 // }
 //
-// function preventSelection() {
-//   var selection = {}
-//
-//   if (window.getSelection) {
-//     selection = window.getSelection()
-//     if (selection.rangeCount) {
-//       selection.removeAllRanges()
-//       return
-//     }
-//   } else if (document.selection) {
-//     selection = document.selection.createRange()
-//     if (selection.text > '') {
-//       document.selection.empty()
-//       return
-//     }
-//   }
-// }
+
 //
 // function loadAndPlayTracks(index) {
 //   var tracks = buildTracks()
@@ -473,32 +457,51 @@ var controls = {
 //   }
 // }
 //
-// function startDragPlayerSlider(e, slider) {
-//   changePlayerBySlider((e.clientX - slider.getBoundingClientRect().left) / slider.clientWidth, slider)
-//
-//   var dragPlayerSliderBound = dragPlayerSlider.bind(this, slider)
-//
-//   document.addEventListener('mousemove', dragPlayerSliderBound)
-//   document.addEventListener('mouseup', () => {
-//     document.removeEventListener('mousemove', dragPlayerSliderBound)
-//   })
-// }
-//
-// function dragPlayerSlider(slider, e) {
-//   preventSelection()
-//   changePlayerBySlider((e.clientX - slider.getBoundingClientRect().left) / slider.clientWidth, slider)
-// }
-//
-// function changePlayerBySlider(location) {
-//   location = 1 < location ? 1 : location
-//   location = location < 0 ? 0 : location
-//   player.seek(location)
-// }
-//
-// function startScroll(e, el) {
-//   el.style.textIndent = `${el.clientWidth < el.scrollWidth ? el.clientWidth - el.scrollWidth : 0}px`
-// }
-//
-// function stopScroll(e, el) {
-//   el.style.textIndent = '0'
-// }
+
+function preventSelection() {
+  var selection = {}
+
+  if (window.getSelection) {
+    selection = window.getSelection()
+    if (selection.rangeCount) {
+      selection.removeAllRanges()
+      return
+    }
+  } else if (document.selection) {
+    selection = document.selection.createRange()
+    if (selection.text > '') {
+      document.selection.empty()
+      return
+    }
+  }
+}
+
+function startDragPlayerSlider(slider, event) {
+  changePlayerBySlider((event.clientX - slider.getBoundingClientRect().left) / slider.clientWidth, slider)
+
+  var dragPlayerSliderBound = dragPlayerSlider.bind(this, slider)
+
+  document.addEventListener('mousemove', dragPlayerSliderBound)
+  document.addEventListener('mouseup', () => {
+    document.removeEventListener('mousemove', dragPlayerSliderBound)
+  })
+}
+
+function dragPlayerSlider(slider, event) {
+  preventSelection()
+  changePlayerBySlider((event.clientX - slider.getBoundingClientRect().left) / slider.clientWidth, slider)
+}
+
+function changePlayerBySlider(location) {
+  location = 1 < location ? 1 : location
+  location = location < 0 ? 0 : location
+  player.seek(location)
+}
+
+function startScroll(e, el) {
+  el.style.textIndent = `${el.clientWidth < el.scrollWidth ? el.clientWidth - el.scrollWidth : 0}px`
+}
+
+function stopScroll(e, el) {
+  el.style.textIndent = '0'
+}

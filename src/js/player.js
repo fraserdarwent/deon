@@ -44,7 +44,6 @@ var player = {
     if (element.classList.contains('playPause')) {
       this.pause()
     } else {
-      // this.songQueue = element.parentElement.parentElement.parentElement.querySelectorAll(selectors.song)
       this.songQueue.currentIndex = element.attributes.getNamedItem('data-index').textContent
       this.songQueue.songs = findNodes(selectors.selectPlayPause)
       this.audio.src = this.songQueue.songs[this.songQueue.currentIndex].attributes.getNamedItem('data-play-link').textContent
@@ -81,6 +80,9 @@ var player = {
       this.currentSong = this.songQueue.songs[this.songQueue.currentIndex]
       this.dispatchEvent(player.listeners.changedSong)
     }
+  },
+  seek: function(percent) {
+    this.audio.currentTime = Math.floor(percent * this.currentSong.duration.raw)
   }
 }
 
@@ -94,7 +96,7 @@ player.addEventListener(player.listeners.changedSong, function changedSong() {
 player.addEventListener(player.listeners.paused, function paused() {
   this.playing = false
   controls.get.playPause().forEach((button) => { button.textContent = 'paused' })
-  controls.get.selectPlayPause().forEach((button) => { button.textContent = 'paused' })
+  controls.get.selectPlayPause().forEach((button) => { if (button.attributes.getNamedItem('data-play-link') === this.songQueue.songs[this.songQueue.currentIndex].attributes.getNamedItem('data-play-link')){ button.textContent = 'paused' } })
 }.bind(player))
 
 player.addEventListener(player.listeners.playing, function playing() {
@@ -104,7 +106,7 @@ player.addEventListener(player.listeners.playing, function playing() {
 }.bind(player))
 
 // Add event listeners to respond to changes in the audio object
-player.audio.addEventListener('seek', function seek(event) {
+player.audio.addEventListener('timeupdate', function timeupdate(event) {
   this.currentSong.currentTime.raw = event.target.currentTime
   this.currentSong.currentTime.pretty.minutes = Math.floor(this.currentSong.currentTime.raw / 60)
   this.currentSong.currentTime.pretty.seconds = pad(Math.floor(this.currentSong.currentTime.raw - Math.floor(this.currentSong.currentTime.raw / 60) * 60))
