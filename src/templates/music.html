@@ -143,7 +143,7 @@
         data-template="play-song">
 {{#streamable}}
 <button class="faux button--mobile{{#inEarlyAccess}} in-early-access{{/inEarlyAccess}}"
-        onclick="playSong(event, this)"
+        onclick="player.dispatchEvent(player.events.playPause,this)"
         role="play-song"
         data-play-link="{{playUrl}}"
         data-title="{{title}}"
