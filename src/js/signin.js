@@ -298,7 +298,7 @@ function processSignUpPage (args) {
 
   renderContent(args.template, scope)
 
-  google.maps.events.addDomListener(window, 'load', initLocationAutoComplete)
+  google.maps.event.addDomListener(window, 'load', initLocationAutoComplete)
   trackSignUpEvents()
   initLocationAutoComplete()
 }

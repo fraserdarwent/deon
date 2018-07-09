@@ -39,7 +39,7 @@ function processEventPage (args) {
   pageProcessor(args, {
     transform: function (args) {
       const scope = {
-        events: transformEvent(args.result)
+        event: transformEvent(args.result)
       }
 
       scope.view = false
@@ -62,7 +62,7 @@ function processHeaderEvent (args) {
       console.log('header', header);
 
       return {
-        events: header
+        event: header
       }
     }
   })
@@ -235,7 +235,7 @@ function transformEventsEmailOptin (obj) {
   obj.isSignedIn = isSignedIn()
   if (obj.isSignedIn) {
     obj.emailOptIns = transformEmailOptins(obj.emailOptIns)
-    obj.fullyOptedIn = obj.emailOptIns.listeners && !isLegacyLocation()
+    obj.fullyOptedIn = obj.emailOptIns.events && !isLegacyLocation()
 
     //Legacy Location
     //delete obj.googleMapsPlaceId

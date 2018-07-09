@@ -42,7 +42,7 @@ function initLocationAutoComplete () {
     var parent = input.parentElement
     var autocomplete = new google.maps.places.Autocomplete(input, options)
 
-    google.maps.events.addListener(autocomplete, 'place_changed', () => {
+    google.maps.event.addListener(autocomplete, 'place_changed', () => {
       var place = autocomplete.getPlace()
       var lat = place.geometry.location.lat()
       var lng = place.geometry.location.lng()
@@ -61,7 +61,7 @@ function initLocationAutoComplete () {
       }
     })
 
-    google.maps.events.addDomListener(input, 'keydown', (e) => {
+    google.maps.event.addDomListener(input, 'keydown', (e) => {
       //If they aren't selecting one of the options then enter means submit
       if (document.querySelector('.pac-item.pac-item-selected') == null) {
         return true
