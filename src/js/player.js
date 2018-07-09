@@ -4,7 +4,7 @@ var player = {
   listeners: {
     playing: new Event('playing'),
     paused: new Event('paused'),
-    changedSong: new Event('changedSong'),
+    changedSongIndex: new Event('changedSongIndex'),
     changedVolume: new Event('changedVolume')
   },
   currentSong: {
@@ -48,7 +48,7 @@ var player = {
       this.songQueue.currentIndex = element.attributes.getNamedItem('data-index').textContent
       this.songQueue.songs = findNodes(selectors.selectPlayPause)
       this.audio.src = this.songQueue.songs[this.songQueue.currentIndex].attributes.getNamedItem('data-play-link').textContent
-      this.dispatchEvent(player.listeners.changedSong)
+      this.dispatchEvent(player.listeners.changedSongIndex)
     }
   },
   playPause: function() {
@@ -66,20 +66,17 @@ var player = {
     this.audio.pause()
     this.dispatchEvent(player.listeners.paused)
   },
-  previous: function(element) {
-    this.songQueue.currentIndex = element.attributes.index
+  previous: function() {
     if (0 <= this.songQueue.currentIndex && 0 < this.songQueue.songs.length){
       this.songQueue.currentIndex--
-      this.currentSong = this.songQueue.songs[this.songQueue.currentIndex]
-      this.dispatchEvent(player.listeners.changedSong)
+      this.dispatchEvent(player.listeners.changedSongIndex)
     }
   },
-  next: function(element) {
-    this.songQueue.currentIndex = element.attributes.index
+  next: function() {
+    console.log(this.songQueue)
     if (this.songQueue.currentIndex + 1 < this.songQueue.songs.length && 0 < this.songQueue.songs.length){
       this.songQueue.currentIndex++
-      this.currentSong = this.songQueue.songs[this.songQueue.currentIndex]
-      this.dispatchEvent(player.listeners.changedSong)
+      this.dispatchEvent(player.listeners.changedSongIndex)
     }
   },
   seek: function(fraction) {
@@ -94,7 +91,8 @@ var player = {
 // Configure audio object defaults
 player.audio.autoplay = true
 
-player.addEventListener(player.listeners.changedSong, function changedSong() {
+player.addEventListener(player.listeners.changedSongIndex, function changedSong() {
+  this.audio.src = this.songQueue.songs[this.songQueue.currentIndex].attributes.getNamedItem('data-play-link').textContent
   this.play()
 }.bind(player))
 
@@ -113,7 +111,10 @@ player.addEventListener(player.listeners.paused, function paused() {
 player.addEventListener(player.listeners.playing, function playing() {
   this.playing = true
   controls.get.playPause().forEach((button) => { button.textContent = 'playing' })
-  controls.get.selectPlayPause().forEach((button) => { if (button.attributes.getNamedItem('data-play-link') === this.songQueue.songs[this.songQueue.currentIndex].attributes.getNamedItem('data-play-link')){ button.textContent = 'playing' } })
+  controls.get.selectPlayPause().forEach((button) => {
+    button.textContent = button.attributes.getNamedItem('data-play-link') === this.songQueue.songs[this.songQueue.currentIndex].attributes.getNamedItem('data-play-link') ? 'playing' : 'paused'
+  })
+  // controls.get.selectPlayPause().forEach((button) => { if (button.attributes.getNamedItem('data-play-link') === this.songQueue.songs[this.songQueue.currentIndex].attributes.getNamedItem('data-play-link')){ button.textContent = 'playing' } })
 }.bind(player))
 
 // Add event listeners to respond to changes in the audio object

@@ -20,20 +20,20 @@
             <button class="faux" onclick="toggleShuffle(event, this)" role="mode">
                 <i class="fa fa-random"></i>
             </button>
-            <button class="faux" onclick="player.previous(this)" role="previous">
+            <button class="faux" onclick="player.previous()" role="previous">
                 <i class="fa fa-step-backward"></i>
             </button>
             <button class="faux playpause" onclick="player.playPause()">
                 <i class="fa fa-play"></i>
             </button>
-            <button class="faux" onclick="player.next(this)" role="next">
+            <button class="faux" onclick="player.next()" role="next">
                 <i class="fa fa-step-forward"></i>
             </button>
             <button class="faux" >
                 <i class="fa fa-repeat"></i>
             </button>
             <div class="currentTime">0:00</div>
-            <div class="fscrub slider horizontal" onclick="scrub(this, event)">
+            <div class="fscrub slider horizontal" onmousedown="scrub(this, event)">
                 <div class="progress"></div>
                 <div class="handle">
                     <div class="inner"></div>

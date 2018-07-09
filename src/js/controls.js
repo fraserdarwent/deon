@@ -14,7 +14,7 @@ var selectors = {
   ftracks: '.ftrack',
   currentTime: '.currentTime',
   duration: '.duration',
-  progress: '.progress',
+  progress: '.fscrub .progress',
   selectPlayPause: '.selectPlayPause',
   volumes: '.volume'
 }
@@ -30,7 +30,6 @@ var controls = {
     selectPlayPause: () => { return findNodes(selectors.selectPlayPause) },
     title: () => { return findNodes(selectors.titles) },
     volume: () => { return findNodes(selectors.volumes) }
-
   }
 }
 
@@ -424,17 +423,17 @@ function preventSelection() {
 }
 
 function scrub(slider, event) {
-    player.seek(normalize((event.clientX - slider.getBoundingClientRect().left) / slider.clientWidth, slider))
+  player.seek(normalize((event.clientX - slider.getBoundingClientRect().left) / slider.clientWidth, slider))
 
-  // var dragPlayerSliderBound = dragPlayerSlider.bind(this, slider)
-  // document.addEventListener('mousemove', dragPlayerSliderBound)
-  // document.addEventListener('mouseup', () => {
-  //   document.removeEventListener('mousemove', dragPlayerSliderBound)
-  // })
-// }
-// function dragPlayerSlider(slider, event) {
-//   preventSelection()
-//   changePlayerBySlider((event.clientX - slider.getBoundingClientRect().left) / slider.clientWidth, slider)
+  var dragPlayerSliderBound = dragPlayerSlider.bind(this, slider)
+  document.addEventListener('mousemove', dragPlayerSliderBound)
+  document.addEventListener('mouseup', () => {
+    document.removeEventListener('mousemove', dragPlayerSliderBound)
+  })
+}
+function dragPlayerSlider(slider, event) {
+  preventSelection()
+  player.seek(normalize((event.clientX - slider.getBoundingClientRect().left) / slider.clientWidth, slider))
 }
 
 function normalize(location) {
