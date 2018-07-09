@@ -92,14 +92,14 @@
         data-partial data-template="track-cells-one-line">
 <td class="longer-width">
   <div class="scroll-container"
-       onmouseover="scrollTrackTitle(this)" onmouseleave="removeScrollTrackTitle(this)">
+       onmouseover="apply(event, this)" onmouseleave="removeScroll(event, this)">
     <span class="scroll-title">{{title}}{{>early-access-msg}}{{>unlicensable}}</span>
   </div>
 </td>
 {{#if playlistId}}
 <td class="longer-width">
   <div class="scroll-container"
-       onmouseover="scrollTrackTitle(this)" onmouseleave="removeScrollTrackTitle(this)">
+       onmouseover="apply(this)" onmouseleave="removeScroll(this)">
     <a href="/release/{{releaseId}}" class="scroll-title">{{release.title}}</a>
   </div>
 </td>

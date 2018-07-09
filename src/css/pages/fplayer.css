@@ -29,17 +29,26 @@ section {
 }
 
 .fplayer .ftrack {
-    text-align: center;
     font-size: 1rem;
     white-space: nowrap;
     overflow: hidden;
+    flex: 0.4;
 }
 
 .fplayer .ftrack:hover {
     cursor: pointer;
     color: dodgerblue;
+}
+
+.fcontrols > * {
+    flex: 0.1;
+    text-align: center;
+}
+
+.textscroll:hover{
     transition: text-indent 2s linear;
 }
+
 .fplayer.playing{
     max-height: 50%
 }
@@ -56,6 +65,7 @@ section {
     left: 50%;
     position: relative;
     display: none;
+    flex: 1;
 }
 .fvolumeslider.show {
     display: block;
@@ -70,12 +80,4 @@ section {
 
 .fplayer .fvolumeslider .slider .progress{
     height: 100%
-}
-
-.fcontrols button, .fscrub, .fduration, .fposition, .fvolume {
-    flex: 0.1;
-    text-align: center;
-}
-.fcontrols .ftrack{
-    flex: 0.4;
 }

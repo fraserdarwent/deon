@@ -21,16 +21,43 @@ var selectors = {
 
 var controls = {
   get: {
-    playPause:  () => { return findNodes(selectors.playPause) },
-    next: () => { return findNodes(selectors.next) },
-    previous: () => { return findNodes(selectors.previous) },
-    currentTime: () => { return findNodes(selectors.currentTime) },
-    duration: () => { return findNodes(selectors.duration) },
-    progress: () => { return findNodes(selectors.progress) },
-    selectPlayPause: () => { return findNodes(selectors.selectPlayPause) },
-    title: () => { return findNodes(selectors.titles) },
-    volume: () => { return findNodes(selectors.volumes) }
+    playPause: () => {
+      return findNodes(selectors.playPause)
+    },
+    next: () => {
+      return findNodes(selectors.next)
+    },
+    previous: () => {
+      return findNodes(selectors.previous)
+    },
+    currentTime: () => {
+      return findNodes(selectors.currentTime)
+    },
+    duration: () => {
+      return findNodes(selectors.duration)
+    },
+    progress: () => {
+      return findNodes(selectors.progress)
+    },
+    selectPlayPause: () => {
+      return findNodes(selectors.selectPlayPause)
+    },
+    title: () => {
+      return findNodes(selectors.titles)
+    },
+    volume: () => {
+      return findNodes(selectors.volumes)
+    }
   }
+}
+
+function applyScroll(event, element) {
+  console.log(element)
+  element.style.textIndent = `${element.clientWidth < element.scrollWidth ? element.clientWidth - element.scrollWidth  : 0 }px`
+}
+
+function removeScroll(event, element) {
+  element.style.textIndent = '0px'
 }
 
 //
@@ -422,7 +449,7 @@ function preventSelection() {
   }
 }
 
-function scrub(slider, event) {
+function scrub(event, slider) {
   player.seek(normalize((event.clientX - slider.getBoundingClientRect().left) / slider.clientWidth, slider))
 
   var dragPlayerSliderBound = dragPlayerSlider.bind(this, slider)
@@ -431,6 +458,7 @@ function scrub(slider, event) {
     document.removeEventListener('mousemove', dragPlayerSliderBound)
   })
 }
+
 function dragPlayerSlider(slider, event) {
   preventSelection()
   player.seek(normalize((event.clientX - slider.getBoundingClientRect().left) / slider.clientWidth, slider))
@@ -474,6 +502,7 @@ function dragVolumeSlider(slider, e) {
   preventSelection()
   changeVolumeBySlider((slider.getBoundingClientRect().bottom - e.clientY), slider)
 }
+
 function changeVolumeBySlider(height, slider) {
   hideVolumeSlider(null, slider.parentElement.parentElement)
   var volume = slider.offsetHeight < height ? 1 : (height / slider.offsetHeight)

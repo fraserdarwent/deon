@@ -459,12 +459,12 @@ body.showing-notice .controls.fixed.playing {
 }
 .controls > .toggle-repeat {
   margin-right: 1em;
-}  
+}
 .controls > .volume-slider-container {
   opacity: 0;
   transition: opacity 0.2s ease;
   pointer-events: none;
-}  
+}
 .show-slider .volume-slider-container {
   opacity: 1;
   pointer-events: auto;
@@ -1356,4 +1356,8 @@ footer .footer-items li:first-child button::before{
   #complete-profile-modal .complete-profile-subscribe label {
     line-height: 1.5;
   }
+}
+
+td {
+  overflow: hidden;
 }
