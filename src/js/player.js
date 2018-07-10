@@ -1,4 +1,7 @@
-// Configure player object
+/***
+ * Configure player object
+ * @type {{audio: HTMLAudioElement, listeners: {playing: Event, paused: Event, selectedsong: Event, changedvolume: Event, progressed: Event}, currentSong: {currentTime: {percent: (function(): number), pretty: (function(): {minutes: number, seconds: *})}, duration: {pretty: (function(): {minutes: number, seconds: *})}}, events: {}, songQueue: {currentIndex: number, songs: Array}, dispatchEvent: player.dispatchEvent, addEventListener: player.addEventListener, select: player.select, pause: player.pause, previous: player.previous, next: player.next, seek: player.seek, setVolume: player.setVolume, progress: player.progress, mute: player.mute, setButtons: player.setButtons}}
+ */
 const player = {
   audio: new Audio(),
   listeners: {
@@ -6,7 +9,7 @@ const player = {
     paused: new Event('paused'),
     selectedsong: new Event('selectedsong'),
     changedvolume: new Event('changedvolume'),
-    drawn: new Event('drawn')
+    progressed: new Event('progressed')
   },
   currentSong: {
     currentTime: {
@@ -79,14 +82,14 @@ const player = {
     this.audio.volume = fraction
     this.dispatchEvent(this.listeners.changedvolume)
   },
-  draw: function () {
+  progress: function () {
     controls.currentTime().forEach((control) => {
       control.textContent = `${player.currentSong.currentTime.pretty().minutes}:${this.currentSong.currentTime.pretty().seconds}`
     })
     controls.progress().forEach((control) => {
       control.style.width = `${player.currentSong.currentTime.percent()}%`
     })
-    this.dispatchEvent(this.listeners.drawn)
+    this.dispatchEvent(this.listeners.progressed)
   },
   mute: function(){
     if (this.audio.volume === 0){
@@ -107,10 +110,14 @@ const player = {
   }
 }
 
-// Configure audio default
+/***
+ * Configure audio default
+***/
 player.audio.autoplay = true
 
-// Add event listeners to player object
+/***
+ * Add event listeners to player object
+ ***/
 player.addEventListener(player.listeners.selectedsong, function selectedsong() {
   this.audio.src = this.songQueue.songs[this.songQueue.currentIndex].attributes.getNamedItem('data-play-link').textContent
 }.bind(player))
@@ -129,24 +136,25 @@ player.addEventListener(player.listeners.playing, function playing() {
   this.setButtons.bind(this)('pause')
 }.bind(player))
 
-player.addEventListener(player.listeners.drawn, function draw() {
-  // Only request another frame if playing
+player.addEventListener(player.listeners.progressed, function draw() {
   if (!this.audio.paused){
-    requestAnimationFrame(this.draw.bind(this))
+    requestAnimationFrame(this.progress.bind(this))
   }
 }.bind(player))
 
-// Add event listener's to player audio object
+/***
+ * Add event listener's to player audio object
+ */
 player.audio.addEventListener('loadstart', function play() {
   this.setButtons.bind(this)('loading')
 }.bind(player))
 
 player.audio.addEventListener('timeupdate', function timeupdate() {
-  this.draw.bind(this)()
+  this.progress.bind(this)()
 }.bind(player))
 
 player.audio.addEventListener('playing', function play() {
-  this.draw.bind(this)()
+  this.progress.bind(this)()
   this.dispatchEvent(this.listeners.playing)
 }.bind(player))
 
@@ -163,6 +171,7 @@ player.audio.addEventListener('durationchange', function durationchange(){
     controls.duration().forEach((control) => { control.textContent = `${this.currentSong.duration.pretty().minutes}:${this.currentSong.duration.pretty().seconds}` })
   }.bind(this))
 }.bind(player))
+
 
 function pad(time) {
   return String("0" + time)
