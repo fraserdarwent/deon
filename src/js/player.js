@@ -35,7 +35,13 @@ const player = {
       }
     },
   },
+  /**
+   * Object to store key/pair values for listeners and events
+   */
   events: {},
+  /**
+   * Object to store current queue of songs and index pointing to current song
+   */
   songQueue: {
     currentIndex: 0,
     songs: []
