@@ -52,7 +52,6 @@ var controls = {
 }
 
 function applyScroll(event, element) {
-  console.log(element)
   element.style.textIndent = `${element.clientWidth < element.scrollWidth ? element.clientWidth - element.scrollWidth  : 0 }px`
 }
 
