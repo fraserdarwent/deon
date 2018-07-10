@@ -89,11 +89,11 @@ const player = {
     this.dispatchEvent(this.listeners.drawn)
   },
   mute: function(){
-    if (this.audio.volume !== 0){
+    if (this.audio.volume === 0){
+      this.audio.volume = this.audio.lastVolume ? this.audio.lastVolume : 1
+    } else {
       this.audio.lastVolume = this.audio.volume
       this.audio.volume = 0
-    } else {
-      this.audio.volume = this.audio.lastVolume ? this.audio.lastVolume : 1
     }
     this.dispatchEvent(this.listeners.changedvolume)
   },
