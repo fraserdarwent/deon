@@ -1,6 +1,6 @@
-/***
+/**
  * Configure player object
- * @type {{audio: HTMLAudioElement, listeners: {playing: Event, paused: Event, selectedsong: Event, changedvolume: Event, progressed: Event}, currentSong: {currentTime: {percent: (function(): number), pretty: (function(): {minutes: number, seconds: *})}, duration: {pretty: (function(): {minutes: number, seconds: *})}}, events: {}, songQueue: {currentIndex: number, songs: Array}, dispatchEvent: player.dispatchEvent, addEventListener: player.addEventListener, select: player.select, pause: player.pause, previous: player.previous, next: player.next, seek: player.seek, setVolume: player.setVolume, progress: player.progress, mute: player.mute, setButtons: player.setButtons}}
+ * @type {{audio: HTMLAudioElement, listeners: {playing: Event, paused: Event, selectedsong: Event, changedvolume: Event, updatedPlayer: Event}, currentSong: {currentTime: {percent: (function(): number), pretty: (function(): {minutes: number, seconds: *})}, duration: {pretty: (function(): {minutes: number, seconds: *})}}, events: {}, songQueue: {currentIndex: number, songs: Array}, dispatchEvent: player.dispatchEvent, addEventListener: player.addEventListener, select: player.select, pause: player.pause, previous: player.previous, next: player.next, seek: player.seek, setVolume: player.setVolume, updatePlayer: player.updatePlayer, mute: player.mute, setButtons: player.setButtons}}
  */
 const player = {
   audio: new Audio(),
@@ -9,8 +9,11 @@ const player = {
     paused: new Event('paused'),
     selectedsong: new Event('selectedsong'),
     changedvolume: new Event('changedvolume'),
-    progressed: new Event('progressed')
+    updatedPlayer: new Event('updatedPlayer')
   },
+  /**
+   * Object containing methods to calculate various information about the current song
+   */
   currentSong: {
     currentTime: {
       percent: function () {
@@ -37,16 +40,32 @@ const player = {
     currentIndex: 0,
     songs: []
   },
+  /**
+   * Dispatch all events for the listener, if it exists
+   * @param listener
+   */
   dispatchEvent: function (listener) {
-    if (this.events[listener.type]) {
+    if (this.listeners[listener] && this.events[listener.type]) {
       this.events[listener.type].forEach((event) => {
         event()
       })
     }
   },
+  /**
+   * Create empty array if it does not already exist
+   * Add event to array of existing events
+   * @param listener
+   * @param event
+   */
   addEventListener: function (listener, event) {
     this.events[listener.type] = this.events[listener.type] ? this.events[listener.type].push(event) : [event]
   },
+  /**
+   * Select a new song
+   * If currently playing song is selected, pause or resume depending on state
+   * @param event
+   * @param element
+   */
   select: function (event, element) {
     if (element.attributes.getNamedItem('data-play-link').textContent === this.audio.src) {
       this.pause()
@@ -56,6 +75,9 @@ const player = {
       this.dispatchEvent(player.listeners.selectedsong)
     }
   },
+  /**
+   * Pause or resume current song based on state
+   */
   pause: function () {
     if (this.audio.paused) {
       this.audio.play()
@@ -63,34 +85,55 @@ const player = {
       this.audio.pause()
     }
   },
+  /**
+   * Select previous song in queue by decrementing index by 1
+   */
   previous: function () {
     if (0 <= this.songQueue.currentIndex && 0 < this.songQueue.songs.length) {
       this.songQueue.currentIndex--
       this.dispatchEvent(player.listeners.selectedsong)
     }
   },
+  /**
+   * Select next song in queue by incrementing index by 1
+   */
   next: function () {
     if (this.songQueue.currentIndex + 1 < this.songQueue.songs.length && 0 < this.songQueue.songs.length) {
       this.songQueue.currentIndex++
       this.dispatchEvent(player.listeners.selectedsong)
     }
   },
+  /**
+   * Seek to position in song based on value between 0 and 1
+   * @param fraction
+   */
   seek: function (fraction) {
     this.audio.currentTime = fraction * this.audio.duration
   },
+  /**
+   * Set volume based on value between 0 and 1
+   * @param fraction
+   */
   setVolume: function (fraction) {
     this.audio.volume = fraction
     this.dispatchEvent(this.listeners.changedvolume)
   },
-  progress: function () {
+  /**
+   * Update the player timestamp and progress bar
+   * Only call from requestAnimationFrame
+   */
+  updatePlayer: function () {
     controls.currentTime().forEach((control) => {
       control.textContent = `${player.currentSong.currentTime.pretty().minutes}:${this.currentSong.currentTime.pretty().seconds}`
     })
     controls.progress().forEach((control) => {
       control.style.width = `${player.currentSong.currentTime.percent()}%`
     })
-    this.dispatchEvent(this.listeners.progressed)
+    this.dispatchEvent(this.listeners.updatedPlayer)
   },
+  /**
+   * Based on current volume, either store current volume and mute player, or set volume to previously stored volume
+   */
   mute: function(){
     if (this.audio.volume === 0){
       this.audio.volume = this.audio.lastVolume ? this.audio.lastVolume : 1
@@ -100,6 +143,10 @@ const player = {
     }
     this.dispatchEvent(this.listeners.changedvolume)
   },
+  /**
+   * Set the content of the select button for the current playing song and pause buttons to parameter
+   * @param content
+   */
   setButtons: function (content) {
     controls.pause().forEach((button) => {
       button.textContent = content
@@ -111,7 +158,7 @@ const player = {
 }
 
 /***
- * Configure audio default
+ * Configure audio defaults
 ***/
 player.audio.autoplay = true
 
@@ -136,9 +183,9 @@ player.addEventListener(player.listeners.playing, function playing() {
   this.setButtons.bind(this)('pause')
 }.bind(player))
 
-player.addEventListener(player.listeners.progressed, function draw() {
+player.addEventListener(player.listeners.updatedPlayer, function draw() {
   if (!this.audio.paused){
-    requestAnimationFrame(this.progress.bind(this))
+    requestAnimationFrame(this.updatePlayer.bind(this))
   }
 }.bind(player))
 
@@ -150,11 +197,11 @@ player.audio.addEventListener('loadstart', function play() {
 }.bind(player))
 
 player.audio.addEventListener('timeupdate', function timeupdate() {
-  this.progress.bind(this)()
+  this.updatePlayer.bind(this)()
 }.bind(player))
 
 player.audio.addEventListener('playing', function play() {
-  this.progress.bind(this)()
+  this.updatePlayer.bind(this)()
   this.dispatchEvent(this.listeners.playing)
 }.bind(player))
 
@@ -171,7 +218,6 @@ player.audio.addEventListener('durationchange', function durationchange(){
     controls.duration().forEach((control) => { control.textContent = `${this.currentSong.duration.pretty().minutes}:${this.currentSong.duration.pretty().seconds}` })
   }.bind(this))
 }.bind(player))
-
 
 function pad(time) {
   return String("0" + time)
@@ -263,7 +309,7 @@ function pad(time) {
 //         this.audio.addEventListener('loadstart', onStateChange.bind(this))
 //         this.audio.addEventListener('canplay', onStateChange.bind(this))
 //         this.audio.addEventListener('canplaythrough', onStateChange.bind(this))
-//         this.audio.addEventListener('progress', onStateChange.bind(this))
+//         this.audio.addEventListener('updatePlayer', onStateChange.bind(this))
 //         this.audio.addEventListener('pause', onStateChange.bind(this))
 //         this.repeatMode = 'none'
 //         this.shuffle = false
@@ -501,7 +547,7 @@ function pad(time) {
 //             }
 //         })
 //
-//         Object.defineProperty(obj, 'progress', {
+//         Object.defineProperty(obj, 'updatePlayer', {
 //             get: function () {
 //                 return this.audio.duration ? this.audio.currentTime / this.audio.duration : 0
 //             }
