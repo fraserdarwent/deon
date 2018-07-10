@@ -1,27 +1,33 @@
 // Configure player object
-var player = {
+var player
+
+player = {
   audio: new Audio(),
   listeners: {
     playing: new Event('playing'),
     paused: new Event('paused'),
-    changedSongIndex: new Event('changedSongIndex'),
-    changedVolume: new Event('changedVolume'),
+    selectedsong: new Event('selectedsong'),
+    changedvolume: new Event('changedvolume'),
     drawn: new Event('drawn')
   },
   currentSong: {
     currentTime: {
-      raw: 0,
-      percent: 0,
-      pretty: {
-        seconds: '0',
-        minutes: '0'
+      percent: function () {
+        return player.audio.currentTime / player.audio.duration * 100
+      },
+      pretty: function () {
+        return {
+          minutes: Math.floor(player.audio.currentTime / 60),
+          seconds: pad(Math.floor(player.audio.currentTime - Math.floor(player.audio.currentTime / 60) * 60))
+        }
       }
     },
     duration: {
-      raw: 0,
-      pretty: {
-        seconds: '0',
-        minutes: '0'
+      pretty: function () {
+        return {
+          minutes: Math.floor(player.audio.duration / 60),
+          seconds: pad(Math.floor(player.audio.duration - Math.floor(player.audio.duration / 60) * 60))
+        }
       }
     },
   },
@@ -30,120 +36,129 @@ var player = {
     currentIndex: 0,
     songs: []
   },
-  dispatchEvent: function(listener) {
+  dispatchEvent: function (listener) {
     if (this.events[listener.type]) {
       this.events[listener.type].forEach((event) => {
         event()
       })
     }
   },
-  addEventListener: function(listener, event) {
+  addEventListener: function (listener, event) {
     this.events[listener.type] = this.events[listener.type] ? this.events[listener.type].push(event) : [event]
   },
-  selectPlayPause: function(event, element) {
-    //If the song is already playing, pause it instead of playing a new song
-    if (element.classList.contains('playPause')) {
-      this.pause()
+  select: function (event, element) {
+    if (element.attributes.getNamedItem('data-play-link').textContent === this.audio.src) {
+      if (!this.audio.paused) {
+        this.pause()
+      } else {
+        this.play()
+      }
     } else {
+      this.songQueue.songs = findNodes(selectors.select)
       this.songQueue.currentIndex = element.attributes.getNamedItem('data-index').textContent
-      this.songQueue.songs = findNodes(selectors.selectPlayPause)
-      this.audio.src = this.songQueue.songs[this.songQueue.currentIndex].attributes.getNamedItem('data-play-link').textContent
-      this.dispatchEvent(player.listeners.changedSongIndex)
+      this.dispatchEvent(player.listeners.selectedsong)
     }
   },
-  playPause: function() {
-    if (this.audio.paused){
+  playPause: function () {
+    if (this.audio.paused) {
       this.play()
     } else {
       this.pause()
     }
   },
-  play: function(){
+  play: function () {
     this.audio.play()
   },
-  pause: function(){
+  pause: function () {
     this.audio.pause()
   },
-  previous: function() {
-    if (0 <= this.songQueue.currentIndex && 0 < this.songQueue.songs.length){
+  previous: function () {
+    if (0 <= this.songQueue.currentIndex && 0 < this.songQueue.songs.length) {
       this.songQueue.currentIndex--
-      this.dispatchEvent(player.listeners.changedSongIndex)
+      this.dispatchEvent(player.listeners.selectedsong)
     }
   },
-  next: function() {
-    if (this.songQueue.currentIndex + 1 < this.songQueue.songs.length && 0 < this.songQueue.songs.length){
+  next: function () {
+    if (this.songQueue.currentIndex + 1 < this.songQueue.songs.length && 0 < this.songQueue.songs.length) {
       this.songQueue.currentIndex++
-      this.dispatchEvent(player.listeners.changedSongIndex)
+      this.dispatchEvent(player.listeners.selectedsong)
     }
   },
-  seek: function(fraction) {
+  seek: function (fraction) {
     this.audio.currentTime = Math.floor(fraction * this.currentSong.duration.raw)
   },
-  setVolume: function(fraction) {
+  setVolume: function (fraction) {
     this.audio.volume = fraction
-    this.dispatchEvent(this.listeners.changedVolume)
+    this.dispatchEvent(this.listeners.changedvolume)
   },
-  draw: function(){
-    this.currentSong.currentTime.raw = this.audio.currentTime
-    this.currentSong.currentTime.pretty.minutes = Math.floor(this.currentSong.currentTime.raw / 60)
-    this.currentSong.currentTime.pretty.seconds = pad(Math.floor(this.currentSong.currentTime.raw - Math.floor(this.currentSong.currentTime.raw / 60) * 60))
-    this.currentSong.currentTime.percent = this.currentSong.currentTime.raw / this.currentSong.duration.raw * 100
-    controls.get.currentTime().forEach((control) => { control.textContent = `${this.currentSong.currentTime.pretty.minutes}:${this.currentSong.currentTime.pretty.seconds}` })
-    controls.get.progress().forEach((control) => { control.style.width = `${this.currentSong.currentTime.percent}%` })
+  draw: function () {
+    controls.get.currentTime().forEach((control) => {
+      control.textContent = `${player.currentSong.currentTime.pretty().minutes}:${this.currentSong.currentTime.pretty().seconds}`
+    })
+    controls.get.progress().forEach((control) => {
+      control.style.width = `${player.currentSong.currentTime.percent()}%`
+    })
     this.dispatchEvent(this.listeners.drawn)
+  },
+  setButtons: function (content) {
+    controls.get.playPause().forEach((button) => {
+      // button.classList.toggle('playing', true)
+      button.textContent = content
+    })
+    controls.get.select().forEach((button) => {
+      button.textContent = button.attributes.getNamedItem('data-play-link') === this.songQueue.songs[this.songQueue.currentIndex].attributes.getNamedItem('data-play-link') ? content : 'play'
+    })
   }
 }
 
 // Configure audio object defaults
 player.audio.autoplay = true
 
-player.addEventListener(player.listeners.changedSongIndex, function changedSongEvent() {
+player.addEventListener(player.listeners.selectedsong, function selectedsong() {
   this.audio.src = this.songQueue.songs[this.songQueue.currentIndex].attributes.getNamedItem('data-play-link').textContent
-  this.play()
 }.bind(player))
 
-player.addEventListener(player.listeners.changedVolume, function changedVolumeEvent() {
+player.addEventListener(player.listeners.changedvolume, function changedvolume() {
   requestAnimationFrame(function changedVolume(){
     controls.get.volume().forEach((control) => { control.style.height = `${this.audio.volume * 100}%` })
   }.bind(this))
 }.bind(player))
 
-player.addEventListener(player.listeners.paused, function pausedEvent() {
-  controls.get.playPause().forEach((button) => { button.textContent = 'paused' })
-  controls.get.selectPlayPause().forEach((button) => { if (button.attributes.getNamedItem('data-play-link') === this.songQueue.songs[this.songQueue.currentIndex].attributes.getNamedItem('data-play-link')){ button.textContent = 'paused' } })
+player.addEventListener(player.listeners.paused, function paused() {
+  this.setButtons.bind(this)('play')
 }.bind(player))
 
-player.addEventListener(player.listeners.playing, function playingEvent() {
-  controls.get.playPause().forEach((button) => { button.textContent = 'playing' })
-  controls.get.selectPlayPause().forEach((button) => {
-    button.textContent = button.attributes.getNamedItem('data-play-link') === this.songQueue.songs[this.songQueue.currentIndex].attributes.getNamedItem('data-play-link') ? 'playing' : 'paused'
-  })
-  // controls.get.selectPlayPause().forEach((button) => { if (button.attributes.getNamedItem('data-play-link') === this.songQueue.songs[this.songQueue.currentIndex].attributes.getNamedItem('data-play-link')){ button.textContent = 'playing' } })
+player.addEventListener(player.listeners.playing, function playing() {
+  this.setButtons.bind(this)('pause')
 }.bind(player))
 
-player.audio.addEventListener('play', function playEvent() {
-  this.draw()
+player.audio.addEventListener('loadstart', function play() {
+  this.setButtons.bind(this)('loading')
+}.bind(player))
+
+player.audio.addEventListener('playing', function play() {
+  this.draw.bind(this)()
   this.dispatchEvent(this.listeners.playing)
 }.bind(player))
 
-player.audio.addEventListener('pause', function pauseEvent() {
+player.audio.addEventListener('loadedmetadata', function loadedmetadata() {
+  controls.get.title().forEach((control) => { control.textContent = `${this.songQueue.songs[this.songQueue.currentIndex].attributes.getNamedItem('data-title').textContent}` })
+}.bind(player))
+
+player.audio.addEventListener('pause', function pause() {
   this.dispatchEvent(this.listeners.paused)
 }.bind(player))
 
 // After drawing the player, draw it again if it is still playing
-player.addEventListener(player.listeners.drawn, function drawEvent() {
+player.addEventListener(player.listeners.drawn, function draw() {
   if (!this.audio.paused){
     requestAnimationFrame(this.draw.bind(this))
   }
 }.bind(player))
 
-player.audio.addEventListener('durationchange', function durationchange(event){
-  this.currentSong.duration.raw = event.target.duration
-  this.currentSong.duration.pretty.minutes = Math.floor(this.currentSong.duration.raw / 60)
-  this.currentSong.duration.pretty.seconds = pad(Math.floor(this.currentSong.duration.raw - Math.floor(this.currentSong.duration.raw / 60) * 60))
+player.audio.addEventListener('durationchange', function durationchange(){
   requestAnimationFrame(function durationchange(){
-    controls.get.duration().forEach((control) => { control.textContent = `${this.currentSong.duration.pretty.minutes}:${this.currentSong.duration.pretty.seconds}` })
-    controls.get.title().forEach((control) => { control.textContent = `${this.songQueue.songs[this.songQueue.currentIndex].attributes.getNamedItem('data-title').textContent}` })
+    controls.get.duration().forEach((control) => { control.textContent = `${this.currentSong.duration.pretty().minutes}:${this.currentSong.duration.pretty().seconds}` })
   }.bind(this))
 }.bind(player))
 

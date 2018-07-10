@@ -15,7 +15,7 @@ var selectors = {
   currentTime: '.currentTime',
   duration: '.duration',
   progress: '.fscrub .progress',
-  selectPlayPause: '.selectPlayPause',
+  select: '.select',
   volumes: '.volume'
 }
 
@@ -39,8 +39,8 @@ var controls = {
     progress: () => {
       return findNodes(selectors.progress)
     },
-    selectPlayPause: () => {
-      return findNodes(selectors.selectPlayPause)
+    select: () => {
+      return findNodes(selectors.select)
     },
     title: () => {
       return findNodes(selectors.titles)
