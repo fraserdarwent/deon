@@ -1,7 +1,5 @@
 // Configure player object
-var player
-
-player = {
+const player = {
   audio: new Audio(),
   listeners: {
     playing: new Event('playing'),
@@ -48,29 +46,19 @@ player = {
   },
   select: function (event, element) {
     if (element.attributes.getNamedItem('data-play-link').textContent === this.audio.src) {
-      if (!this.audio.paused) {
-        this.pause()
-      } else {
-        this.play()
-      }
+      this.pause()
     } else {
       this.songQueue.songs = findNodes(selectors.select)
       this.songQueue.currentIndex = element.attributes.getNamedItem('data-index').textContent
       this.dispatchEvent(player.listeners.selectedsong)
     }
   },
-  playPause: function () {
-    if (this.audio.paused) {
-      this.play()
-    } else {
-      this.pause()
-    }
-  },
-  play: function () {
-    this.audio.play()
-  },
   pause: function () {
-    this.audio.pause()
+    if (this.audio.paused) {
+      this.audio.play()
+    } else {
+      this.audio.pause()
+    }
   },
   previous: function () {
     if (0 <= this.songQueue.currentIndex && 0 < this.songQueue.songs.length) {
@@ -85,42 +73,43 @@ player = {
     }
   },
   seek: function (fraction) {
-    this.audio.currentTime = Math.floor(fraction * this.currentSong.duration.raw)
+    this.audio.currentTime = fraction * this.audio.duration
   },
   setVolume: function (fraction) {
     this.audio.volume = fraction
     this.dispatchEvent(this.listeners.changedvolume)
   },
   draw: function () {
-    controls.get.currentTime().forEach((control) => {
+    controls.currentTime().forEach((control) => {
       control.textContent = `${player.currentSong.currentTime.pretty().minutes}:${this.currentSong.currentTime.pretty().seconds}`
     })
-    controls.get.progress().forEach((control) => {
+    controls.progress().forEach((control) => {
       control.style.width = `${player.currentSong.currentTime.percent()}%`
     })
     this.dispatchEvent(this.listeners.drawn)
   },
   setButtons: function (content) {
-    controls.get.playPause().forEach((button) => {
+    controls.pause().forEach((button) => {
       // button.classList.toggle('playing', true)
       button.textContent = content
     })
-    controls.get.select().forEach((button) => {
+    controls.select().forEach((button) => {
       button.textContent = button.attributes.getNamedItem('data-play-link') === this.songQueue.songs[this.songQueue.currentIndex].attributes.getNamedItem('data-play-link') ? content : 'play'
     })
   }
 }
 
-// Configure audio object defaults
+// Configure audio default
 player.audio.autoplay = true
 
+// Add event listeners to player object
 player.addEventListener(player.listeners.selectedsong, function selectedsong() {
   this.audio.src = this.songQueue.songs[this.songQueue.currentIndex].attributes.getNamedItem('data-play-link').textContent
 }.bind(player))
 
 player.addEventListener(player.listeners.changedvolume, function changedvolume() {
   requestAnimationFrame(function changedVolume(){
-    controls.get.volume().forEach((control) => { control.style.height = `${this.audio.volume * 100}%` })
+    controls.volume().forEach((control) => { control.style.height = `${this.audio.volume * 100}%` })
   }.bind(this))
 }.bind(player))
 
@@ -132,8 +121,20 @@ player.addEventListener(player.listeners.playing, function playing() {
   this.setButtons.bind(this)('pause')
 }.bind(player))
 
+player.addEventListener(player.listeners.drawn, function draw() {
+  // Only request another frame if playing
+  if (!this.audio.paused){
+    requestAnimationFrame(this.draw.bind(this))
+  }
+}.bind(player))
+
+// Add event listener's to player audio object
 player.audio.addEventListener('loadstart', function play() {
   this.setButtons.bind(this)('loading')
+}.bind(player))
+
+player.audio.addEventListener('timeupdate', function timeupdate() {
+  this.draw.bind(this)()
 }.bind(player))
 
 player.audio.addEventListener('playing', function play() {
@@ -142,23 +143,16 @@ player.audio.addEventListener('playing', function play() {
 }.bind(player))
 
 player.audio.addEventListener('loadedmetadata', function loadedmetadata() {
-  controls.get.title().forEach((control) => { control.textContent = `${this.songQueue.songs[this.songQueue.currentIndex].attributes.getNamedItem('data-title').textContent}` })
+  controls.title().forEach((control) => { control.textContent = `${this.songQueue.songs[this.songQueue.currentIndex].attributes.getNamedItem('data-title').textContent}` })
 }.bind(player))
 
 player.audio.addEventListener('pause', function pause() {
   this.dispatchEvent(this.listeners.paused)
 }.bind(player))
 
-// After drawing the player, draw it again if it is still playing
-player.addEventListener(player.listeners.drawn, function draw() {
-  if (!this.audio.paused){
-    requestAnimationFrame(this.draw.bind(this))
-  }
-}.bind(player))
-
 player.audio.addEventListener('durationchange', function durationchange(){
   requestAnimationFrame(function durationchange(){
-    controls.get.duration().forEach((control) => { control.textContent = `${this.currentSong.duration.pretty().minutes}:${this.currentSong.duration.pretty().seconds}` })
+    controls.duration().forEach((control) => { control.textContent = `${this.currentSong.duration.pretty().minutes}:${this.currentSong.duration.pretty().seconds}` })
   }.bind(this))
 }.bind(player))
 
