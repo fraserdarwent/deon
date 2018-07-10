@@ -17,7 +17,7 @@ const player = {
   currentSong: {
     currentTime: {
       percent: function () {
-        return player.audio.currentTime / player.audio.duration * 100
+        return this.audio.currentTime / this.audio.duration * 100
       },
       pretty: function () {
         return {
@@ -51,7 +51,7 @@ const player = {
    * @param listener
    */
   dispatchEvent: function (listener) {
-    if (this.listeners[listener] && this.events[listener.type]) {
+    if (this.listeners[listener.type] && this.events[listener.type]) {
       this.events[listener.type].forEach((event) => {
         event()
       })
@@ -78,7 +78,7 @@ const player = {
     } else {
       this.songQueue.songs = findNodes(selectors.select)
       this.songQueue.currentIndex = element.attributes.getNamedItem('data-index').textContent
-      this.dispatchEvent(player.listeners.selectedsong)
+      this.dispatchEvent(this.listeners.selectedsong)
     }
   },
   /**
@@ -97,7 +97,7 @@ const player = {
   previous: function () {
     if (0 <= this.songQueue.currentIndex && 0 < this.songQueue.songs.length) {
       this.songQueue.currentIndex--
-      this.dispatchEvent(player.listeners.selectedsong)
+      this.dispatchEvent(this.listeners.selectedsong)
     }
   },
   /**
@@ -106,7 +106,7 @@ const player = {
   next: function () {
     if (this.songQueue.currentIndex + 1 < this.songQueue.songs.length && 0 < this.songQueue.songs.length) {
       this.songQueue.currentIndex++
-      this.dispatchEvent(player.listeners.selectedsong)
+      this.dispatchEvent(this.listeners.selectedsong)
     }
   },
   /**
@@ -118,10 +118,10 @@ const player = {
   },
   /**
    * Set volume based on value between 0 and 1
-   * @param fraction
+   * @param volume
    */
-  setVolume: function (fraction) {
-    this.audio.volume = fraction
+  setVolume: function (volume) {
+    this.audio.volume = volume
     this.dispatchEvent(this.listeners.changedvolume)
   },
   /**
@@ -130,10 +130,10 @@ const player = {
    */
   updatePlayer: function () {
     controls.currentTime().forEach((control) => {
-      control.textContent = `${player.currentSong.currentTime.pretty().minutes}:${this.currentSong.currentTime.pretty().seconds}`
+      control.textContent = `${this.currentSong.currentTime.pretty().minutes}:${this.currentSong.currentTime.pretty().seconds}`
     })
     controls.progress().forEach((control) => {
-      control.style.width = `${player.currentSong.currentTime.percent()}%`
+      control.style.width = `${this.currentSong.currentTime.percent()}%`
     })
     this.dispatchEvent(this.listeners.updatedPlayer)
   },
@@ -177,7 +177,7 @@ player.addEventListener(player.listeners.selectedsong, function selectedsong() {
 
 player.addEventListener(player.listeners.changedvolume, function changedvolume() {
   requestAnimationFrame(function changedVolume(){
-    controls.volume().forEach((control) => { control.style.height = `${this.audio.volume * 100}%` })
+     controls.volume().forEach((control) => { control.style.height = `${this.audio.volume * 100}%` })
   }.bind(this))
 }.bind(player))
 
