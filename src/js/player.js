@@ -1,6 +1,6 @@
 /**
  * Object to store player state and functions
- * @type {{audio: HTMLAudioElement, listeners: {playing: Event, paused: Event, seletedsong: Event, changedvolume: Event, updatedPlayer: Event}, currentTime: {percent: (function(): number), pretty: (function(): {minutes: number, seconds})}, duration: {pretty: (function(): {minutes: number, seconds})}, events: {}, dispatchEvent: player.dispatchEvent, addEventListener: player.addEventListener, select: player.select, pause: player.pause, previous: player.previous, next: player.next, seek: player.seek, setVolume: player.setVolume, updatePlayer: player.updatePlayer, mute: player.mute, setButtons: player.setButtons}}
+ * @type {{audio: HTMLAudioElement, listeners: {playing: Event, paused: Event, seletedsong: Event, changedvolume: Event, updatedPlayer: Event}, currentTime: {percent: (function(): number), pretty: (function(): {minutes: number, seconds})}, duration: {pretty: (function(): {minutes: number, seconds})}, events: {}, dispatchEvent: player.dispatchEvent, addEventListener: player.addEventListener, select: player.select, pause: player.pause, previous: player.previous, next: player.next, seek: player.seek, setVolume: player.setVolume, updatePlayer: player.updatePlayer, mute: player.mute, updateControls: player.updateControls}}
  */
 const player = {
   audio: new Audio(),
@@ -64,7 +64,7 @@ const player = {
     if (element.dataset.playLink === this.audio.src) {
       this.pause()
     } else {
-      var songs = element.parentElement.parentElement.parentElement.querySelectorAll(selectors.song)
+      var songs = findNodes(selectors.song, element.parentElement.parentElement.parentElement)
 
       if (songs){
         var index = parseInt(element.dataset.index)
@@ -73,6 +73,12 @@ const player = {
         this.dispatchEvent(this.listeners.seletedsong)
         this.song.next = index + 1 < songs.length ? getNextSong(index, songs) : null
 
+        /**
+         * Helper function to form a linked list of songs
+         * @param index
+         * @param songs
+         * @returns {*}
+         */
         function getNextSong(index, songs) {
           var song = songs[index + 1]
 
@@ -152,10 +158,11 @@ const player = {
     this.dispatchEvent(this.listeners.changedvolume)
   },
   /**
-   * Set the content of the select button for the current playing song and pause buttons to parameter
+   * Update controls
+   * Could be bundled in with updatePlayer, but do not want unnecessary DOM operations in that
    * @param content
    */
-  setButtons: function (content) {
+  updateControls: function (content) {
     controls.pause().forEach((button) => {
       button.textContent = content
     })
@@ -184,11 +191,11 @@ player.addEventListener(player.listeners.changedvolume, function changedVolume()
 }.bind(player))
 
 player.addEventListener(player.listeners.paused, function paused() {
-  this.setButtons.bind(this)('play')
+  this.updateControls.bind(this)('play')
 }.bind(player))
 
 player.addEventListener(player.listeners.playing, function playing() {
-  this.setButtons.bind(this)('pause')
+  this.updateControls.bind(this)('pause')
 }.bind(player))
 
 player.addEventListener(player.listeners.updatedPlayer, function draw() {
@@ -201,7 +208,7 @@ player.addEventListener(player.listeners.updatedPlayer, function draw() {
  * Add event listener's to player audio object
  */
 player.audio.addEventListener('loadstart', function play() {
-  this.setButtons.bind(this)('loading')
+  this.updateControls.bind(this)('loading')
 }.bind(player))
 
 player.audio.addEventListener('timeupdate', function timeUpdate() {
