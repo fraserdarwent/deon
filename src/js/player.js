@@ -1,3 +1,7 @@
+/**
+ * Object to store player state and functions
+ * @type {{audio: HTMLAudioElement, listeners: {playing: Event, paused: Event, seletedsong: Event, changedvolume: Event, updatedPlayer: Event}, currentTime: {percent: (function(): number), pretty: (function(): {minutes: number, seconds})}, duration: {pretty: (function(): {minutes: number, seconds})}, events: {}, dispatchEvent: player.dispatchEvent, addEventListener: player.addEventListener, select: player.select, pause: player.pause, previous: player.previous, next: player.next, seek: player.seek, setVolume: player.setVolume, updatePlayer: player.updatePlayer, mute: player.mute, setButtons: player.setButtons}}
+ */
 const player = {
   audio: new Audio(),
   listeners: {
@@ -64,18 +68,17 @@ const player = {
 
       if (songs){
         var index = parseInt(element.dataset.index)
+
         this.song = songs[index]
         this.dispatchEvent(this.listeners.seletedsong)
-        this.song.next = getNextSong(index, songs)
+        this.song.next = index + 1 < songs.length ? getNextSong(index, songs) : null
+
         function getNextSong(index, songs) {
-          if (index + 1 < songs.length){
-            var nextIndex = index + 1
-            var song = songs[nextIndex]
-    //Previous song
-            song.next = getNextSong(nextIndex, songs)
-            return song
-          }
-          return null
+          var song = songs[index + 1]
+
+          song.previous = 0 <= index ? songs[index] : null
+          song.next = index + 1 < songs.length - 1 ? getNextSong(index + 1, songs) : null
+          return song
         }
       }
     }
@@ -94,14 +97,19 @@ const player = {
    * Select previous song in queue by decrementing index by 1
    */
   previous: function () {
-    this.song = this.song.previous
+    if (this.song && this.song.previous){
+      this.song = this.song.previous
+      this.dispatchEvent(this.listeners.seletedsong)
+    }
   },
   /**
    * Select next song in queue by incrementing index by 1
    */
   next: function () {
-    this.song = this.song.next
-    this.dispatchEvent(this.listeners.seletedsong)
+    if (this.song && this.song.next){
+      this.song = this.song.next
+      this.dispatchEvent(this.listeners.seletedsong)
+    }
   },
   /**
    * Seek to position in song based on value between 0 and 1
@@ -151,8 +159,8 @@ const player = {
     controls.pause().forEach((button) => {
       button.textContent = content
     })
-    controls.select().forEach((button) => {
-      button.textContent = button.attributes.getNamedItem('data-play-link') === this.songQueue.songs[this.songQueue.currentIndex].attributes.getNamedItem('data-play-link') ? content : 'play'
+    controls.song().forEach((button) => {
+      button.textContent = button.attributes.getNamedItem('data-play-link') === this.song.attributes.getNamedItem('data-play-link') ? content : 'play'
     })
   }
 }

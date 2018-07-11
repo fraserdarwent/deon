@@ -14,6 +14,9 @@ var controls = {
   pause: () => {
     return findNodes(selectors.pause)
   },
+  song: () => {
+    return findNodes(selectors.song)
+  },
   next: () => {
     return findNodes(selectors.next)
   },
