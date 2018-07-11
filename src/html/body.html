@@ -135,7 +135,7 @@ window.fbAsyncInit = function() {
                 </div>
             </div>
             <a href="#" class="silent scroll-container" role="track-link"
-               onmouseover="scrollTrackTitle(this)" onmouseleave="removeScroll.bind(this)">
+               onmouseover="applyScroll.bind(this)()" onmouseleave="removeScroll.bind(this)()">
                 <span class="scroll-title" role="track-title"></span>
             </a>
             <span role="timestamp"></span>
