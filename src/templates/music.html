@@ -99,7 +99,7 @@
 {{#if playlistId}}
 <td class="longer-width">
   <div class="scroll-container"
-       onmouseover="apply(this)" onmouseleave="removeScroll(this)">
+       onmouseover="apply(this)" onmouseleave="removeScroll.bind(this)()">
     <a href="/release/{{releaseId}}" class="scroll-title">{{release.title}}</a>
   </div>
 </td>
