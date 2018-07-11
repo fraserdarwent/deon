@@ -9,31 +9,19 @@ var selectors = {
 }
 
 var controls = {
-  pause: () => {
+  pauses: () => {
     return findNodes(selectors.pause)
   },
-  song: () => {
+  songs: () => {
     return findNodes(selectors.song)
   },
-  next: () => {
-    return findNodes(selectors.next)
-  },
-  previous: () => {
-    return findNodes(selectors.previous)
-  },
-  currentTime: () => {
+  currentTimes: () => {
     return findNodes(selectors.currentTime)
   },
-  duration: () => {
+  durations: () => {
     return findNodes(selectors.duration)
   },
-  startDrag: () => {
-    return findNodes(selectors.startDrag)
-  },
-  select: () => {
-    return findNodes(selectors.select)
-  },
-  title: () => {
+  titles: () => {
     return findNodes(selectors.title)
   },
   scrubs: {

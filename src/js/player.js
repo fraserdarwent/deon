@@ -137,7 +137,7 @@ const player = {
    * Only call from requestAnimationFrame
    */
   updatePlayer: function () {
-    controls.currentTime().forEach((control) => {
+    controls.currentTimes().forEach((control) => {
       control.textContent = `${this.currentTime.pretty().minutes}:${this.currentTime.pretty().seconds}`
     })
     controls.scrubs.inners().forEach((control) => {
@@ -163,10 +163,10 @@ const player = {
    * @param content
    */
   updateControls: function (content) {
-    controls.pause().forEach((button) => {
+    controls.pauses().forEach((button) => {
       button.textContent = content
     })
-    controls.song().forEach((button) => {
+    controls.songs().forEach((button) => {
       button.textContent = button.attributes.getNamedItem('data-play-link') === this.song.attributes.getNamedItem('data-play-link') ? content : 'play'
     })
   }
@@ -223,7 +223,7 @@ player.audio.addEventListener('playing', function play() {
 }.bind(player))
 
 player.audio.addEventListener('loadedmetadata', function loadedMetadata() {
-  controls.title().forEach((control) => { control.textContent = `${this.song.attributes.getNamedItem('data-title').textContent}` })
+  controls.titles().forEach((control) => { control.textContent = `${this.song.attributes.getNamedItem('data-title').textContent}` })
 }.bind(player))
 
 player.audio.addEventListener('pause', function pause() {
@@ -232,7 +232,7 @@ player.audio.addEventListener('pause', function pause() {
 
 player.audio.addEventListener('durationchange', function durationChange(){
   requestAnimationFrame(function durationchange(){
-    controls.duration().forEach((control) => { control.textContent = `${this.duration.pretty().minutes}:${this.duration.pretty().seconds}` })
+    controls.durations().forEach((control) => { control.textContent = `${this.duration.pretty().minutes}:${this.duration.pretty().seconds}` })
   }.bind(this))
 }.bind(player))
 
