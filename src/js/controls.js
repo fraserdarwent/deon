@@ -5,9 +5,7 @@ var selectors = {
   ftracks: '.ftrack',
   currentTime: '.currentTime',
   duration: '.duration',
-  startDrag: '.scrub > .slider > .outer > .inner',
-  song: '.song',
-  volume: '.volume > .slider > .outer > .inner'
+  song: '.song'
 }
 
 var controls = {
@@ -39,6 +37,7 @@ var controls = {
     return findNodes(selectors.title)
   },
   scrubs: {
+    inners: () => { return findNodes('.scrub > .slider > .outer > .inner') },
     drag: function(slider, event) {
       preventSelection()
       player.seek(clamp((event.clientX - slider.getBoundingClientRect().left) / slider.clientWidth))
@@ -57,42 +56,42 @@ var controls = {
     }
   },
   volumes: {
-    find: findNodes(selectors.volume),
-    show: function (e, el) {
-      var slider = el.firstElementChild
+    inners: () => { return findNodes('.volume > .slider > .outer > .inner') },
+    startDrag: function() {
+      controls.volumes.changePlayerVolume.bind(this)(event)
 
-      slider.classList.toggle('show', true)
-      if (!slider.timeout) {
-        slider.addEventListener('mousedown', this.drag.bind(this, findNodes('.slider > .outer', slider)), true)
-      }
-    },
-    hide: function(e, el) {
-      var slider = el.firstElementChild
-
-      clearTimeout(slider.timeout)
-      slider.timeout = setTimeout(() => {
-        slider.classList.toggle('show', false)
-      }, 1500)
-    },
-    startDrag: function(slider, e) {
-      this.changePlayerVolume((slider.getBoundingClientRect().bottom - e.clientY), slider)
-
-      var dragVolumeSliderBound = this.drag.bind(this, slider)
+      var dragVolumeSliderBound = controls.volumes.drag.bind(this)
 
       document.addEventListener('mousemove', dragVolumeSliderBound)
       document.addEventListener('mouseup', () => {
         document.removeEventListener('mousemove', dragVolumeSliderBound)
       })
     },
-    drag: function (slider, e) {
+    drag: function () {
       preventSelection()
-      this.changePlayerVolume((slider.getBoundingClientRect().bottom - e.clientY), slider)
+      controls.volumes.changePlayerVolume.bind(this)(event)
     },
-    changePlayerVolume: function(height, slider) {
-      this.hide(null, slider.parentElement.parentElement)
-      var volume = slider.offsetHeight < height ? 1 : (height / slider.offsetHeight)
+    show: function () {
+      var slider = findNode('.slider', this)
 
-      volume = volume < 0 ? 0 : volume
+      clearTimeout(slider.timeout)
+      slider.classList.toggle('show', true)
+      if (!slider.timeout) {
+        slider.addEventListener('mousedown', controls.volumes.startDrag.bind(this), true)
+      }
+    },
+    hide: function() {
+      var slider = findNode('.slider', this)
+
+      slider.timeout = setTimeout(() => {
+        slider.classList.toggle('show', false)
+      }, 1500)
+    },
+    changePlayerVolume: function(event) {
+      var sliderOuter = findNode('.slider > .outer', this)
+      var volume = (sliderOuter.getBoundingClientRect().bottom - event.clientY) / sliderOuter.offsetHeight
+
+      volume = clamp(volume)
       player.setVolume(volume)
     }
   },

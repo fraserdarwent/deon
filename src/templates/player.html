@@ -44,7 +44,7 @@
                 </div>
             </div>
             <div class="duration" role="duration">0:00</div>
-            <div class="volume" onmouseover="controls.volumes.show(event, this)" onmouseleave="controls.volumes.hide(event, this)">
+            <div class="volume" onmouseover="controls.volumes.show.bind(this)(event)" onmouseleave="controls.volumes.hide.bind(this)(event)">
                 <div class="slider vertical">
                     <div class="outer">
                         <div class="inner"></div>

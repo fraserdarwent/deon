@@ -82,7 +82,7 @@ const player = {
         function getNextSong(index, songs) {
           var song = songs[index + 1]
 
-          song.previous = 0 < index -1 ? songs[index] : null
+          song.previous = 0 < index - 1 ? songs[index] : null
           song.next = index + 1 < songs.length - 1 ? getNextSong(index + 1, songs) : null
           return song
         }
@@ -129,7 +129,7 @@ const player = {
    * @param volume
    */
   setVolume: function (volume) {
-    this.audio.volumes = volume
+    this.audio.volume = volume
     this.dispatchEvent(this.listeners.changedvolume)
   },
   /**
@@ -186,7 +186,7 @@ player.addEventListener(player.listeners.seletedsong, function selectedSong() {
 
 player.addEventListener(player.listeners.changedvolume, function changedVolume() {
   requestAnimationFrame(function changedVolume(){
-    controls.volumes.find().forEach((control) => { control.style.height = `${this.audio.volume * 100}%` })
+    controls.volumes.inners().forEach((control) => { control.style.height = `${this.audio.volume * 100}%` })
   }.bind(this))
 }.bind(player))
 
