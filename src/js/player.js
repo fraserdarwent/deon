@@ -191,9 +191,9 @@ player.addEventListener(player.listeners.seletedsong, function selectedSong() {
 }.bind(player))
 
 player.addEventListener(player.listeners.changedvolume, function changedVolume() {
-  requestAnimationFrame(function changedVolume(){
+  requestAnimationFrame(() => {
     controls.volumes.inners().forEach((control) => { control.style.height = `${this.audio.volume * 100}%` })
-  }.bind(this))
+  })
 }.bind(player))
 
 player.addEventListener(player.listeners.paused, function paused() {
@@ -237,9 +237,9 @@ player.audio.addEventListener('pause', function pause() {
 }.bind(player))
 
 player.audio.addEventListener('durationchange', function durationChange(){
-  requestAnimationFrame(function durationchange(){
+  requestAnimationFrame(() => {
     controls.durations().forEach((control) => { control.textContent = `${this.duration.pretty().minutes}:${this.duration.pretty().seconds}` })
-  }.bind(this))
+  })
 }.bind(player))
 
 function pad(string, length) {

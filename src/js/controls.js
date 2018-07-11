@@ -110,7 +110,6 @@ var controls = {
  * Scroll text which is longer than the div it is in by applying a calculated text indent
  */
 function applyScroll() {
-  console.log(this)
   this.style.textIndent = `${this.clientWidth < this.scrollWidth ? this.clientWidth - this.scrollWidth : 0 }px`
 }
 
