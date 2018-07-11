@@ -6,7 +6,7 @@ var selectors = {
   currentTime: '.currentTime',
   duration: '.duration',
   scrub: '.scrub > .slider > .outer > .inner',
-  select: '.select',
+  song: '.song',
   volume: '.volume > .slider > .outer > .inner'
 }
 

@@ -1,37 +1,28 @@
-/**
- * Configure player object
- * @type {{audio: HTMLAudioElement, listeners: {playing: Event, paused: Event, selectedsong: Event, changedvolume: Event, updatedPlayer: Event}, currentSong: {currentTime: {percent: (function(): number), pretty: (function(): {minutes: number, seconds: *})}, duration: {pretty: (function(): {minutes: number, seconds: *})}}, events: {}, songQueue: {currentIndex: number, songs: Array}, dispatchEvent: player.dispatchEvent, addEventListener: player.addEventListener, select: player.select, pause: player.pause, previous: player.previous, next: player.next, seek: player.seek, setVolume: player.setVolume, updatePlayer: player.updatePlayer, mute: player.mute, setButtons: player.setButtons}}
- */
 const player = {
   audio: new Audio(),
   listeners: {
     playing: new Event('playing'),
     paused: new Event('paused'),
-    selectedsong: new Event('selectedsong'),
+    seletedsong: new Event('selectedsong'),
     changedvolume: new Event('changedvolume'),
     updatedPlayer: new Event('updatedPlayer')
   },
-  /**
-   * Object containing methods to calculate various information about the current song
-   */
-  currentSong: {
-    currentTime: {
-      percent: function () {
-        return player.audio.currentTime / player.audio.duration * 100
-      },
-      pretty: function () {
-        return {
-          minutes: Math.floor(player.audio.currentTime / 60),
-          seconds: pad(Math.floor(player.audio.currentTime - Math.floor(player.audio.currentTime / 60) * 60))
-        }
-      }
+  currentTime: {
+    percent: function () {
+      return player.audio.currentTime / player.audio.duration * 100
     },
-    duration: {
-      pretty: function () {
-        return {
-          minutes: Math.floor(player.audio.duration / 60),
-          seconds: pad(Math.floor(player.audio.duration - Math.floor(player.audio.duration / 60) * 60))
-        }
+    pretty: function () {
+      return {
+        minutes: Math.floor(player.audio.currentTime / 60),
+        seconds: pad(Math.floor(player.audio.currentTime - Math.floor(player.audio.currentTime / 60) * 60))
+      }
+    }
+  },
+  duration: {
+    pretty: function () {
+      return {
+        minutes: Math.floor(player.audio.duration / 60),
+        seconds: pad(Math.floor(player.audio.duration - Math.floor(player.audio.duration / 60) * 60))
       }
     },
   },
@@ -40,19 +31,11 @@ const player = {
    */
   events: {},
   /**
-   * Object to store current queue of songs and index pointing to current song
-   */
-  songQueue: {
-    currentIndex: 0,
-    songs: []
-  },
-  /**
    * Dispatch all events for the listener, if it exists
    * @param listener
    */
   dispatchEvent: function (listener) {
-    if (this.listeners[listener.type] && this.events[listener.type]) {
-      console.log(`dispatching: ${listener.type}`)
+    if (this.events[listener.type]) {
       this.events[listener.type].forEach((event) => {
         event()
       })
@@ -74,12 +57,27 @@ const player = {
    * @param element
    */
   select: function (event, element) {
-    if (element.attributes.getNamedItem('data-play-link').textContent === this.audio.src) {
+    if (element.dataset.playLink === this.audio.src) {
       this.pause()
     } else {
-      this.songQueue.songs = findNodes(selectors.select)
-      this.songQueue.currentIndex = element.attributes.getNamedItem('data-index').textContent
-      this.dispatchEvent(this.listeners.selectedsong)
+      var songs = element.parentElement.parentElement.parentElement.querySelectorAll(selectors.song)
+
+      if (songs){
+        var index = parseInt(element.dataset.index)
+        this.song = songs[index]
+        this.dispatchEvent(this.listeners.seletedsong)
+        this.song.next = getNextSong(index, songs)
+        function getNextSong(index, songs) {
+          if (index + 1 < songs.length){
+            var nextIndex = index + 1
+            var song = songs[nextIndex]
+    //Previous song
+            song.next = getNextSong(nextIndex, songs)
+            return song
+          }
+          return null
+        }
+      }
     }
   },
   /**
@@ -96,19 +94,14 @@ const player = {
    * Select previous song in queue by decrementing index by 1
    */
   previous: function () {
-    if (0 <= this.songQueue.currentIndex && 0 < this.songQueue.songs.length) {
-      this.songQueue.currentIndex--
-      this.dispatchEvent(this.listeners.selectedsong)
-    }
+    this.song = this.song.previous
   },
   /**
    * Select next song in queue by incrementing index by 1
    */
   next: function () {
-    if (this.songQueue.currentIndex + 1 < this.songQueue.songs.length && 0 < this.songQueue.songs.length) {
-      this.songQueue.currentIndex++
-      this.dispatchEvent(this.listeners.selectedsong)
-    }
+    this.song = this.song.next
+    this.dispatchEvent(this.listeners.seletedsong)
   },
   /**
    * Seek to position in song based on value between 0 and 1
@@ -131,10 +124,10 @@ const player = {
    */
   updatePlayer: function () {
     controls.currentTime().forEach((control) => {
-      control.textContent = `${this.currentSong.currentTime.pretty().minutes}:${this.currentSong.currentTime.pretty().seconds}`
+      control.textContent = `${this.currentTime.pretty().minutes}:${this.currentTime.pretty().seconds}`
     })
     controls.scrub().forEach((control) => {
-      control.style.width = `${this.currentSong.currentTime.percent()}%`
+      control.style.width = `${this.currentTime.percent()}%`
     })
     this.dispatchEvent(this.listeners.updatedPlayer)
   },
@@ -172,11 +165,11 @@ player.audio.autoplay = true
 /***
  * Add event listeners to player object
  ***/
-player.addEventListener(player.listeners.selectedsong, function selectedsong() {
-  this.audio.src = this.songQueue.songs[this.songQueue.currentIndex].attributes.getNamedItem('data-play-link').textContent
+player.addEventListener(player.listeners.seletedsong, function selectedSong() {
+  this.audio.src = this.song.dataset.playLink
 }.bind(player))
 
-player.addEventListener(player.listeners.changedvolume, function changedvolume() {
+player.addEventListener(player.listeners.changedvolume, function changedVolume() {
   requestAnimationFrame(function changedVolume(){
     controls.volume().forEach((control) => { control.style.height = `${this.audio.volume * 100}%` })
   }.bind(this))
@@ -203,7 +196,7 @@ player.audio.addEventListener('loadstart', function play() {
   this.setButtons.bind(this)('loading')
 }.bind(player))
 
-player.audio.addEventListener('timeupdate', function timeupdate() {
+player.audio.addEventListener('timeupdate', function timeUpdate() {
   if (this.audio.paused){
     requestAnimationFrame(this.updatePlayer.bind(this))
   }
@@ -214,22 +207,25 @@ player.audio.addEventListener('playing', function play() {
   this.dispatchEvent(this.listeners.playing)
 }.bind(player))
 
-player.audio.addEventListener('loadedmetadata', function loadedmetadata() {
-  controls.title().forEach((control) => { control.textContent = `${this.songQueue.songs[this.songQueue.currentIndex].attributes.getNamedItem('data-title').textContent}` })
+player.audio.addEventListener('loadedmetadata', function loadedMetadata() {
+  controls.title().forEach((control) => { control.textContent = `${this.song.attributes.getNamedItem('data-title').textContent}` })
 }.bind(player))
 
 player.audio.addEventListener('pause', function pause() {
   this.dispatchEvent(this.listeners.paused)
 }.bind(player))
 
-player.audio.addEventListener('durationchange', function durationchange(){
+player.audio.addEventListener('durationchange', function durationChange(){
   requestAnimationFrame(function durationchange(){
-    controls.duration().forEach((control) => { control.textContent = `${this.currentSong.duration.pretty().minutes}:${this.currentSong.duration.pretty().seconds}` })
+    controls.duration().forEach((control) => { control.textContent = `${this.duration.pretty().minutes}:${this.duration.pretty().seconds}` })
   }.bind(this))
 }.bind(player))
 
-function pad(time) {
-  return String("0" + time)
+function pad(string, length) {
+  if (0 < length){
+    return pad(string, length - 1)
+  }
+  return String("0" + string)
     .slice(-2)
 }
 
