@@ -85,12 +85,13 @@ var controls = {
   },
 }
 
-function applyScroll(event, element) {
-  element.style.textIndent = `${element.clientWidth < element.scrollWidth ? element.clientWidth - element.scrollWidth : 0 }px`
+function applyScroll() {
+  console.log(this)
+  this.style.textIndent = `${this.clientWidth < this.scrollWidth ? this.clientWidth - this.scrollWidth : 0 }px`
 }
 
-function removeScroll(event, element) {
-  element.style.textIndent = '0px'
+function removeScroll() {
+    this.style.textIndent = '0px'
 }
 
 function preventSelection() {
