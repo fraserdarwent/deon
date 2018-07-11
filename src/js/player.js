@@ -149,11 +149,11 @@ const player = {
    * Based on current volume, either store current volume and mute player, or set volume to previously stored volume
    */
   mute: function(){
-    if (this.audio.volumes === 0){
-      this.audio.volumes = this.audio.lastVolume || 1
+    if (this.audio.volume === 0){
+      this.audio.volume = this.audio.lastVolume || 0
     } else {
-      this.audio.lastVolume = this.audio.volumes
-      this.audio.volumes = 0
+      this.audio.lastVolume = this.audio.volume
+      this.audio.volume = 0
     }
     this.dispatchEvent(this.listeners.changedvolume)
   },
