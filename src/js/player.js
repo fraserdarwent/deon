@@ -52,6 +52,7 @@ const player = {
    */
   dispatchEvent: function (listener) {
     if (this.listeners[listener.type] && this.events[listener.type]) {
+      console.log(`dispatching: ${listener.type}`)
       this.events[listener.type].forEach((event) => {
         event()
       })
@@ -177,7 +178,7 @@ player.addEventListener(player.listeners.selectedsong, function selectedsong() {
 
 player.addEventListener(player.listeners.changedvolume, function changedvolume() {
   requestAnimationFrame(function changedVolume(){
-     controls.volume().forEach((control) => { control.style.height = `${this.audio.volume * 100}%` })
+    controls.volume().forEach((control) => { control.style.height = `${this.audio.volume * 100}%` })
   }.bind(this))
 }.bind(player))
 
@@ -203,11 +204,13 @@ player.audio.addEventListener('loadstart', function play() {
 }.bind(player))
 
 player.audio.addEventListener('timeupdate', function timeupdate() {
-  this.updatePlayer.bind(this)()
+  if (this.audio.paused){
+    requestAnimationFrame(this.updatePlayer.bind(this))
+  }
 }.bind(player))
 
 player.audio.addEventListener('playing', function play() {
-  this.updatePlayer.bind(this)()
+  requestAnimationFrame(this.updatePlayer.bind(this))
   this.dispatchEvent(this.listeners.playing)
 }.bind(player))
 
