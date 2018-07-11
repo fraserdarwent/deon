@@ -4,8 +4,8 @@
         data-process="processCatalogPage"
         data-template="catalog-page"
 >
-    <div class="fplayer">
-        <div class="container fcontainer">
+    <div class="player">
+        <div class="container container">
             <div class="col-xs-12 browse-filters browse-filters--table"
                  data-source="$endpoint/catalog/browse/filters"
                  data-process="processCatalogFilters">
@@ -14,8 +14,8 @@
                 <div style="width: 100%;" role="catalog-pages"></div>
             </div>
         </div>
-        <div class="fcontrols">
-            <div class="ftrack title textscroll" onmouseover="applyScroll(event, this)" onmouseleave="removeScroll(event, this)" role="track-title">
+        <div class="controls">
+            <div class="track title textscroll" onmouseover="applyScroll(event, this)" onmouseleave="removeScroll(event, this)" role="track-title">
             </div>
             <button class="faux" onclick="toggleShuffle(event, this)" role="mode">
                 <i class="fa fa-random"></i>
@@ -33,18 +33,17 @@
                 <i class="fa fa-repeat"></i>
             </button>
             <div class="currentTime">0:00</div>
-            <div class="fscrub slider horizontal" onmousedown="scrub(event, this)">
+            <div class="scrub slider horizontal" onmousedown="scrub(event, this)">
                 <div class="progress"></div>
                 <div class="handle">
                     <div class="inner"></div>
                 </div>
             </div>
             <div class="duration" role="duration">0:00</div>
-            <div class="fvolume" onmouseover="showVolumeSlider(event, this)" onmouseleave="hideVolumeSlider(event, this)"
-                 style="z-index: 0">
-                <div class="fvolumeslider">
-                    <div class="slider vertical">
-                        <div class="volume progress"></div>
+            <div class="volume" onmouseover="showVolumeSlider(event, this)" onmouseleave="hideVolumeSlider(event, this)">
+                <div class="slider vertical">
+                    <div class="outer">
+                        <div class="inner"></div>
                         <div class="handle">
                             <div class="inner"></div>
                         </div>

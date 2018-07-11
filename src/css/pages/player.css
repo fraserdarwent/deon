@@ -2,7 +2,20 @@ section {
     padding: 0;
 }
 
-.fplayer {
+.controls > * {
+    flex: 0.1;
+    text-align: center;
+}
+
+.textscroll:hover{
+    transition: text-indent 2s linear;
+}
+
+.volume > .slider > .outer > .inner {
+    height: 100%
+}
+
+.player {
     display: flex;
     flex-flow: column nowrap;
     height: 100vh;
@@ -10,14 +23,14 @@ section {
     align-items: center;
 }
 
-.fplayer .fcontainer {
+.player .container {
     width: 100%;
     flex: 1;
     overflow-y: scroll;
     border-bottom: 2px solid #ccc;
 }
 
-.fplayer .fcontrols {
+.player .controls {
     display: flex;
     flex-flow: row nowrap;
     justify-content: space-evenly;
@@ -28,37 +41,28 @@ section {
     padding: 0 40px;
 }
 
-.fplayer .ftrack {
+.player .track {
     font-size: 1rem;
     white-space: nowrap;
     overflow: hidden;
     flex: 0.4;
 }
 
-.fplayer .ftrack:hover {
-    cursor: pointer;
-    color: dodgerblue;
-}
-
-.fcontrols > * {
-    flex: 0.1;
-    text-align: center;
-}
-
-.textscroll:hover{
-    transition: text-indent 2s linear;
-}
-
-.fplayer.playing{
+.player.playing{
     max-height: 50%
 }
 
-.fplayer .fscrub {
+.player .scrub {
     flex:2;
     height: 5px;
 }
 
-.fvolumeslider {
+.player .track:hover {
+    cursor: pointer;
+    color: dodgerblue;
+}
+
+.player > .controls > .volume > .slider {
     width: 0;
     height: 0;
     top: 50%;
@@ -67,10 +71,12 @@ section {
     display: none;
     flex: 1;
 }
-.fvolumeslider.show {
+
+.player > .controls > .volume > .slider.show {
     display: block;
 }
-.fplayer .fvolumeslider .slider{
+
+.player > .controls > .volume > .slider > .outer {
     height: 100px;
     top: calc(-10px - 100px);
     width: 5px;
@@ -78,6 +84,3 @@ section {
     position: absolute;
 }
 
-.fplayer .fvolumeslider .slider .progress{
-    height: 100%
-}

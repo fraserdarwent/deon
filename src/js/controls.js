@@ -1,22 +1,14 @@
 var selectors = {
-  play: '[role="play"]',
   pause: '.pause',
-  playPlaylist: '[role="play-playlist"]',
-  playRelease: '[role="play-release"]',
   scrub: '.fscrub .progress',
-  link: '[role="track-link"]',
-  titles: '.title',
-  volumeI: '[role="volumeControl"] > i',
-  volumeInnerSlider: '.fvolumeslider .slider .progress',
-  volumeOuterSlider: '.volume-slider-outer',
-  volumeSliderContainer: '.volume-slider-container',
+  title: '.title',
   controls: '.controls',
   ftracks: '.ftrack',
   currentTime: '.currentTime',
   duration: '.duration',
-  progress: '.fscrub .progress',
+  progress: '.progress',
   select: '.select',
-  volumes: '.volume'
+  volume: '.volume > .slider > .outer > .inner'
 }
 
 var controls = {
@@ -42,10 +34,10 @@ var controls = {
     return findNodes(selectors.select)
   },
   title: () => {
-    return findNodes(selectors.titles)
+    return findNodes(selectors.title)
   },
   volume: () => {
-    return findNodes(selectors.volumes)
+    return findNodes(selectors.volume)
   }
 }
 
@@ -108,7 +100,7 @@ function showVolumeSlider(e, el) {
 
   slider.classList.toggle('show', true)
   if (!slider.timeout) {
-    slider.addEventListener('mousedown', startDragVolumeSlider.bind(this, slider.firstElementChild), true)
+    slider.addEventListener('mousedown', startDragVolumeSlider.bind(this, slider.querySelector('.slider > .outer')), true)
   }
 }
 
@@ -122,6 +114,7 @@ function hideVolumeSlider(e, el) {
 }
 
 function startDragVolumeSlider(slider, e) {
+  console.log(slider)
   changeVolumeBySlider((slider.getBoundingClientRect().bottom - e.clientY), slider)
 
   var dragVolumeSliderBound = dragVolumeSlider.bind(this, slider)

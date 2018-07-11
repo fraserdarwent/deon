@@ -1,4 +1,4 @@
-.slider{
+.slider > .outer {
     background: #ccc;
     cursor: pointer;
     display: flex;
@@ -6,11 +6,11 @@
     justify-items: center;
     }
 
-.slider .progress{
+.slider > .outer > .inner {
     background-color: dodgerblue;
 }
 
-.slider .handle .inner{
+.slider .handle > .inner {
     height: 20px;
     width: 20px;
     border-radius: 20px;
@@ -20,26 +20,26 @@
     position: relative;
 }
 
-.slider.vertical{
+.slider.vertical > .outer {
     flex-flow: column-reverse nowrap;
 }
 
-.slider.horizontal{
+.slider.horizontal > .outer {
     flex-flow: row nowrap;
 }
 
-.slider.vertical .progress {
+.slider.vertical > .outer > .inner {
     width: 100%;
 }
 
-.slider.horizontal .progress{
+.slider.horizontal > .outer > .inner {
     height: 100%;
 }
 
-.slider.vertical .handle{
+.slider.vertical .handle {
     height: 0;
 }
 
-.slider.horizontal .handle{
+.slider.horizontal .handle {
     width: 0;
 }
