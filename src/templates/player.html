@@ -15,7 +15,7 @@
             </div>
         </div>
         <div class="controls">
-            <div class="track title textscroll" onmouseover="applyScroll(event, this)" onmouseleave="removeScroll(event, this)" role="track-title">
+            <div class="title textscroll" onmouseover="applyScroll(event, this)" onmouseleave="removeScroll(event, this)" role="track-title">
             </div>
             <button class="faux" onclick="toggleShuffle(event, this)" role="mode">
                 <i class="fa fa-random"></i>
@@ -33,10 +33,14 @@
                 <i class="fa fa-repeat"></i>
             </button>
             <div class="currentTime">0:00</div>
-            <div class="scrub slider horizontal" onmousedown="scrub(event, this)">
-                <div class="progress"></div>
-                <div class="handle">
-                    <div class="inner"></div>
+            <div class="scrub">
+                <div class="slider horizontal" onmousedown="scrub(event, this)">
+                    <div class="outer">
+                        <div class="inner"></div>
+                        <div class="handle">
+                            <div class="inner"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="duration" role="duration">0:00</div>

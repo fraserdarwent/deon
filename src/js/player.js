@@ -17,7 +17,7 @@ const player = {
   currentSong: {
     currentTime: {
       percent: function () {
-        return this.audio.currentTime / this.audio.duration * 100
+        return player.audio.currentTime / player.audio.duration * 100
       },
       pretty: function () {
         return {
@@ -132,7 +132,7 @@ const player = {
     controls.currentTime().forEach((control) => {
       control.textContent = `${this.currentSong.currentTime.pretty().minutes}:${this.currentSong.currentTime.pretty().seconds}`
     })
-    controls.progress().forEach((control) => {
+    controls.scrub().forEach((control) => {
       control.style.width = `${this.currentSong.currentTime.percent()}%`
     })
     this.dispatchEvent(this.listeners.updatedPlayer)

@@ -2,9 +2,10 @@ section {
     padding: 0;
 }
 
-.controls > * {
+.player > .controls > * {
     flex: 0.1;
     text-align: center;
+    margin: 0 1rem;
 }
 
 .textscroll:hover{
@@ -23,14 +24,14 @@ section {
     align-items: center;
 }
 
-.player .container {
+.player > .container {
     width: 100%;
     flex: 1;
     overflow-y: scroll;
     border-bottom: 2px solid #ccc;
 }
 
-.player .controls {
+.player > .controls {
     display: flex;
     flex-flow: row nowrap;
     justify-content: space-evenly;
@@ -41,23 +42,14 @@ section {
     padding: 0 40px;
 }
 
-.player .track {
+.player .title {
     font-size: 1rem;
     white-space: nowrap;
     overflow: hidden;
-    flex: 0.4;
+    flex: 0.5;
 }
 
-.player.playing{
-    max-height: 50%
-}
-
-.player .scrub {
-    flex:2;
-    height: 5px;
-}
-
-.player .track:hover {
+.player .title:hover {
     cursor: pointer;
     color: dodgerblue;
 }
@@ -84,3 +76,11 @@ section {
     position: absolute;
 }
 
+.player > .controls > .scrub {
+    flex:2;
+}
+
+.player > .controls > .scrub > .slider > .outer {
+    width: 100%;
+    height: 5px;
+}

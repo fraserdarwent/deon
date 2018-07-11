@@ -1,12 +1,11 @@
 var selectors = {
   pause: '.pause',
-  scrub: '.fscrub .progress',
   title: '.title',
   controls: '.controls',
   ftracks: '.ftrack',
   currentTime: '.currentTime',
   duration: '.duration',
-  progress: '.progress',
+  scrub: '.scrub > .slider > .outer > .inner',
   select: '.select',
   volume: '.volume > .slider > .outer > .inner'
 }
@@ -27,8 +26,8 @@ var controls = {
   duration: () => {
     return findNodes(selectors.duration)
   },
-  progress: () => {
-    return findNodes(selectors.progress)
+  scrub: () => {
+    return findNodes(selectors.scrub)
   },
   select: () => {
     return findNodes(selectors.select)
