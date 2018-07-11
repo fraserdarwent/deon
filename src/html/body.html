@@ -45,7 +45,7 @@ window.fbAsyncInit = function() {
 </div>
 <header style="display: none">
     <div class="col-xs-hidden col-md-visible scrub-container">
-        <div class="scrub" onclick="scrub(event, this)">
+        <div class="scrub" onclick="startDrag(event, this)">
             <div class="progress" role="scrub-progress"></div>
         </div>
     </div>
@@ -140,7 +140,7 @@ window.fbAsyncInit = function() {
             </a>
             <span role="timestamp"></span>
             <div class="col-md-hidden scrub-container scrub-container--mobile">
-                <div class="scrub" onclick="scrub(event, this)">
+                <div class="scrub" onclick="startDrag(event, this)">
                     <div class="progress" role="scrub-progress"></div>
                 </div>
             </div>

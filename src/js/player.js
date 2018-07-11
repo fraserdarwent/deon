@@ -82,7 +82,7 @@ const player = {
         function getNextSong(index, songs) {
           var song = songs[index + 1]
 
-          song.previous = 0 <= index ? songs[index] : null
+          song.previous = 0 < index -1 ? songs[index] : null
           song.next = index + 1 < songs.length - 1 ? getNextSong(index + 1, songs) : null
           return song
         }
@@ -129,7 +129,7 @@ const player = {
    * @param volume
    */
   setVolume: function (volume) {
-    this.audio.volume = volume
+    this.audio.volumes = volume
     this.dispatchEvent(this.listeners.changedvolume)
   },
   /**
@@ -140,7 +140,7 @@ const player = {
     controls.currentTime().forEach((control) => {
       control.textContent = `${this.currentTime.pretty().minutes}:${this.currentTime.pretty().seconds}`
     })
-    controls.scrub().forEach((control) => {
+    controls.startDrag().forEach((control) => {
       control.style.width = `${this.currentTime.percent()}%`
     })
     this.dispatchEvent(this.listeners.updatedPlayer)
@@ -149,11 +149,11 @@ const player = {
    * Based on current volume, either store current volume and mute player, or set volume to previously stored volume
    */
   mute: function(){
-    if (this.audio.volume === 0){
-      this.audio.volume = this.audio.lastVolume ? this.audio.lastVolume : 1
+    if (this.audio.volumes === 0){
+      this.audio.volumes = this.audio.lastVolume || 1
     } else {
-      this.audio.lastVolume = this.audio.volume
-      this.audio.volume = 0
+      this.audio.lastVolume = this.audio.volumes
+      this.audio.volumes = 0
     }
     this.dispatchEvent(this.listeners.changedvolume)
   },
@@ -186,7 +186,7 @@ player.addEventListener(player.listeners.seletedsong, function selectedSong() {
 
 player.addEventListener(player.listeners.changedvolume, function changedVolume() {
   requestAnimationFrame(function changedVolume(){
-    controls.volume().forEach((control) => { control.style.height = `${this.audio.volume * 100}%` })
+    controls.volumes.find().forEach((control) => { control.style.height = `${this.audio.volume * 100}%` })
   }.bind(this))
 }.bind(player))
 

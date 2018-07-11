@@ -5,7 +5,7 @@ var selectors = {
   ftracks: '.ftrack',
   currentTime: '.currentTime',
   duration: '.duration',
-  scrub: '.scrub > .slider > .outer > .inner',
+  startDrag: '.scrub > .slider > .outer > .inner',
   song: '.song',
   volume: '.volume > .slider > .outer > .inner'
 }
@@ -29,8 +29,8 @@ var controls = {
   duration: () => {
     return findNodes(selectors.duration)
   },
-  scrub: () => {
-    return findNodes(selectors.scrub)
+  startDrag: () => {
+    return findNodes(selectors.startDrag)
   },
   select: () => {
     return findNodes(selectors.select)
@@ -38,9 +38,64 @@ var controls = {
   title: () => {
     return findNodes(selectors.title)
   },
-  volume: () => {
-    return findNodes(selectors.volume)
-  }
+  scrubs: {
+    drag: function(slider, event) {
+      preventSelection()
+      player.seek(clamp((event.clientX - slider.getBoundingClientRect().left) / slider.clientWidth))
+    },
+    startDrag: function(event, slider) {
+      player.seek(clamp((event.clientX - slider.getBoundingClientRect().left) / slider.clientWidth))
+      var mouseMove = this.drag.bind(this, slider)
+
+      function mouseUp() {
+        document.removeEventListener('mousemove', mouseMove)
+        document.removeEventListener('mouseup', mouseUp)
+      }
+
+      document.addEventListener('mousemove', mouseMove)
+      document.addEventListener('mouseup', mouseUp)
+    }
+  },
+  volumes: {
+    find: findNodes(selectors.volume),
+    show: function (e, el) {
+      var slider = el.firstElementChild
+
+      slider.classList.toggle('show', true)
+      if (!slider.timeout) {
+        slider.addEventListener('mousedown', this.drag.bind(this, findNodes('.slider > .outer', slider)), true)
+      }
+    },
+    hide: function(e, el) {
+      var slider = el.firstElementChild
+
+      clearTimeout(slider.timeout)
+      slider.timeout = setTimeout(() => {
+        slider.classList.toggle('show', false)
+      }, 1500)
+    },
+    startDrag: function(slider, e) {
+      this.changePlayerVolume((slider.getBoundingClientRect().bottom - e.clientY), slider)
+
+      var dragVolumeSliderBound = this.drag.bind(this, slider)
+
+      document.addEventListener('mousemove', dragVolumeSliderBound)
+      document.addEventListener('mouseup', () => {
+        document.removeEventListener('mousemove', dragVolumeSliderBound)
+      })
+    },
+    drag: function (slider, e) {
+      preventSelection()
+      this.changePlayerVolume((slider.getBoundingClientRect().bottom - e.clientY), slider)
+    },
+    changePlayerVolume: function(height, slider) {
+      this.hide(null, slider.parentElement.parentElement)
+      var volume = slider.offsetHeight < height ? 1 : (height / slider.offsetHeight)
+
+      volume = volume < 0 ? 0 : volume
+      player.setVolume(volume)
+    }
+  },
 }
 
 function applyScroll(event, element) {
@@ -69,24 +124,6 @@ function preventSelection() {
   }
 }
 
-function scrub(event, slider) {
-  player.seek(clamp((event.clientX - slider.getBoundingClientRect().left) / slider.clientWidth))
-  var mouseMove = dragPlayerSlider.bind(this, slider)
-
-  function mouseUp() {
-    document.removeEventListener('mousemove', mouseMove)
-    document.removeEventListener('mouseup', mouseUp)
-  }
-
-  document.addEventListener('mousemove', mouseMove)
-  document.addEventListener('mouseup', mouseUp)
-}
-
-function dragPlayerSlider(slider, event) {
-  preventSelection()
-  player.seek(clamp((event.clientX - slider.getBoundingClientRect().left) / slider.clientWidth))
-}
-
 function clamp(i) {
   if (1 < i){
     i = 1
@@ -95,47 +132,4 @@ function clamp(i) {
     i = 0
   }
   return i
-}
-
-function showVolumeSlider(e, el) {
-  var slider = el.firstElementChild
-
-  slider.classList.toggle('show', true)
-  if (!slider.timeout) {
-    slider.addEventListener('mousedown', startDragVolumeSlider.bind(this, findNodes('.slider > .outer', slider)), true)
-  }
-}
-
-function hideVolumeSlider(e, el) {
-  var slider = el.firstElementChild
-
-  clearTimeout(slider.timeout)
-  slider.timeout = setTimeout(() => {
-    slider.classList.toggle('show', false)
-  }, 1500)
-}
-
-function startDragVolumeSlider(slider, e) {
-  console.log(slider)
-  changeVolumeBySlider((slider.getBoundingClientRect().bottom - e.clientY), slider)
-
-  var dragVolumeSliderBound = dragVolumeSlider.bind(this, slider)
-
-  document.addEventListener('mousemove', dragVolumeSliderBound)
-  document.addEventListener('mouseup', () => {
-    document.removeEventListener('mousemove', dragVolumeSliderBound)
-  })
-}
-
-function dragVolumeSlider(slider, e) {
-  preventSelection()
-  changeVolumeBySlider((slider.getBoundingClientRect().bottom - e.clientY), slider)
-}
-
-function changeVolumeBySlider(height, slider) {
-  hideVolumeSlider(null, slider.parentElement.parentElement)
-  var volume = slider.offsetHeight < height ? 1 : (height / slider.offsetHeight)
-
-  volume = volume < 0 ? 0 : volume
-  player.setVolume(volume)
 }

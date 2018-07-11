@@ -34,7 +34,7 @@
             </button>
             <div class="currentTime">0:00</div>
             <div class="scrub">
-                <div class="slider horizontal" onmousedown="scrub(event, this)">
+                <div class="slider horizontal" onmousedown="controls.scrubs.startDrag(event, this)">
                     <div class="outer">
                         <div class="inner"></div>
                         <div class="handle">
@@ -44,7 +44,7 @@
                 </div>
             </div>
             <div class="duration" role="duration">0:00</div>
-            <div class="volume" onmouseover="showVolumeSlider(event, this)" onmouseleave="hideVolumeSlider(event, this)">
+            <div class="volume" onmouseover="controls.volumes.show(event, this)" onmouseleave="controls.volumes.hide(event, this)">
                 <div class="slider vertical">
                     <div class="outer">
                         <div class="inner"></div>
