@@ -8,6 +8,10 @@ var selectors = {
   song: '.song'
 }
 
+/**
+ * Object for storing functions to do with the controls
+ * @type {{pauses: (function(): Node[]), songs: (function(): Node[]), currentTimes: (function(): Node[]), durations: (function(): Node[]), titles: (function(): Node[]), scrubs: {inners: (function(): Node[]), drag: controls.scrubs.drag, startDrag: controls.scrubs.startDrag}, volumes: {inners: (function(): Node[]), startDrag: controls.volumes.startDrag, drag: controls.volumes.drag, show: controls.volumes.show, hide: controls.volumes.hide, changePlayerVolume: controls.volumes.changePlayerVolume}}}
+ */
 var controls = {
   pauses: () => {
     return findNodes(selectors.pause)
@@ -24,6 +28,9 @@ var controls = {
   titles: () => {
     return findNodes(selectors.title)
   },
+    /**
+     * Store functions for finding and operating on song scrub bars (song progress bar)
+     */
   scrubs: {
     inners: () => { return findNodes('.scrub > .slider > .outer > .inner') },
     drag: function(slider, event) {
@@ -43,6 +50,9 @@ var controls = {
       document.addEventListener('mouseup', mouseUp)
     }
   },
+    /**
+     * Store functions for finding and operating on volume sliders
+     */
   volumes: {
     inners: () => { return findNodes('.volume > .slider > .outer > .inner') },
     startDrag: function() {
@@ -59,6 +69,10 @@ var controls = {
       preventSelection()
       controls.volumes.changePlayerVolume.bind(this)(event)
     },
+        /**
+         * Reset hide timeout
+         * Start drag
+         */
     show: function () {
       var slider = findNode('.slider', this)
 
@@ -68,6 +82,9 @@ var controls = {
         slider.addEventListener('mousedown', controls.volumes.startDrag.bind(this), true)
       }
     },
+        /**
+         * Hide after 1500ms
+         */
     hide: function() {
       var slider = findNode('.slider', this)
 
@@ -75,6 +92,10 @@ var controls = {
         slider.classList.toggle('show', false)
       }, 1500)
     },
+        /**
+         * Change player volume based on current slider
+         * @param event
+         */
     changePlayerVolume: function(event) {
       var sliderOuter = findNode('.slider > .outer', this)
       var volume = (sliderOuter.getBoundingClientRect().bottom - event.clientY) / sliderOuter.offsetHeight
@@ -85,15 +106,25 @@ var controls = {
   },
 }
 
+/**
+ * Scroll text which is longer than the div it is in by applying a calculated text indent
+ */
 function applyScroll() {
   console.log(this)
   this.style.textIndent = `${this.clientWidth < this.scrollWidth ? this.clientWidth - this.scrollWidth : 0 }px`
 }
 
+/**
+ * Remove applied text indent
+ */
 function removeScroll() {
     this.style.textIndent = '0px'
 }
 
+/**
+ * Prevent selection
+ * Used whilst dragging sliders
+ */
 function preventSelection() {
   var selection = {}
 
@@ -112,6 +143,11 @@ function preventSelection() {
   }
 }
 
+/**
+ * Clamp input between 0 and 1
+ * @param i
+ * @returns {*}
+ */
 function clamp(i) {
   if (1 < i){
     i = 1

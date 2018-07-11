@@ -11,6 +11,9 @@ const player = {
     changedvolume: new Event('changedvolume'),
     updatedPlayer: new Event('updatedPlayer')
   },
+  /**
+   * Functions for calculating and displaying the current position in song
+   */
   currentTime: {
     percent: function () {
       return player.audio.currentTime / player.audio.duration * 100
@@ -22,6 +25,9 @@ const player = {
       }
     }
   },
+  /**
+   * Functions for displaying and displaying duration of current song
+   */
   duration: {
     pretty: function () {
       return {
