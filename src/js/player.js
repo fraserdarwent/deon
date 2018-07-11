@@ -140,7 +140,7 @@ const player = {
     controls.currentTime().forEach((control) => {
       control.textContent = `${this.currentTime.pretty().minutes}:${this.currentTime.pretty().seconds}`
     })
-    controls.startDrag().forEach((control) => {
+    controls.scrubs.inners().forEach((control) => {
       control.style.width = `${this.currentTime.percent()}%`
     })
     this.dispatchEvent(this.listeners.updatedPlayer)
