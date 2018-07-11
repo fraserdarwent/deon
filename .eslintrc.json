@@ -4,6 +4,7 @@
     },
     "rules": {
         "indent": ["error", 2],
+        "linebreak-style": ["error", "unix"],
         "semi": ["error", "never"],
         "no-sparse-arrays": "error",
         "no-template-curly-in-string": "error",
