@@ -154,7 +154,7 @@ const player = {
   /**
    * Based on current volume, either store current volume and mute player, or set volume to previously stored volume
    */
-  mute: function(){
+  mute: function() {
     if (this.audio.volume === 0){
       this.audio.volume = this.audio.lastVolume || 0
     } else {
@@ -236,7 +236,7 @@ player.audio.addEventListener('pause', function pause() {
   this.dispatchEvent(this.listeners.paused)
 }.bind(player))
 
-player.audio.addEventListener('durationchange', function durationChange(){
+player.audio.addEventListener('durationchange', function durationChange() {
   requestAnimationFrame(() => {
     controls.durations().forEach((control) => { control.textContent = `${this.duration.pretty().minutes}:${this.duration.pretty().seconds}` })
   })

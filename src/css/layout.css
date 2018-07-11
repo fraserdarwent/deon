@@ -1,5 +1,5 @@
 section {
-  padding: 3rem 0;
+  padding: 2rem 0;
 }
 
 .v-padding{
@@ -382,10 +382,6 @@ body.showing-notice .controls.fixed.playing {
   display: block;
   margin: .5rem;
   text-align: center;
-}
-
-.controls > span {
-  margin: 0 0 .5rem 0;
 }
 
 .controls > button {
