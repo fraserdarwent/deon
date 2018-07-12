@@ -1294,3 +1294,29 @@ footer .footer-items li:first-child button::before{
 td {
   overflow: hidden;
 }
+
+.controls > * {
+  background-size: contain;
+  height: 100%;
+  cursor: pointer;
+}
+
+.pause {
+  height: 20px;
+  width: 20px;
+  cursor: pointer;
+  background-size: contain;
+  background: url("/img/baseline-play_arrow-24px.svg") no-repeat center;
+}
+
+.previous {
+  background: url("/img/baseline-fast_rewind-24px.svg") no-repeat center;
+}
+
+.next {
+  background: url("/img/baseline-fast_forward-24px.svg") no-repeat center;
+}
+
+.loading {
+  animation: rotating 2s linear infinite;
+}

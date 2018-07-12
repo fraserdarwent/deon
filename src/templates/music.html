@@ -142,7 +142,7 @@
         data-partial
         data-template="play-song">
 {{#streamable}}
-<button class="faux song button--mobile{{#inEarlyAccess}} in-early-access{{/inEarlyAccess}}"
+<div class="pause song button--mobile{{#inEarlyAccess}} in-early-access{{/inEarlyAccess}}"
         onclick="player.select(event, this)"
         role="play-song"
         data-play-link="{{playUrl}}"
@@ -164,17 +164,14 @@
             data-playlist-id="{{playlistId}}"
         {{/if}}
         data-release-id="{{releaseId}}">
-    <i class="fa fa-play-circle inactive"></i>
-    <i class="fa fa-pause-circle active"></i>
-</button>
+</div>
 {{/streamable}}
 {{^streamable}}
     {{#inEarlyAccess}}
-        <button class="faux button--mobile{{#inEarlyAccess}} in-early-access{{/inEarlyAccess}}"
+        <div class="pause button--mobile{{#inEarlyAccess}} in-early-access{{/inEarlyAccess}}"
                 onclick="canDownloadOrModal(event, this)"
                 title="{{title}}">
-            <i class="fa fa-play-circle inactive"></i>
-        </button>
+        </div>
     {{/inEarlyAccess}}
 {{/streamable}}
 </script>

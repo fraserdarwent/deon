@@ -67,7 +67,7 @@ const player = {
    * @param element
    */
   select: function (event, element) {
-    if (element.dataset.playLink === this.audio.src) {
+    if (element.dataset && element.dataset.playLink === this.audio.src) {
       this.pause()
     } else {
       var songs = findNodes(selectors.song, element.parentElement.parentElement.parentElement)
@@ -166,14 +166,17 @@ const player = {
   /**
    * Update controls
    * Could be bundled in with updatePlayer, but do not want unnecessary DOM operations in that
-   * @param content
+   * @param url
    */
-  updateControls: function (content) {
-    controls.pauses().forEach((button) => {
-      button.textContent = content
+  updateControls: function (url) {
+    controls.pauses().forEach((element) => {
+      element.style.backgroundImage = `url("${url}")`
     })
-    controls.songs().forEach((button) => {
-      button.textContent = button.attributes.getNamedItem('data-play-link') === this.song.attributes.getNamedItem('data-play-link') ? content : 'play'
+    controls.songs().forEach((element) => {
+      if(element.dataset.playLink === this.audio.src){
+        console.log(element)
+      }
+      element.style.backgroundImage = element.dataset && element.dataset.playLink === this.audio.src ? `url("${url}")` : 'url("/img/baseline-play_arrow-24px.svg")'
     })
   }
 }
@@ -197,11 +200,11 @@ player.addEventListener(player.listeners.changedvolume, function changedVolume()
 }.bind(player))
 
 player.addEventListener(player.listeners.paused, function paused() {
-  this.updateControls.bind(this)('play')
+  this.updateControls.bind(this)('/img/baseline-play_arrow-24px.svg')
 }.bind(player))
 
 player.addEventListener(player.listeners.playing, function playing() {
-  this.updateControls.bind(this)('pause')
+  this.updateControls.bind(this)('/img/baseline-pause-24px.svg')
 }.bind(player))
 
 player.addEventListener(player.listeners.updatedPlayer, function draw() {
@@ -214,7 +217,7 @@ player.addEventListener(player.listeners.updatedPlayer, function draw() {
  * Add event listener's to player audio object
  */
 player.audio.addEventListener('loadstart', function play() {
-  this.updateControls.bind(this)('loading')
+  this.updateControls.bind(this)('/img/baseline-cached-24px.svg')
 }.bind(player))
 
 player.audio.addEventListener('timeupdate', function timeUpdate() {

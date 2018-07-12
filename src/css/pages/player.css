@@ -78,6 +78,9 @@ section {
 
 .player > .controls > .scrub {
     flex:2;
+    display: flex;
+    justify-content: center;
+    flex-flow: column nowrap;
 }
 
 .player > .controls > .scrub > .slider > .outer {
