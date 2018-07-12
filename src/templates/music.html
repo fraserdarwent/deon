@@ -88,14 +88,14 @@
         data-partial data-template="track-cells-one-line">
 <td class="longer-width">
   <div class="scroll-container"
-       onmouseover="scrollTrackTitle(this)" onmouseleave="removeScrollTrackTitle(this)">
+       onmouseover="applyScroll.bind(this)()" onmouseleave="removeScroll.bind(this)()">
     <span class="scroll-title">{{title}}{{>early-access-msg}}{{>unlicensable}}</span>
   </div>
 </td>
 {{#if playlistId}}
 <td class="longer-width">
   <div class="scroll-container"
-       onmouseover="scrollTrackTitle(this)" onmouseleave="removeScrollTrackTitle(this)">
+       onmouseover="applyScroll.bind(this)()" onmouseleave="removeScroll.bind(this)()">
     <a href="/release/{{releaseId}}" class="scroll-title">{{release.title}}</a>
   </div>
 </td>
@@ -138,8 +138,8 @@
         data-partial
         data-template="play-song">
 {{#streamable}}
-<button class="faux button--mobile{{#inEarlyAccess}} in-early-access{{/inEarlyAccess}}"
-        onclick="playSong(event, this)"
+<button class="song faux button--mobile{{#inEarlyAccess}} in-early-access{{/inEarlyAccess}}"
+        onclick="player.select.bind(this)()"
         role="play-song"
         data-play-link="{{playUrl}}"
         data-title="{{title}}"
@@ -160,8 +160,7 @@
             data-playlist-id="{{playlistId}}"
         {{/if}}
         data-release-id="{{releaseId}}">
-    <i class="fa fa-play-circle inactive"></i>
-    <i class="fa fa-pause-circle active"></i>
+    <i class="fa fa-play"></i>
 </button>
 {{/streamable}}
 {{^streamable}}

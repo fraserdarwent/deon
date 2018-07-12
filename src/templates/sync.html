@@ -132,9 +132,9 @@
         <div class="image-wrapper">
             <img src="/img/artwork.jpg" class="preload" />
             <img src="{{release.cover}}" />
-            <a  class="button button--cta"
+            <a  class="song button button--cta"
                 data-index="{{index}}"
-                onclick="playSong(event, this)"
+                onclick="player.select.bind(this)()"
                 role="play-song"
                 data-play-link="{{playUrl}}"
                 data-title="{{title}}"

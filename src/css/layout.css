@@ -378,7 +378,6 @@ body.showing-notice .controls.fixed.playing {
 }
 
 .controls > a {
-  width: 100%;
   display: block;
   margin: .5rem 0;
   text-align: center;
@@ -453,12 +452,12 @@ body.showing-notice .controls.fixed.playing {
 }
 .controls > .toggle-repeat {
   margin-right: 1em;
-}  
+}
 .controls > .volume-slider-container {
   opacity: 0;
   transition: opacity 0.2s ease;
   pointer-events: none;
-}  
+}
 .show-slider .volume-slider-container {
   opacity: 1;
   pointer-events: auto;
@@ -581,9 +580,8 @@ body.showing-notice .controls.fixed.playing {
   }
 
   .controls > a {
-    width: 0;
     display: inline-block;
-    margin: 0 0;
+    margin-right: 1rem;
     padding: 0;
     text-align: left;
     transition: width 0.3s ease, margin 0.3s ease;

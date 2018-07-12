@@ -134,9 +134,9 @@ window.fbAsyncInit = function() {
                     </div>
                 </div>
             </div>
-            <a href="#" class="silent scroll-container" role="track-link"
-               onmouseover="scrollTrackTitle(this)" onmouseleave="removeScrollTrackTitle(this)">
-                <span class="scroll-title" role="track-title"></span>
+            <a href="#" class="title" role="track-link"
+               onmouseover="applyScroll.bind(this)()"
+               onmouseleave="removeScroll.bind(this)()">
             </a>
             <div class="col-md-hidden scrub-container scrub-container--mobile">
                 <div class="scrub" onclick="scrub(event, this)">
@@ -146,13 +146,13 @@ window.fbAsyncInit = function() {
             <button class="faux" onclick="toggleShuffle(event, this)" role="mode">
                 <i class="fa fa-random"></i>
             </button>
-            <button class="faux" onclick="previous(event, this)" role="previous">
+            <button class="previous faux" onclick="player.previous()" role="previous">
                 <i class="fa fa-step-backward"></i>
             </button>
-            <button class="faux" onclick="togglePlay(event, this)">
+            <button class="pause faux" onclick="player.pause()">
                 <i class="fa fa-play" role="play"></i>
             </button>
-            <button class="faux" onclick="next(event, this)" role="next">
+            <button class="next faux" onclick="player.next()" role="next">
                 <i class="fa fa-step-forward"></i>
             </button>
             <button class="faux" onclick="toggleRepeat(event, this)">

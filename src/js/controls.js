@@ -13,169 +13,172 @@ var sel = {
   controls: '.controls'
 }
 
-var playerEvents = {
-  statechange: updateControls,
-  play: onNewSong,
-}
+/**
+ * Object for storing functions to do with the controls
+ * @type {{selectors: {pause: string, title: string, controls: string, ftracks: string, currentTime: string, duration: string, song: string}, styles: {paused: string, playing: string, loading: string}, pauses: (function(): Node[]), songs: (function(): Node[]), currentTimes: (function(): Node[]), durations: (function(): Node[]), titles: (function(): Node[]), scrubs: {inners: (function(): Node[]), drag: controls.scrubs.drag, startDrag: controls.scrubs.startDrag}, volumes: {inners: (function(): Node[]), startDrag: controls.volumes.startDrag, drag: controls.volumes.drag, show: controls.volumes.show, hide: controls.volumes.hide, changePlayerVolume: controls.volumes.changePlayerVolume}}}
+ */
+var controls = {
+  selectors: {
+    pause: '.pause',
+    title: '.title',
+    controls: '.controls',
+    ftracks: '.ftrack',
+    currentTime: '.currentTime',
+    duration: '.duration',
+    song: '.song'
+  },
+  styles: {
+    paused: 'fa-play',
+    playing: 'fa-pause',
+    loading: 'fa-load'
+  },
+  pauses: () => {
+    return findNodes(controls.selectors.pause)
+  },
+  songs: () => {
+    return findNodes(controls.selectors.song)
+  },
+  currentTimes: () => {
+    return findNodes(controls.selectors.currentTime)
+  },
+  durations: () => {
+    return findNodes(controls.selectors.duration)
+  },
+  titles: () => {
+    return findNodes(controls.selectors.title)
+  },
+  /**
+     * Store functions for finding and operating on song scrub bars (song progress bar)
+     */
+  scrubs: {
+    inners: () => { return findNodes('.scrub > .slider > .outer > .inner') },
+    drag: function(slider, event) {
+      preventSelection()
+      player.seek(clamp((event.clientX - slider.getBoundingClientRect().left) / slider.clientWidth))
+    },
+    startDrag: function(event, slider) {
+      player.seek(clamp((event.clientX - slider.getBoundingClientRect().left) / slider.clientWidth))
+      var mouseMove = controls.scrubs.drag.bind(this, slider)
 
-var playerAnalyticEvents = [
-  'play',
-  'stop',
-  'pause',
-  'next',
-  'previous',
-  'ended'
-]
-
-var player
-
-document.addEventListener('DOMContentLoaded', (e) => {
-  player = new MusicPlayer()
-  var events = Object.keys(playerEvents)
-
-  events.forEach((name) => {
-    player.addEventListener(name, playerEvents[name])
-  })
-  playerAnalyticEvents.forEach((name) => {
-    player.addEventListener(name, recordPlayerEvent)
-  })
-  player.addEventListener('error', recordPlayerError)
-  player.addEventListener('trackBlocked', () => {
-    toasty(new Error('Track blocked by your settings because it is not eligible for content creator licensing.'))
-  })
-
-  player.addEventListener('play', recordPlayerPlayLegacy)
-  requestAnimationFrame(updatePlayerProgress)
-  var volume = getCookie('volume')
-
-  if (!volume) {
-    volume = 1
-  }
-  player.setStoredVolume(volume)
-  player.setVolume(volume)
-  bindVolumeEvents()
-  setVolumeDisplay()
-  document.addEventListener('keydown', (e) => {
-    if (e.keyCode == 32) {
-      const spaceFields = ['INPUT', 'TEXTAREA', 'BUTTON']
-
-      if (spaceFields.indexOf(e.target.tagName) != -1) {
-        return
+      function mouseUp() {
+        document.removeEventListener('mousemove', mouseMove)
+        document.removeEventListener('mouseup', mouseUp)
       }
 
-      e.preventDefault()
-
-      if (player.items.length) {
-        togglePlay()
-      }
-      else {
-        const playButton = findNode('[onclick^="playSongs"],[onclick^="playSong"]')
-
-        if (playButton) {
-          playButton.click()
-        }
-      }
+      document.addEventListener('mousemove', mouseMove)
+      document.addEventListener('mouseup', mouseUp)
     }
-  })
-})
+  },
+  /**
+     * Store functions for finding and operating on volume sliders
+     */
+  volumes: {
+    inners: () => { return findNodes('.volume > .slider > .outer > .inner') },
+    startDrag: function() {
+      controls.volumes.changePlayerVolume.bind(this)(event)
 
-function recordPlayerEvent (e) {
-  var opts = e.detail.item
+      var dragVolumeSliderBound = controls.volumes.drag.bind(this)
 
-  opts.label = opts.title + ' by ' + opts.artistTitle
-  opts.category = 'Music Player'
-  opts.releaseId = opts.releaseId
-  opts.trackId = opts.trackId
-  recordEvent('Deon AP ' + capitalizeFirstLetter(e.type), opts)
+      document.addEventListener('mousemove', dragVolumeSliderBound)
+      document.addEventListener('mouseup', () => {
+        document.removeEventListener('mousemove', dragVolumeSliderBound)
+      })
+    },
+    drag: function () {
+      preventSelection()
+      controls.volumes.changePlayerVolume.bind(this)(event)
+    },
+    /**
+         * Reset hide timeout
+         * Start drag
+         */
+    show: function () {
+      var slider = findNode('.slider', this)
+
+      clearTimeout(slider.timeout)
+      slider.classList.toggle('show', true)
+      if (!slider.timeout) {
+        slider.addEventListener('mousedown', controls.volumes.startDrag.bind(this), true)
+      }
+    },
+    /**
+         * Hide after 1500ms
+         */
+    hide: function() {
+      var slider = findNode('.slider', this)
+
+      slider.timeout = setTimeout(() => {
+        slider.classList.toggle('show', false)
+      }, 1500)
+    },
+    /**
+         * Change player volume based on current slider
+         * @param event
+         */
+    changePlayerVolume: function(event) {
+      var sliderOuter = findNode('.slider > .outer', this)
+      var volume = (sliderOuter.getBoundingClientRect().bottom - event.clientY) / sliderOuter.offsetHeight
+
+      volume = clamp(volume)
+      player.setVolume(volume)
+    }
+  },
 }
 
-function recordPlayerError (e) {
-  e.category = 'Music Player'
-  recordEvent('Deon AP Error', e)
+/**
+ * Scroll text which is longer than the div it is in by applying a calculated text indent
+ */
+function applyScroll() {
+  this.style.textIndent = `${this.clientWidth < this.scrollWidth ? this.clientWidth - this.scrollWidth : 0 }px`
 }
 
-function recordPlayerPlayLegacy (e) {
-  recordEvent('Audio Player Play Server Side', e.detail.item)
+/**
+ * Remove applied text indent
+ */
+function removeScroll() {
+  this.style.textIndent = '0px'
 }
 
-function togglePlay (e, el) {
-  player.toggle()
-  updateControls()
-}
+/**
+ * Prevent selection
+ * Used whilst dragging sliders
+ */
+function preventSelection() {
+  var selection = {}
 
-function next (e, el) {
-  player.next()
-  updateControls()
-}
-
-function previous (e, el) {
-  player.previous()
-  updateControls()
-}
-
-function toggleRepeat (e, el) {
-  var options = ['none', 'one', 'all']
-  var i = (options.indexOf(player.repeat) + 1) % options.length
-
-  player.repeat = options[i]
-
-  el.classList.toggle('repeat-one', player.repeat == 'one')
-  el.classList.toggle('repeat-all', player.repeat == 'all')
-}
-
-function toggleShuffle (e, el) {
-  player.shuffle = !player.shuffle
-  el.classList.toggle('active', player.shuffle)
-}
-
-function playSong (e, el) {
-  if (!el) {
-    return
+  if (window.getSelection) {
+    selection = window.getSelection()
+    if (selection.rangeCount) {
+      selection.removeAllRanges()
+      return
+    }
+  } else if (document.selection) {
+    selection = document.selection.createRange()
+    if (selection.text > '') {
+      document.selection.empty()
+      return
+    }
   }
-  const index = el.hasAttribute('data-index') ? +el.dataset.index : undefined
-
-  if (index != undefined) {
-    loadAndPlayTracks(index)
-  }
 }
 
-function toggleVolume (e, el) {
-  if (!el.matches(e.target, 'i,button')) {
-    return
+/**
+ * Clamp input between 0 and 1
+ * @param i
+ * @returns {*}
+ */
+function clamp(i) {
+  if (1 < i){
+    i = 1
   }
-
-  var volume = player.getVolume()
-
-  if (volume > 0) {
-    player.setStoredVolume(volume)
-    player.setVolume(0)
+  if (i < 0){
+    i = 0
   }
-  else {
-    player.setVolume(player.getStoredVolume())
-  }
-  setVolumeDisplay()
+  return i
 }
 
-function bindVolumeEvents (){
-  var container = findNode(sel.volumeSliderContainer)
-  var outer = findNode(sel.volumeOuterSlider)
-
-  // non-touch events
-  container.addEventListener('mouseover', volumeSliderRemain)
-  container.addEventListener('mouseleave', startVolumeSliderHide)
-  outer.addEventListener('mousedown', startVolumeDrag)
-  outer.addEventListener('mousemove', calculateVolumeDrag)
-
-  // touch events
-  container.addEventListener('touchstart', initVolumeMobile)
-}
-
-function initVolumeMobile(e){
-  // if they're on touch devices, let's put the volume at 100%
-  e.preventDefault()
-  player.setVolume(1)
-}
-
+/**
+ *Old code
+**/
 function startVolumeSliderShow (e) {
   clearTimeout(startVolumeSliderHide.timeout)
   var controls = findNode(sel.controls)
@@ -203,32 +206,6 @@ function volumeSliderHide () {
   controls.classList.toggle('show-slider', false)
 }
 
-function preventSelection(){
-  var selection = {}
-
-  if (window.getSelection) {
-    selection = window.getSelection()
-    if (selection.rangeCount) {
-      selection.removeAllRanges()
-      return
-    }
-  } else if (document.selection) {
-    selection = document.selection.createRange()
-    if (selection.text > '') {
-      document.selection.empty()
-      return
-    }
-  }
-}
-
-function startVolumeDrag (e) {
-  startVolumeDrag.dragging = true
-  calculateVolumeDrag(e)
-  window.addEventListener("mouseup", stopVolumeDrag)
-  window.addEventListener("mousemove", preventSelection, false)
-}
-startVolumeDrag.dragging = false
-
 function calculateVolumeDrag (e) {
   if (!e.path) {
     addEventPath(e)
@@ -248,7 +225,7 @@ function calculateVolumeDrag (e) {
     newVolume = 1
   }
 
-  player.setStoredVolume(newVolume)
+  // player.setStoredVolume(newVolume)
   player.setVolume(newVolume)
   setCookie('volume', newVolume)
   setVolumeDisplay()
@@ -261,7 +238,7 @@ function stopVolumeDrag (e) {
 }
 
 function setVolumeDisplay () {
-  var volume = player.getVolume()
+  var volume = player.audio.volume
   var icon = findNode(sel.volumeI)
   var innerSlide = findNode(sel.volumeInnerSlider)
   var height = volume * 100
@@ -274,200 +251,57 @@ function setVolumeDisplay () {
   icon.classList.toggle('fa-volume-up', volume >= 0.75)
   innerSlide.style.height = parseInt(height) + '%'
 }
+function startVolumeDrag (e) {
+  startVolumeDrag.dragging = true
+  calculateVolumeDrag(e)
+  window.addEventListener("mouseup", stopVolumeDrag)
+  window.addEventListener("mousemove", preventSelection, false)
+}
+startVolumeDrag.dragging = false
+function bindVolumeEvents (){
+  var container = findNode(sel.volumeSliderContainer)
+  var outer = findNode(sel.volumeOuterSlider)
 
-function playSongDblC (e, el) {
-  var button = el.querySelector('[role="play-song"]')
+  // non-touch events
+  container.addEventListener('mouseover', volumeSliderRemain)
+  container.addEventListener('mouseleave', startVolumeSliderHide)
+  outer.addEventListener('mousedown', startVolumeDrag)
+  outer.addEventListener('mousemove', calculateVolumeDrag)
 
-  playSong(e, button)
+  // touch events
+  container.addEventListener('touchstart', initVolumeMobile)
 }
 
-function loadAndPlayTracks (index) {
-  var tracks = buildTracks()
+document.addEventListener('DOMContentLoaded', (e) => {
 
-  if (areTracksLoaded(tracks)) {
-    player.toggle(index)
+  var volume = getCookie('volume')
+
+  if (!volume) {
+    volume = 1
   }
-  else {
-    player.set(tracks)
-    player.play(index)
+  player.setVolume(volume)
+  bindVolumeEvents()
+  setVolumeDisplay()
+  document.addEventListener('keydown', (e) => {
+    if (e.keyCode == 32) {
+      const spaceFields = ['INPUT', 'TEXTAREA', 'BUTTON']
 
-    var el = findNode(sel.link)
+      if (spaceFields.indexOf(e.target.tagName) != -1) {
+        return
+      }
 
-    if (el) { el.setAttribute('href', window.location.pathname + window.location.search) }
-  }
+      e.preventDefault()
 
-  updateControls()
-}
+      if (player.items.length) {
+        togglePlay()
+      }
+      else {
+        const playButton = findNode('[onclick^="playSongs"],[onclick^="playSong"]')
 
-function buildTracks () {
-  var els = Array.prototype.slice.call(document.querySelectorAll('[data-play-link]'))
-
-  els = els.sort(function (el1, el2) {
-    var idx1 = parseInt(el1.dataset.index)
-    var idx2 = parseInt(el2.dataset.index)
-
-    if (idx1 == idx2) {
-      return 0
+        if (playButton) {
+          playButton.click()
+        }
+      }
     }
-    return idx1 > idx2 ? 1 : -1
   })
-  return els.map(mapTrackElToPlayer)
-}
-
-function areTracksLoaded (tracks) {
-  return tracks.every(function(track, index) {
-    return player.items[index] && player.items[index].source == track.source
-  })
-}
-
-function playSongs (e, el) {
-  loadAndPlayTracks()
-}
-
-function onNewSong (e) {
-  var el = findNode(sel.title)
-  var elContainer = findNode(sel.link)
-  var controls = findNode(sel.controls)
-
-  el.textContent = prepareTrackTitle(e.detail.item)
-  elContainer.classList.add('playing-track')
-  controls.classList.add('playing')
-  if (typeof autoBrowseMore == 'function') { autoBrowseMore() }
-}
-
-function prepareTrackTitle(item){
-  var artistNames = item.artist
-
-  if (!artistNames) { return item.title }
-
-  var trackTitle = ""
-
-  artistNames = artistNames.split(", ").filter(function(n){ return n != "" })
-
-  if (artistNames.length > 2){
-    trackTitle = "Various Artists"
-  } else {
-    trackTitle = artistNames.join(" & ")
-  }
-  trackTitle += " - " + item.title
-  return trackTitle
-}
-
-function scrollTrackTitle(elementContainer){
-  var scrollingElement = elementContainer.querySelector('.scroll-title')
-
-  if (!elementContainer || !scrollingElement) { return }
-  if (scrollingElement.offsetWidth > elementContainer.offsetWidth){
-    var scrollDistance = scrollingElement.offsetWidth - elementContainer.offsetWidth + 1
-
-    scrollingElement.style.textIndent = -scrollDistance + 'px'
-  }
-}
-function removeScrollTrackTitle(elementContainer){
-  var scrollingElement = elementContainer.querySelector('.scroll-title')
-
-  if (!elementContainer || !scrollingElement) { return }
-  scrollingElement.style.textIndent = '0px'
-}
-
-function updateControls () {
-  var playEl = findNode(sel.play)
-
-  if (playEl) {
-    playEl.classList.toggle('fa-play', !player.playing && !player.loading)
-    playEl.classList.toggle('fa-pause', player.playing)
-    playEl.classList.toggle('fa-spin', player.loading && !player.playing)
-    playEl.classList.toggle('fa-refresh', player.loading && !player.playing)
-  }
-
-  var buttons = document.querySelectorAll('[role="play-song"],[role="play-release"]')
-
-  for (var i = 0; i < buttons.length; i++) {
-    buttons[i].classList.remove('active')
-  }
-
-  var playing = player.playing || player.loading
-  var item = player.items[player.index]
-  var selector = '[role="play-song"][data-play-link="' + (item ? item.source : '') + '"]'
-
-  var allMatches = document.querySelectorAll(selector)
-  var el
-
-  if (item) {
-    if (allMatches.length > 1) {
-      //try to find one with a matching index first
-      el = findNode(selector + '[data-index="' + player.index + '"]')
-    }
-    if (!el) {
-      el = allMatches[0]
-    }
-  }
-
-  if (el) {
-    el.classList.toggle('active', playing)
-  }
-
-  var pel = findNode(sel.playPlaylist)
-
-  if (pel) {
-    var playlistPlaying = playing && !isPlaylistLoaded(pel.dataset.playlistId)
-
-    pel.classList.toggle('fa-pause', playlistPlaying)
-    pel.classList.toggle('fa-play', !playlistPlaying)
-  }
-
-  var rel = findNode(sel.playRelease)
-
-  if (rel) {
-    rel.classList.toggle('active', playing && isReleaseLoaded(rel.dataset.releaseId))
-  }
-}
-
-function isPlaylistLoaded (id) {
-  return player.items.length && player.items[0].playlistId == id
-}
-
-function isReleaseLoaded (id) {
-  return player.items.length && player.items[0].releaseId == id
-}
-
-function mapTrackElToPlayer (el) {
-  return {
-    source:     el.dataset.playLink,
-    skip:       isSignedIn() && !el.hasAttribute('data-licensable') && (session.settings || {}).hideNonLicensableTracks,
-    block:       isSignedIn() && !el.hasAttribute('data-licensable') && (session.settings || {}).blockNonLicensableTracks,
-    title:      el.dataset.title,
-    index:      el.dataset.index,
-    artist:      el.dataset.artist,
-    artistTitle: el.dataset.artistsTitle,
-    trackId:    el.dataset.trackId,
-    playlistId: el.dataset.playlistId,
-    releaseId:  el.dataset.releaseId
-  }
-}
-
-function scrub (e, el) {
-  var seekTo
-
-  if (e.clientY > 100){
-    var margin = 0
-
-    if (document.body) { margin = document.body.clientWidth - el.offsetWidth || 0 }
-    seekTo = (e.clientX - margin / 2) / el.offsetWidth
-  } else {
-    seekTo = e.clientX / el.offsetWidth
-  }
-  player.seek(seekTo)
-  //TODO: Add google analytics event to track from here
-}
-
-function updatePlayerProgress () {
-  requestAnimationFrame(updatePlayerProgress)
-  var scrubs = document.querySelectorAll(sel.scrub)
-
-  if (scrubs) {
-    for (var i = 0; i < scrubs.length; i++){
-      scrubs[i].style.width = player.progress * 100 + '%'
-    }
-  }
-}
+})

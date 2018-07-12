@@ -120,14 +120,14 @@
         </td>
         <td class="longer-width">
           <div class="scroll-container"
-               onmouseover="scrollTrackTitle(this)" onmouseleave="removeScrollTrackTitle(this)">
-            <span class="scroll-title artists">{{title}}</span>
+               onmouseover="applyScroll.bind(this)()" onmouseleave="removeScroll.bind(this)()">
+            {{title}}
           </div>
           {{>unlicensable}}
         </td>
         <td class="longer-width artists">
             <div class="scroll-container"
-               onmouseover="scrollTrackTitle(this)" onmouseleave="removeScrollTrackTitle(this)">
+               onmouseover="applyScroll.bind(this)()" onmouseleave="removeScroll.bind(this)()">
             <span class="scroll-title">
               {{>artists-csv-list}}
             </span>
@@ -135,7 +135,7 @@
         </td>
         <td class="longer-width">
           <div class="scroll-container"
-               onmouseover="scrollTrackTitle(this)" onmouseleave="removeScrollTrackTitle(this)">
+               onmouseover="applyScroll.bind(this)()" onmouseleave="removeScroll.bind(this)()">
             <a class="scroll-title" href="/release/{{release.catalogId}}">
               {{release.title}}
             </a>
