@@ -1350,6 +1350,27 @@ footer .footer-items li:first-child button::before{
   }
 }
 
+.controls{
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-evenly;
+}
+
+.controls > .volume{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.volume > .slider.hide {
+  display: none;
+}
+
+.volume > .slider{
+  height: 100px;
+  width: 6px;
+}
+
 .fa-refresh{
   animation: rotate 2s linear infinite;
 }

@@ -95,7 +95,7 @@ var controls = {
       return findNodes('.volume > .slider > .outer > .inner')
     },
     startDrag: function () {
-      controls.volumes().changePlayerVolume.bind(this)(event)
+      controls.volumes.changePlayerVolume.bind(this)(event)
 
       var dragVolumeSliderBound = controls.volumes.drag.bind(this)
 
@@ -116,7 +116,7 @@ var controls = {
       var slider = findNode('.slider', this)
 
       clearTimeout(slider.timeout)
-      slider.classList.toggle('show', true)
+      slider.classList.toggle('hide', false)
       if (!slider.timeout) {
         slider.addEventListener('mousedown', controls.volumes.startDrag.bind(this), true)
       }
@@ -128,7 +128,7 @@ var controls = {
       var slider = findNode('.slider', this)
 
       slider.timeout = setTimeout(() => {
-        slider.classList.toggle('show', false)
+        slider.classList.toggle('hide', true)
       }, 1500)
     },
     /**
@@ -279,55 +279,5 @@ function startVolumeDrag (e) {
   window.addEventListener("mouseup", stopVolumeDrag)
   window.addEventListener("mousemove", preventSelection, false)
 }
-startVolumeDrag.dragging = false
-function bindVolumeEvents (){
-  var container = findNode(sel.volumeSliderContainer)
-  var outer = findNode(sel.volumeOuterSlider)
 
-  // non-touch events
-  container.addEventListener('mouseover', volumeSliderRemain)
-  container.addEventListener('mouseleave', startVolumeSliderHide)
-  outer.addEventListener('mousedown', startVolumeDrag)
-  outer.addEventListener('mousemove', calculateVolumeDrag)
-
-  // touch events
-  container.addEventListener('touchstart', initVolumeMobile)
-}
-function initVolumeMobile(e){
-  // if they're on touch devices, let's put the volume at 100%
-  e.preventDefault()
-  player.setVolume(1)
-}
-document.addEventListener('DOMContentLoaded', (e) => {
-
-  var volume = getCookie('volume')
-
-  if (!volume) {
-    volume = 1
-  }
-  player.setVolume(volume)
-  bindVolumeEvents()
-  setVolumeDisplay()
-  document.addEventListener('keydown', (e) => {
-    if (e.keyCode == 32) {
-      const spaceFields = ['INPUT', 'TEXTAREA', 'BUTTON']
-
-      if (spaceFields.indexOf(e.target.tagName) != -1) {
-        return
-      }
-
-      e.preventDefault()
-
-      if (player.items.length) {
-        togglePlay()
-      }
-      else {
-        const playButton = findNode('[onclick^="playSongs"],[onclick^="playSong"]')
-
-        if (playButton) {
-          playButton.click()
-        }
-      }
-    }
-  })
-})
+player.setVolume(1)

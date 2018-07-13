@@ -127,13 +127,6 @@ window.fbAsyncInit = function() {
 
         <!-- Player -->
         <div class="flex controls push-right" role='fixed'>
-            <div class="volume-slider-container" unselectable="on" onselectstart="return false;">
-                <div class="volume-slider-outer">
-                    <div class="volume-slider-inner">
-                        <div class="volume-slider-handle"></div>
-                    </div>
-                </div>
-            </div>
             <a href="#" class="title" role="track-link"
                onmouseover="applyScroll.bind(this)()"
                onmouseleave="removeScroll.bind(this)()">
@@ -158,9 +151,19 @@ window.fbAsyncInit = function() {
             <button class="faux" onclick="toggleRepeat(event, this)">
                 <i class="fa fa-repeat"></i>
             </button>
-            <button class="faux volume-toggle" onclick="toggleVolume(event)" role="volumeControl" onmouseover="startVolumeSliderShow(event)" onmouseleave="startVolumeSliderHide()">
-                <i class="fa fa-volume-up"></i>
-            </button>
+            <div class="volume" onmouseover="controls.volumes.show.bind(this)()" onmouseleave="controls.volumes.hide.bind(this)()">
+                <div class="slider vertical below hide">
+                    <div class="outer">
+                        <div class="inner"></div>
+                        <div class="handle">
+                            <div class="inner"></div>
+                        </div>
+                    </div>
+                </div>
+                <button class="faux volume-toggle" role="volumeControl" onclick="player.mute()">
+                    <i class="fa fa-volume-up"></i>
+                </button>
+            </div>
         </div>
     </div>
 </header>
