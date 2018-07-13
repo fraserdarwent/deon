@@ -745,7 +745,7 @@ header:hover .scrub > .progress,
     position: fixed;
   }
 
-  .playing.controls.fixed {
+  .controls.fixed.loaded {
     position: fixed;
     top: 0;
     left: initial;

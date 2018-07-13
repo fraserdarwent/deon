@@ -49,8 +49,8 @@ const player = {
    * @param listener
    */
   dispatchEvent: function (listener) {
-    if (this.events[listener.type]) {
-      this.events[listener.type].forEach((event) => {
+    if (player.events[listener.type]) {
+      player.events[listener.type].forEach((event) => {
         event()
       })
     }
@@ -103,28 +103,28 @@ const player = {
    * Pause or resume current song based on state
    */
   pause: function () {
-    if (this.audio.paused) {
-      this.audio.play()
+    if (player.audio.paused) {
+      player.audio.play()
     } else {
-      this.audio.pause()
+      player.audio.pause()
     }
   },
   /**
    * Select previous song in queue by decrementing index by 1
    */
   previous: function () {
-    if (this.song && this.song.previous){
-      this.song = this.song.previous
-      this.dispatchEvent(this.listeners.seletedsong)
+    if (player.song && player.song.previous){
+      player.song = player.song.previous
+      player.dispatchEvent(player.listeners.seletedsong)
     }
   },
   /**
    * Select next song in queue by incrementing index by 1
    */
   next: function () {
-    if (this.song && this.song.next){
-      this.song = this.song.next
-      this.dispatchEvent(this.listeners.seletedsong)
+    if (player.song && player.song.next){
+      player.song = this.song.next
+      player.dispatchEvent(player.listeners.seletedsong)
     }
   },
   /**
@@ -132,15 +132,15 @@ const player = {
    * @param fraction
    */
   seek: function (fraction) {
-    this.audio.currentTime = fraction * this.audio.duration
+    player.audio.currentTime = fraction * player.audio.duration
   },
   /**
    * Set volume based on value between 0 and 1
    * @param volume
    */
   setVolume: function (volume) {
-    this.audio.volume = volume
-    this.dispatchEvent(this.listeners.changedvolume)
+    player.audio.volume = volume
+    player.dispatchEvent(player.listeners.changedvolume)
   },
   /**
    * Update the player timestamp and progress bar
@@ -148,24 +148,24 @@ const player = {
    */
   updatePlayer: function () {
     controls.currentTimes().forEach((control) => {
-      control.textContent = `${this.currentTime.pretty().minutes}:${this.currentTime.pretty().seconds}`
+      control.textContent = `${player.currentTime.pretty().minutes}:${player.currentTime.pretty().seconds}`
     })
     controls.scrubs.inners().forEach((control) => {
-      control.style.width = `${this.currentTime.percent()}%`
+      control.style.width = `${player.currentTime.percent()}%`
     })
-    this.dispatchEvent(this.listeners.updatedPlayer)
+    player.dispatchEvent(player.listeners.updatedPlayer)
   },
   /**
    * Based on current volume, either store current volume and mute player, or set volume to previously stored volume
    */
   mute: function() {
-    if (this.audio.volume === 0){
-      this.audio.volume = this.audio.lastVolume || 0
+    if (player.audio.volume === 0){
+      this.audio.volume = player.audio.lastVolume || 0
     } else {
-      this.audio.lastVolume = this.audio.volume
+      this.audio.lastVolume = player.audio.volume
       this.audio.volume = 0
     }
-    this.dispatchEvent(this.listeners.changedvolume)
+    player.dispatchEvent(player.listeners.changedvolume)
   },
   /**
    * Update controls
@@ -179,8 +179,8 @@ const player = {
       if (element.state){
         icon.classList.toggle(element.state, false)
       }
-      icon.classList.toggle(state, true)
-      element.state = state
+      icon.classList.toggle(controls.styles.fa[state], true)
+      element.state = controls.styles.fa[state]
     })
     controls.songs().forEach((element) => {
       const icon = element.firstElementChild
@@ -188,14 +188,14 @@ const player = {
       if (element.state){
         icon.classList.toggle(element.state, false)
       }
-      icon.classList.toggle(controls.styles.paused, true)
-      element.state = controls.styles.paused
+      icon.classList.toggle(controls.styles.fa[state], true)
+      element.state = controls.styles.fa[state]
       if (element.dataset.playLink === this.audio.src){
         if (element.state){
           icon.classList.toggle(element.state, false)
         }
-        icon.classList.toggle(state, true)
-        element.state = state
+        icon.classList.toggle(controls.styles.fa[state], true)
+        element.state = controls.styles.fa[state]
       }
     })
   }
@@ -210,64 +210,71 @@ player.audio.autoplay = true
  * Add event listeners to player object
  ***/
 player.addEventListener(player.listeners.seletedsong, function selectedSong() {
-  this.audio.src = this.song.dataset.playLink
-}.bind(player))
+  player.audio.src = player.song.dataset.playLink
+})
 
 player.addEventListener(player.listeners.changedvolume, function changedVolume() {
   requestAnimationFrame(() => {
-    controls.volumes.inners().forEach((control) => { control.style.height = `${this.audio.volume * 100}%` })
+    controls.volumes.inners().forEach((control) => { control.style.height = `${player.audio.volume * 100}%` })
   })
-}.bind(player))
+})
 
 player.addEventListener(player.listeners.paused, function paused() {
-  this.updateControls.bind(this)(controls.styles.paused)
-}.bind(player))
+  player.updateControls.bind(player)('paused')
+})
 
 player.addEventListener(player.listeners.playing, function playing() {
-  this.updateControls.bind(this)(controls.styles.playing)
-}.bind(player))
+  player.updateControls.bind('playing')
+})
 
 player.addEventListener(player.listeners.updatedPlayer, function draw() {
-  if (!this.audio.paused){
-    requestAnimationFrame(this.updatePlayer.bind(this))
+  if (!player.audio.paused){
+    requestAnimationFrame(player.updatePlayer.bind(player))
   }
-}.bind(player))
+})
 
 /***
  * Add event listener's to player audio object
  */
 player.audio.addEventListener('loadstart', function play() {
-  this.updateControls.bind(this)(controls.styles.loading)
-}.bind(player))
+  player.updateControls('loading')
+})
 
 player.audio.addEventListener('timeupdate', function timeUpdate() {
-  if (this.audio.paused){
-    requestAnimationFrame(this.updatePlayer.bind(this))
+  if (player.audio.paused){
+    requestAnimationFrame(player.updatePlayer)
   }
-}.bind(player))
+})
 
 player.audio.addEventListener('playing', function play() {
-  requestAnimationFrame(this.updatePlayer.bind(this))
-  this.dispatchEvent(this.listeners.playing)
-}.bind(player))
+  requestAnimationFrame(player.updatePlayer)
+  player.dispatchEvent(player.listeners.playing)
+})
 
 player.audio.addEventListener('loadedmetadata', function loadedMetadata() {
   requestAnimationFrame(() => {
+    controls.controls().forEach((control => {
+      if (control.state){
+        control.classList.toggle('loaded', false)
+      }
+      control.classList.toggle(state, true)
+    }))
+
     controls.titles().forEach((control) => {
-      control.textContent = `${this.song.attributes.getNamedItem('data-title').textContent}`
+      control.textContent = `${player.song.attributes.getNamedItem('data-title').textContent}`
     })
   })
-}.bind(player))
+})
 
 player.audio.addEventListener('pause', function pause() {
-  this.dispatchEvent(this.listeners.paused)
-}.bind(player))
+  player.dispatchEvent(player.listeners.paused)
+})
 
 player.audio.addEventListener('durationchange', function durationChange() {
   requestAnimationFrame(() => {
-    controls.durations().forEach((control) => { control.textContent = `${this.duration.pretty().minutes}:${this.duration.pretty().seconds}` })
+    controls.durations().forEach((control) => { control.textContent = `${player.duration.pretty().minutes}:${player.duration.pretty().seconds}` })
   })
-}.bind(player))
+})
 
 function pad(string, length) {
   if (0 < length){

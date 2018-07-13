@@ -28,9 +28,14 @@ var controls = {
     song: '.song'
   },
   styles: {
-    paused: 'fa-play',
-    playing: 'fa-pause',
-    loading: 'fa-load'
+    fa: {
+      paused: 'fa-play',
+      playing: 'fa-pause',
+      loading: 'fa-load'
+    }
+  },
+  controls: () => {
+    return findNodes(controls.selectors.controls)
   },
   pauses: () => {
     return findNodes(controls.selectors.pause)
