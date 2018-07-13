@@ -15,7 +15,7 @@ var sel = {
 
 /**
  * Object for storing functions to do with the controls
- * @type {{selectors: {pause: string, title: string, controls: string, ftracks: string, currentTime: string, duration: string, song: string}, styles: {paused: string, playing: string, loading: string}, pauses: (function(): Node[]), songs: (function(): Node[]), currentTimes: (function(): Node[]), durations: (function(): Node[]), titles: (function(): Node[]), scrubs: {inners: (function(): Node[]), drag: controls.scrubs.drag, startDrag: controls.scrubs.startDrag}, volumes: {inners: (function(): Node[]), startDrag: controls.volumes.startDrag, drag: controls.volumes.drag, show: controls.volumes.show, hide: controls.volumes.hide, changePlayerVolume: controls.volumes.changePlayerVolume}}}
+ * @type {{selectors: {pause: string, title: string, controls: string, ftracks: string, currentTime: string, duration: string, song: string}, controls: {styles: {fa: {paused: string, playing: string, loading: string}, find: (function(): Node[])}, pauses: {styles: {fa: {paused: string, playing: string, loading: string}}, find: (function(): Node[])}, songs: (function(): Node[]), currentTimes: (function(): Node[]), durations: (function(): Node[]), titles: (function(): Node[]), scrubs: {inners: (function(): Node[]), drag: controls.controls.scrubs.drag, startDrag: controls.controls.scrubs.startDrag}, volumes: {inners: (function(): Node[]), startDrag: controls.controls.volumes.startDrag, drag: controls.controls.volumes.drag, show: controls.controls.volumes.show, hide: controls.controls.volumes.hide, changePlayerVolume: controls.controls.volumes.changePlayerVolume}}}}
  */
 var controls = {
   selectors: {
@@ -27,21 +27,32 @@ var controls = {
     duration: '.duration',
     song: '.song'
   },
-  styles: {
-    fa: {
-      paused: 'fa-play',
-      playing: 'fa-pause',
-      loading: 'fa-load'
+  pauses: {
+    styles: {
+      fa: {
+        paused: 'fa-play',
+        playing: 'fa-pause',
+        loading: 'fa-spinner'
+      },
+    },
+    find: () => {
+      return findNodes(controls.selectors.pause)
     }
   },
-  controls: () => {
+  songs: {
+    find: () => {
+      return findNodes(controls.selectors.song)
+    },
+    styles: {
+      fa: {
+        paused: 'fa-play-circle',
+        playing: 'fa-pause-circle',
+        loading: 'fa-spinner'
+      }
+    }
+  },
+  find: () => {
     return findNodes(controls.selectors.controls)
-  },
-  pauses: () => {
-    return findNodes(controls.selectors.pause)
-  },
-  songs: () => {
-    return findNodes(controls.selectors.song)
   },
   currentTimes: () => {
     return findNodes(controls.selectors.currentTime)
@@ -56,12 +67,14 @@ var controls = {
      * Store functions for finding and operating on song scrub bars (song progress bar)
      */
   scrubs: {
-    inners: () => { return findNodes('.scrub > .slider > .outer > .inner') },
-    drag: function(slider, event) {
+    inners: () => {
+      return findNodes('.scrub > .slider > .outer > .inner')
+    },
+    drag: function (slider, event) {
       preventSelection()
       player.seek(clamp((event.clientX - slider.getBoundingClientRect().left) / slider.clientWidth))
     },
-    startDrag: function(event, slider) {
+    startDrag: function (event, slider) {
       player.seek(clamp((event.clientX - slider.getBoundingClientRect().left) / slider.clientWidth))
       var mouseMove = controls.scrubs.drag.bind(this, slider)
 
@@ -78,9 +91,11 @@ var controls = {
      * Store functions for finding and operating on volume sliders
      */
   volumes: {
-    inners: () => { return findNodes('.volume > .slider > .outer > .inner') },
-    startDrag: function() {
-      controls.volumes.changePlayerVolume.bind(this)(event)
+    inners: () => {
+      return findNodes('.volume > .slider > .outer > .inner')
+    },
+    startDrag: function () {
+      controls.volumes().changePlayerVolume.bind(this)(event)
 
       var dragVolumeSliderBound = controls.volumes.drag.bind(this)
 
@@ -94,9 +109,9 @@ var controls = {
       controls.volumes.changePlayerVolume.bind(this)(event)
     },
     /**
-         * Reset hide timeout
-         * Start drag
-         */
+       * Reset hide timeout
+       * Start drag
+       */
     show: function () {
       var slider = findNode('.slider', this)
 
@@ -107,9 +122,9 @@ var controls = {
       }
     },
     /**
-         * Hide after 1500ms
-         */
-    hide: function() {
+       * Hide after 1500ms
+       */
+    hide: function () {
       var slider = findNode('.slider', this)
 
       slider.timeout = setTimeout(() => {
@@ -117,22 +132,22 @@ var controls = {
       }, 1500)
     },
     /**
-         * Change player volume based on current slider
-         * @param event
-         */
-    changePlayerVolume: function(event) {
+       * Change player volume based on current slider
+       * @param event
+       */
+    changePlayerVolume: function (event) {
       var sliderOuter = findNode('.slider > .outer', this)
       var volume = (sliderOuter.getBoundingClientRect().bottom - event.clientY) / sliderOuter.offsetHeight
 
       volume = clamp(volume)
       player.setVolume(volume)
     }
-  },
+  }
 }
-
 /**
  * Scroll text which is longer than the div it is in by applying a calculated text indent
  */
+
 function applyScroll() {
   this.style.textIndent = `${this.clientWidth < this.scrollWidth ? this.clientWidth - this.scrollWidth : 0 }px`
 }

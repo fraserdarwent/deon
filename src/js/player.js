@@ -173,29 +173,29 @@ const player = {
    * @param state
    */
   updateControls: function (state) {
-    controls.pauses().forEach((element) => {
+    controls.pauses.find().forEach((element) => {
       const icon = element.firstElementChild
 
       if (element.state){
         icon.classList.toggle(element.state, false)
       }
-      icon.classList.toggle(controls.styles.fa[state], true)
-      element.state = controls.styles.fa[state]
+      icon.classList.toggle(controls.pauses.styles.fa[state], true)
+      element.state = controls.pauses.styles.fa[state]
     })
-    controls.songs().forEach((element) => {
+    controls.songs.find().forEach((element) => {
       const icon = element.firstElementChild
 
       if (element.state){
         icon.classList.toggle(element.state, false)
       }
-      icon.classList.toggle(controls.styles.fa[state], true)
-      element.state = controls.styles.fa[state]
+      icon.classList.toggle(controls.songs.styles.fa.paused, true)
+      element.state = controls.songs.styles.fa.paused
       if (element.dataset.playLink === this.audio.src){
         if (element.state){
           icon.classList.toggle(element.state, false)
         }
-        icon.classList.toggle(controls.styles.fa[state], true)
-        element.state = controls.styles.fa[state]
+        icon.classList.toggle(controls.songs.styles.fa[state], true)
+        element.state = controls.songs.styles.fa[state]
       }
     })
   }
@@ -220,16 +220,16 @@ player.addEventListener(player.listeners.changedvolume, function changedVolume()
 })
 
 player.addEventListener(player.listeners.paused, function paused() {
-  player.updateControls.bind(player)('paused')
+  player.updateControls('paused')
 })
 
 player.addEventListener(player.listeners.playing, function playing() {
-  player.updateControls.bind('playing')
+  player.updateControls('playing')
 })
 
 player.addEventListener(player.listeners.updatedPlayer, function draw() {
   if (!player.audio.paused){
-    requestAnimationFrame(player.updatePlayer.bind(player))
+    requestAnimationFrame(player.updatePlayer)
   }
 })
 
@@ -253,13 +253,9 @@ player.audio.addEventListener('playing', function play() {
 
 player.audio.addEventListener('loadedmetadata', function loadedMetadata() {
   requestAnimationFrame(() => {
-    controls.controls().forEach((control => {
-      if (control.state){
-        control.classList.toggle('loaded', false)
-      }
-      control.classList.toggle(state, true)
+    controls.find().forEach((control => {
+      control.classList.toggle('loaded', true)
     }))
-
     controls.titles().forEach((control) => {
       control.textContent = `${player.song.attributes.getNamedItem('data-title').textContent}`
     })
