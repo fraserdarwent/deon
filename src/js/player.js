@@ -67,8 +67,6 @@ const player = {
   /**
    * Select a new song
    * If currently playing song is selected, pause or resume depending on state
-   * @param event
-   * @param element
    */
   select: function () {
     if (this.dataset && this.dataset.playLink === player.audio.src) {
