@@ -1349,3 +1349,13 @@ footer .footer-items li:first-child button::before{
     line-height: 1.5;
   }
 }
+
+.fa-refresh{
+  animation: rotate 2s linear infinite;
+}
+
+@keyframes rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -32,7 +32,7 @@ var controls = {
       fa: {
         paused: 'fa-play',
         playing: 'fa-pause',
-        loading: 'fa-spinner'
+        loading: 'fa-refresh'
       },
     },
     find: () => {
@@ -47,7 +47,7 @@ var controls = {
       fa: {
         paused: 'fa-play-circle',
         playing: 'fa-pause-circle',
-        loading: 'fa-spinner'
+        loading: 'fa-refresh'
       }
     }
   },
@@ -149,6 +149,7 @@ var controls = {
  */
 
 function applyScroll() {
+  this.style.transition = 'text-indent 2s linear'
   this.style.textIndent = `${this.clientWidth < this.scrollWidth ? this.clientWidth - this.scrollWidth : 0 }px`
 }
 
@@ -156,6 +157,7 @@ function applyScroll() {
  * Remove applied text indent
  */
 function removeScroll() {
+  this.style.transition = 'none'
   this.style.textIndent = '0px'
 }
 
@@ -291,7 +293,11 @@ function bindVolumeEvents (){
   // touch events
   container.addEventListener('touchstart', initVolumeMobile)
 }
-
+function initVolumeMobile(e){
+  // if they're on touch devices, let's put the volume at 100%
+  e.preventDefault()
+  player.setVolume(1)
+}
 document.addEventListener('DOMContentLoaded', (e) => {
 
   var volume = getCookie('volume')
