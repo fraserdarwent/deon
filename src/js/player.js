@@ -180,6 +180,7 @@ const player = {
       icon.classList.toggle(controls.pauses.styles.fa[state], true)
       element.state = controls.pauses.styles.fa[state]
     })
+
     controls.songs.find().forEach((element) => {
       const icon = element.firstElementChild
 
@@ -252,7 +253,7 @@ player.audio.addEventListener('playing', function play() {
 player.audio.addEventListener('loadedmetadata', function loadedMetadata() {
   requestAnimationFrame(() => {
     controls.find().forEach((control => {
-      control.classList.toggle('loaded', true)
+      control.classList.toggle('playing', true)
     }))
     controls.titles().forEach((control) => {
       control.textContent = `${player.song.attributes.getNamedItem('data-title').textContent}`

@@ -1352,7 +1352,7 @@ footer .footer-items li:first-child button::before{
 
 .controls{
   display: flex;
-  flex-flow: row nowrap;
+  flex-flow: row wrap;
   justify-content: space-evenly;
 }
 
@@ -1377,5 +1377,14 @@ footer .footer-items li:first-child button::before{
 @keyframes rotate {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@media screen and (max-width: 992px){
+  .controls > .volume {
+    display: none;
+  }
+  .controls {
+    display: none;
   }
 }
