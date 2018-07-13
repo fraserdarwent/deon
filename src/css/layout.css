@@ -1358,7 +1358,6 @@ footer .footer-items li:first-child button::before{
 
 .controls > .volume{
   display: flex;
-  align-items: center;
   justify-content: center;
 }
 
@@ -1366,7 +1365,7 @@ footer .footer-items li:first-child button::before{
   display: none;
 }
 
-.volume > .slider{
+.volume > .slider {
   height: 100px;
   width: 6px;
 }

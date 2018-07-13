@@ -280,4 +280,4 @@ function startVolumeDrag (e) {
   window.addEventListener("mousemove", preventSelection, false)
 }
 
-player.setVolume(1)
+document.addEventListener('DOMContentLoaded', player.setVolume(1))
