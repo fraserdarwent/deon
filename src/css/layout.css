@@ -1,5 +1,5 @@
 section {
-  padding: 2rem 0;
+  padding: 3rem 0;
 }
 
 .v-padding{
@@ -704,7 +704,7 @@ header:hover .scrub > .progress,
 .controls{
   display: none;
 }
-.playing.controls{
+.controls.playing.fixed{
   position: fixed;
   bottom: 0;
   display: flex;
@@ -717,7 +717,7 @@ header:hover .scrub > .progress,
 }
 
 @media screen and (min-width: 992px){
-  .controls.playing{
+  .controls.playing.fixed{
     position: fixed;
     top: 0;
     left: initial;
