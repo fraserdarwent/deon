@@ -20,12 +20,12 @@
 }
 
 .slider.vertical.below {
-    top: calc(100% + 15px);
+    top: calc(50% + 10px);
     align-items: flex-start;
 }
 
 .slider.vertical.above{
-    top: calc(-100% - 15px);
+    top: calc(-50% - 10px);
     align-items: flex-end;
 }
 

@@ -1,5 +1,5 @@
 section {
-  padding: 3rem 0;
+  padding: 2rem 0;
 }
 
 .v-padding{
@@ -379,7 +379,7 @@ body.showing-notice .controls.fixed.playing {
 
 .controls > a {
   display: block;
-  margin: .5rem 0;
+  margin: 0 0 .5rem 0;
   text-align: center;
 }
 
@@ -704,32 +704,36 @@ header:hover .scrub > .progress,
 .controls{
   display: none;
 }
-.controls.playing.fixed{
-  position: fixed;
-  bottom: 0;
-  display: flex;
-  left: 0;
-  right: 0;
-  margin: 0;
-  background: #fff;
-  box-shadow: 0 0 20px rgba(0,0,0,0.25);
-  z-index: 99;
+
+@media screen and (max-width: 992px) {
+    .controls.playing{
+        position: fixed;
+        bottom: 0;
+        display: flex;
+        left: 0;
+        right: 0;
+        margin: 0;
+        background: #fff;
+        box-shadow: 0 0 20px rgba(0,0,0,0.25);
+        z-index: 99;
+    }
 }
 
 @media screen and (min-width: 992px){
-  .controls.playing.fixed{
-    position: fixed;
-    top: 0;
-    left: initial;
-    right: 0;
-    bottom: initial;
-    z-index: 99;
-    padding: .85rem 1.25rem .75rem;
-    box-shadow: 0 0 20px rgba(0,0,0,0.15);
-    background: #fff;
-    animation: slideDown .45s ease;
-  }
+    .controls.playing.fixed{
+        position: fixed;
+        top: 0;
+        left: initial;
+        right: 0;
+        bottom: initial;
+        z-index: 99;
+        padding: .85rem 1.25rem .75rem;
+        box-shadow: 0 0 20px rgba(0,0,0,0.15);
+        background: #fff;
+        animation: slideDown .45s ease;
+    }
 }
+
 @keyframes slideDown{
   from{
     transform: translateY(-50px);
