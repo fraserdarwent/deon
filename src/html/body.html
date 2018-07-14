@@ -126,16 +126,11 @@ window.fbAsyncInit = function() {
         </div>
 
         <!-- Player -->
-        <div class="flex controls push-right" role='fixed'>
+        <div class="flex controls" role='fixed'>
             <a href="#" class="title" role="track-link"
                onmouseover="applyScroll.bind(this)()"
                onmouseleave="removeScroll.bind(this)()">
             </a>
-            <div class="col-md-hidden scrub-container scrub-container--mobile">
-                <div class="scrub" onclick="scrub(event, this)">
-                    <div class="progress" role="scrub-progress"></div>
-                </div>
-            </div>
             <button class="faux" onclick="toggleShuffle(event, this)" role="mode">
                 <i class="fa fa-random"></i>
             </button>
@@ -152,7 +147,7 @@ window.fbAsyncInit = function() {
                 <i class="fa fa-repeat"></i>
             </button>
             <div class="volume" onmouseover="controls.volumes.show.bind(this)()" onmouseleave="controls.volumes.hide.bind(this)()">
-                <div class="slider vertical below hide">
+                <div class="slider vertical below overlay hidden">
                     <div class="outer">
                         <div class="inner"></div>
                         <div class="handle">
@@ -163,6 +158,16 @@ window.fbAsyncInit = function() {
                 <button class="faux volume-toggle" role="volumeControl" onclick="player.mute()">
                     <i class="fa fa-volume-up"></i>
                 </button>
+            </div>
+            <div class="scrub">
+                <div class="slider horizontal hidden" onmousedown="controls.scrubs.startDrag(event, this)">
+                    <div class="outer">
+                        <div class="inner"></div>
+                        <div class="handle">
+                            <div class="inner"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

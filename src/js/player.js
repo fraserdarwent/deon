@@ -252,6 +252,9 @@ player.audio.addEventListener('playing', function play() {
 
 player.audio.addEventListener('loadedmetadata', function loadedMetadata() {
   requestAnimationFrame(() => {
+    controls.scrubs.sliders.find().forEach((control => {
+      control.classList.toggle('hidden', false)
+    }))
     controls.find().forEach((control => {
       control.classList.toggle('playing', true)
     }))

@@ -1,8 +1,12 @@
 .slider {
-    position: absolute;
-    display: flex;
     justify-content: center;
     z-index: 1;
+    width: 100%;
+    height: 100%;
+}
+
+.slider.overlay {
+    position: absolute;
 }
 
 .slider > .outer {

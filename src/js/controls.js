@@ -67,6 +67,10 @@ var controls = {
      * Store functions for finding and operating on song scrub bars (song progress bar)
      */
   scrubs: {
+    sliders: {
+      find: () => {
+        return findNodes('.scrub > .slider')
+      }},
     inners: () => {
       return findNodes('.scrub > .slider > .outer > .inner')
     },
@@ -116,7 +120,7 @@ var controls = {
       var slider = findNode('.slider', this)
 
       clearTimeout(slider.timeout)
-      slider.classList.toggle('hide', false)
+      slider.classList.toggle('hidden', false)
       if (!slider.timeout) {
         slider.addEventListener('mousedown', controls.volumes.startDrag.bind(this), true)
       }
@@ -128,7 +132,7 @@ var controls = {
       var slider = findNode('.slider', this)
 
       slider.timeout = setTimeout(() => {
-        slider.classList.toggle('hide', true)
+        slider.classList.toggle('hidden', true)
       }, 1500)
     },
     /**
