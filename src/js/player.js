@@ -72,10 +72,10 @@ const player = {
     if (this.dataset && this.dataset.playLink === player.audio.src) {
       player.pause()
     } else {
-      var songs = findNodes(controls.selectors.song, this.parentElement.parentElement.parentElement)
+      const songs = findNodes(controls.songs.selector, this.parentElement.parentElement.parentElement)
 
       if (songs){
-        var index = parseInt(this.dataset.index)
+        const index = parseInt(this.dataset.index)
 
         player.song = songs[index]
         player.dispatchEvent(player.listeners.seletedsong)
@@ -88,7 +88,7 @@ const player = {
          * @returns {*}
          */
         function getNextSong(index, songs) {
-          var song = songs[index + 1]
+          const song = songs[index + 1]
 
           song.previous = 0 < index - 1 ? songs[index] : null
           song.next = index + 1 < songs.length - 1 ? getNextSong(index + 1, songs) : null
@@ -145,10 +145,10 @@ const player = {
    * Only call from requestAnimationFrame
    */
   updatePlayer: function () {
-    controls.currentTimes().forEach((control) => {
+    findNodes(controls.currentTimes.selector).forEach((control) => {
       control.textContent = `${player.currentTime.pretty().minutes}:${player.currentTime.pretty().seconds}`
     })
-    controls.scrubs.inners().forEach((control) => {
+    findNodes(controls.scrubs.inners.selector).forEach((control) => {
       control.style.width = `${player.currentTime.percent()}%`
     })
     player.dispatchEvent(player.listeners.updatedPlayer)
@@ -171,7 +171,7 @@ const player = {
    * @param state
    */
   updateControls: function (state) {
-    controls.pauses.find().forEach((element) => {
+    findNodes(controls.pauses.selector).forEach((element) => {
       const icon = element.firstElementChild
 
       if (element.state){
@@ -181,7 +181,7 @@ const player = {
       element.state = controls.pauses.styles.fa[state]
     })
 
-    controls.songs.find().forEach((element) => {
+    findNodes(controls.songs.selector).forEach((element) => {
       const icon = element.firstElementChild
 
       if (element.state){
@@ -209,12 +209,13 @@ player.audio.autoplay = true
  * Add event listeners to player object
  ***/
 player.addEventListener(player.listeners.seletedsong, function selectedSong() {
+  console.log(player)
   player.audio.src = player.song.dataset.playLink
 })
 
 player.addEventListener(player.listeners.changedvolume, function changedVolume() {
   requestAnimationFrame(() => {
-    controls.volumes.inners().forEach((control) => { control.style.height = `${player.audio.volume * 100}%` })
+    findNodes(controls.volumes.inners.selector).forEach((control) => { control.style.height = `${player.audio.volume * 100}%` })
   })
 })
 
@@ -252,13 +253,13 @@ player.audio.addEventListener('playing', function play() {
 
 player.audio.addEventListener('loadedmetadata', function loadedMetadata() {
   requestAnimationFrame(() => {
-    controls.scrubs.sliders.find().forEach((control => {
+    findNodes(controls.scrubs.sliders.selector).forEach((control => {
       control.classList.toggle('hidden', false)
     }))
-    controls.find().forEach((control => {
+    findNodes(controls.selector).forEach((control => {
       control.classList.toggle('playing', true)
     }))
-    controls.titles().forEach((control) => {
+    findNodes(controls.titles.selector).forEach((control) => {
       control.textContent = `${player.song.attributes.getNamedItem('data-title').textContent}`
     })
   })
@@ -270,7 +271,7 @@ player.audio.addEventListener('pause', function pause() {
 
 player.audio.addEventListener('durationchange', function durationChange() {
   requestAnimationFrame(() => {
-    controls.durations().forEach((control) => { control.textContent = `${player.duration.pretty().minutes}:${player.duration.pretty().seconds}` })
+    findNodes(controls.durations.selector).forEach((control) => { control.textContent = `${player.duration.pretty().minutes}:${player.duration.pretty().seconds}` })
   })
 })
 
