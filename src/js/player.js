@@ -73,11 +73,12 @@ const player = {
    * If currently playing song is selected, pause or resume depending on state
    */
   select: function () {
-    if (this.dataset && this.dataset.playLink === player.audio.src) {
+    if (this.dataset && this.dataset.url === player.audio.src) {
       player.pause()
     } else {
       const songs = findNodes(controls.songs.selector, this.closest('.context'))
 
+      console.log(songs)
       if (songs) {
         const index = parseInt(this.dataset.index)
 
@@ -187,7 +188,7 @@ const player = {
    * Re-work this functionality so saving of state is not required i.e. directly write the value of the <i>
    */
   updateControls: function (state) {
-    findNodes(controls.songs.selector).forEach((element) => {
+    findNodes(controls.pauses.selector).forEach((element) => {
       const icon = findNode('i', element)
 
       if (element.state) {
@@ -198,14 +199,14 @@ const player = {
     })
 
     findNodes(controls.songs.selector).forEach((element) => {
-      const icon = element.firstElementChild
+      const icon = findNode('i', element)
 
       if (element.state) {
         icon.classList.toggle(element.state, false)
       }
       icon.classList.toggle(controls.songs.styles.fa.paused, true)
       element.state = controls.songs.styles.fa.paused
-      if (element.dataset.playLink === this.audio.src) {
+      if (element.dataset.url === this.audio.src) {
         if (element.state) {
           icon.classList.toggle(element.state, false)
         }
@@ -225,7 +226,7 @@ player.audio.autoplay = true
  * Add event listeners to player object
  */
 player.addEventListener(player.listeners.seletedsong, function selectedSong() {
-  player.audio.src = player.song.dataset.playLink
+  player.audio.src = player.song.dataset.url
 })
 
 player.addEventListener(player.listeners.changedvolume, function changedVolume() {

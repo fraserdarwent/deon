@@ -699,41 +699,6 @@ header:hover .scrub > .progress,
   }
 }
 
-/* Fixed player */
-
-.controls{
-  display: none;
-}
-
-@media screen and (max-width: 992px) {
-    .controls.playing{
-        position: fixed;
-        bottom: 0;
-        display: flex;
-        left: 0;
-        right: 0;
-        margin: 0;
-        background: #fff;
-        box-shadow: 0 0 20px rgba(0,0,0,0.25);
-        z-index: 99;
-    }
-}
-
-@media screen and (min-width: 992px){
-    .controls.playing.fixed{
-        position: fixed;
-        top: 0;
-        left: initial;
-        right: 0;
-        bottom: initial;
-        z-index: 99;
-        padding: .85rem 1.25rem .75rem;
-        box-shadow: 0 0 20px rgba(0,0,0,0.15);
-        background: #fff;
-        animation: slideDown .45s ease;
-    }
-}
-
 @keyframes slideDown{
   from{
     transform: translateY(-50px);

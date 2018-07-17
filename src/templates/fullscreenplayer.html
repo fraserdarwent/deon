@@ -10,18 +10,18 @@
                  onmouseover="applyScroll.bind(this)()"
                  onmouseleave="removeScroll.bind(this)()">
             </div>
-            <div class="shuffle" onclick="player.shuffle()">
+            <div class="shuffle faux" onclick="player.shuffle()">
                 <i class="fa fa-random"></i>
             </div>
-            <div class="previous" onclick="player.previous()">
+            <button class="previous faux" onclick="player.previous()">
                 <i class="fa fa-step-backward"></i>
-            </div>
-            <div class="pause" onclick="player.pause()">
+            </button>
+            <button class="pause faux" onclick="player.pause()">
                 <i class="fa fa-play"></i>
-            </div>
-            <div class="next" onclick="player.next()">
+            </button>
+            <button class="next faux" onclick="player.next()">
                 <i class="fa fa-step-forward"></i>
-            </div>
+            </button>
             <div class="repeat">
             </div>
             <div class="currentTime">0:00</div>
@@ -38,9 +38,9 @@
             </div>
             <div class="duration">0:00</div>
             <div class="volume"
-                 onmouseover="controls.volumes.show.bind(this)(event)"
-                 onmouseleave="controls.volumes.hide.bind(this)(event)">
-                <div class="slider vertical">
+                 onmouseover="controls.volumes.show.bind(this)()"
+                 onmouseleave="controls.volumes.hide.bind(this)()">
+                <div class="slider vertical hidden">
                     <div class="outer">
                         <div class="inner"></div>
                         <div class="handle">
@@ -48,10 +48,10 @@
                         </div>
                     </div>
                 </div>
-                <div class="volume-toggle"
-                     onclick="player.mute()">
+                <button class="toggle faux"
+                        onclick="player.mute()">
                     <i class="fa fa-volume-up"></i>
-                </div>
+                </button>
             </div>
         </div>
     </div>
@@ -77,27 +77,23 @@
                 {{#if artists.length}}
                 data-artist="{{#each artists}}{{name}}, {{/each}}"
                 {{/if}}
-                data-index="{{index}}"
+                data-index="{{@index}}"
                 data-track-id="{{_id}}"
-                {{#if activeTest}}
-                data-ab-test="{{activeTest}}"
-                data-kpi="play-track"
-                {{/if}}
-                {{#if licensable}}
-                data-licensable
-                {{/if}}
-                {{#if playlistId}}
-                data-playlist-id="{{playlistId}}"
-                {{/if}}
                 data-release-id="{{releaseId}}"
                 {{#if streamable}}
                 data-url="https://blobcache.monstercat.com/blobs/{{albums.streamHash}}"
                 {{/if}}>
-                <td class="pause">
-                    <i class="fa fa-play-circle"></i>
+                <td>
+                    <button class="pause faux">
+                        <i class="fa fa-play-circle"></i>
+                    </button>
                 </td>
-                <td>{{title}}</td>
-                <td>{{artistsTitle}}</td>
+                <td>
+                    <div>{{title}}</div>
+                </td>
+                <td>
+                    <div>{{artistsTitle}}</div>
+                </td>
             </tr>
         {{/results}}
         </tbody>
