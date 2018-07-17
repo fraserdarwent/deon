@@ -1360,6 +1360,10 @@ footer .footer-items li:first-child button::before{
   animation: rotate 2s linear infinite;
 }
 
+.textscroll:hover{
+    transition: text-indent 2s linear;
+}
+
 @keyframes rotate {
   to {
     transform: rotate(360deg);

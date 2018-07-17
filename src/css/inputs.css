@@ -9,7 +9,7 @@ th.shrink, td.shrink {
 }
 
 tr:nth-child(odd) > td {
-  background: #f5f5f5;
+  /*background: #f5f5f5;*/
 }
 
 table.table-striped tr:nth-child(odd) > th {

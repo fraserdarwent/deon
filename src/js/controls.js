@@ -15,7 +15,7 @@ const sel = {
 
 /**
  * Object for storing functions to do with the controls
- * @type {{selector: string, selectors: {pauses: string, titles: string, currentTimes: string, durations: string, songs: string, scrubs: {sliders: string}}, pauses: {selector: string, styles: {fa: {paused: string, playing: string, loading: string}}}, songs: {selector: string, styles: {fa: {paused: string, playing: string, loading: string}}}, currentTimes: {selector: string}, durations: {selector: string}, titles: {selector: string}, scrubs: {sliders: {find: (function(): Node[])}, inners: (function(): Node[]), drag: controls.scrubs.drag, startDrag: controls.scrubs.startDrag}, volumes: {inners: {selector: string}, startDrag: controls.volumes.startDrag, drag: controls.volumes.drag, show: controls.volumes.show, hide: controls.volumes.hide, changePlayerVolume: controls.volumes.changePlayerVolume}}}
+ * @type {{selector: string, pauses: {selector: string, styles: {fa: {paused: string, playing: string, loading: string}}}, songs: {selector: string, styles: {fa: {paused: string, playing: string, loading: string}}}, currentTimes: {selector: string}, durations: {selector: string}, titles: {selector: string}, scrubs: {sliders: {selector: string}, inners: {selector: string}, drag: controls.scrubs.drag, startDrag: controls.scrubs.startDrag}, volumes: {inners: {selector: string}, startDrag: controls.volumes.startDrag, drag: controls.volumes.drag, show: controls.volumes.show, hide: controls.volumes.hide, changePlayerVolume: controls.volumes.changePlayerVolume}}}
  */
 const controls = {
   selector: '.controls',
@@ -130,10 +130,10 @@ const controls = {
     }
   }
 }
+
 /**
  * Scroll text which is longer than the div it is in by applying a calculated text indent
  */
-
 function applyScroll() {
   this.style.transition = 'text-indent 2s linear'
   this.style.textIndent = `${this.clientWidth < this.scrollWidth ? this.clientWidth - this.scrollWidth : 0 }px`

@@ -12,6 +12,10 @@ const player = {
     updatedPlayer: new Event('updatedPlayer')
   },
   /**
+   * Boolean to store whether the user currently has shuffle selected
+   */
+  shuffling: true,
+  /**
    * Object to store current song
    */
   song: {},
@@ -72,9 +76,9 @@ const player = {
     if (this.dataset && this.dataset.playLink === player.audio.src) {
       player.pause()
     } else {
-      const songs = findNodes(controls.songs.selector, this.parentElement.parentElement.parentElement)
+      const songs = findNodes(controls.songs.selector, this.closest('.context'))
 
-      if (songs){
+      if (songs) {
         const index = parseInt(this.dataset.index)
 
         player.song = songs[index]
@@ -108,22 +112,32 @@ const player = {
     }
   },
   /**
-   * Select previous song in queue by decrementing index by 1
+   * Invert shuffling
+   */
+  shuffle: function () {
+    this.shuffling = !this.shuffling
+  },
+  /**
+   * Select previous song in queue by going back up linked list
    */
   previous: function () {
-    if (player.song && player.song.previous){
+    if (player.song && player.song.previous) {
       player.song = player.song.previous
       player.dispatchEvent(player.listeners.seletedsong)
     }
   },
   /**
-   * Select next song in queue by incrementing index by 1
+   * Select next song in queue by following linked list or selecting at random
    */
   next: function () {
-    if (player.song && player.song.next){
+    if (player.song && player.song.next) {
+      if (player.shuffling) {
+        //Select random song
+      }
+    } else {
       player.song = this.song.next
-      player.dispatchEvent(player.listeners.seletedsong)
     }
+    player.dispatchEvent(player.listeners.seletedsong)
   },
   /**
    * Seek to position in song based on value between 0 and 1
@@ -156,8 +170,8 @@ const player = {
   /**
    * Based on current volume, either store current volume and mute player, or set volume to previously stored volume
    */
-  mute: function() {
-    if (player.audio.volume === 0){
+  mute: function () {
+    if (player.audio.volume === 0) {
       this.audio.volume = player.audio.lastVolume || 0
     } else {
       this.audio.lastVolume = player.audio.volume
@@ -169,12 +183,14 @@ const player = {
    * Update controls
    * Could be bundled in with updatePlayer, but do not want unnecessary DOM operations in that
    * @param state
+   * @TODO
+   * Re-work this functionality so saving of state is not required i.e. directly write the value of the <i>
    */
   updateControls: function (state) {
-    findNodes(controls.pauses.selector).forEach((element) => {
-      const icon = element.firstElementChild
+    findNodes(controls.songs.selector).forEach((element) => {
+      const icon = findNode('i', element)
 
-      if (element.state){
+      if (element.state) {
         icon.classList.toggle(element.state, false)
       }
       icon.classList.toggle(controls.pauses.styles.fa[state], true)
@@ -184,13 +200,13 @@ const player = {
     findNodes(controls.songs.selector).forEach((element) => {
       const icon = element.firstElementChild
 
-      if (element.state){
+      if (element.state) {
         icon.classList.toggle(element.state, false)
       }
       icon.classList.toggle(controls.songs.styles.fa.paused, true)
       element.state = controls.songs.styles.fa.paused
-      if (element.dataset.playLink === this.audio.src){
-        if (element.state){
+      if (element.dataset.playLink === this.audio.src) {
+        if (element.state) {
           icon.classList.toggle(element.state, false)
         }
         icon.classList.toggle(controls.songs.styles.fa[state], true)
@@ -200,22 +216,23 @@ const player = {
   }
 }
 
-/***
+/**
  * Configure audio defaults
-***/
+ */
 player.audio.autoplay = true
 
-/***
+/**
  * Add event listeners to player object
- ***/
+ */
 player.addEventListener(player.listeners.seletedsong, function selectedSong() {
-  console.log(player)
   player.audio.src = player.song.dataset.playLink
 })
 
 player.addEventListener(player.listeners.changedvolume, function changedVolume() {
   requestAnimationFrame(() => {
-    findNodes(controls.volumes.inners.selector).forEach((control) => { control.style.height = `${player.audio.volume * 100}%` })
+    findNodes(controls.volumes.inners.selector).forEach((control) => {
+      control.style.height = `${player.audio.volume * 100}%`
+    })
   })
 })
 
@@ -228,12 +245,12 @@ player.addEventListener(player.listeners.playing, function playing() {
 })
 
 player.addEventListener(player.listeners.updatedPlayer, function draw() {
-  if (!player.audio.paused){
+  if (!player.audio.paused) {
     requestAnimationFrame(player.updatePlayer)
   }
 })
 
-/***
+/**
  * Add event listener's to player audio object
  */
 player.audio.addEventListener('loadstart', function play() {
@@ -241,7 +258,7 @@ player.audio.addEventListener('loadstart', function play() {
 })
 
 player.audio.addEventListener('timeupdate', function timeUpdate() {
-  if (player.audio.paused){
+  if (player.audio.paused) {
     requestAnimationFrame(player.updatePlayer)
   }
 })
@@ -271,12 +288,14 @@ player.audio.addEventListener('pause', function pause() {
 
 player.audio.addEventListener('durationchange', function durationChange() {
   requestAnimationFrame(() => {
-    findNodes(controls.durations.selector).forEach((control) => { control.textContent = `${player.duration.pretty().minutes}:${player.duration.pretty().seconds}` })
+    findNodes(controls.durations.selector).forEach((control) => {
+      control.textContent = `${player.duration.pretty().minutes}:${player.duration.pretty().seconds}`
+    })
   })
 })
 
 function pad(string, length) {
-  if (0 < length){
+  if (0 < length) {
     return pad(string, length - 1)
   }
   return String("0" + string)
