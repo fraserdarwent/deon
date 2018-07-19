@@ -1297,10 +1297,6 @@ footer .footer-items li:first-child button::before{
   justify-content: space-evenly;
 }
 
-.controls > * {
-  order: 10;
-}
-
 .controls > .volume{
   display: flex;
   justify-content: center;
@@ -1332,23 +1328,5 @@ footer .footer-items li:first-child button::before{
 @keyframes rotate {
   to {
     transform: rotate(360deg);
-  }
-}
-
-@media screen and (max-width: 992px){
-  .controls > .volume {
-    display: none;
-  }
-  .controls {
-    display: none;
-  }
-  .controls > .scrub {
-    height: 15px;
-    order: 9;
-    margin: 0;
-  }
-  .controls > .title {
-    order: 8;
-    width: 100%;
   }
 }

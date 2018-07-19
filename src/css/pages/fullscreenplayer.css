@@ -113,25 +113,18 @@ Controls
  */
 
 #fullscreenplayer > .controls {
-    flex: 0;
     display: flex;
-    flex-flow: column wrap;
+    flex-flow: row wrap;
     justify-content: space-between;
     align-items: center;
     font-size: 1rem;
     width: 100%;
 }
 
-@media screen and (min-width: 768px) {
-    #fullscreenplayer > .controls {
-        flex-flow: row wrap;
-    }
-}
-
 #fullscreenplayer > .controls > * {
-    display: flex;
     flex-flow: row nowrap;
-    flex: 1;
+    order: 1;
+    flex-grow: 1;
     text-align: center;
 }
 
@@ -140,20 +133,20 @@ Controls
     color: dodgerblue;
 }
 
-#fullscreenplayer > .controls > .group {
-    width: 100%;
-}
-
-#fullscreenplayer > .controls > .group > * {
-    flex: 1;
-    margin: 5px;
-}
-
 #fullscreenplayer > .controls .scrub {
-    flex: 2;
     display: flex;
     justify-content: center;
     flex-flow: column nowrap;
+    width: 100%;
+    flex-grow: 10;
+    order: 0;
+}
+
+@media screen and (min-width: 768px) {
+    #fullscreenplayer > .controls > .scrub {
+        width: auto;
+        order: 1;
+    }
 }
 
 #fullscreenplayer > .controls .volume > .slider {
