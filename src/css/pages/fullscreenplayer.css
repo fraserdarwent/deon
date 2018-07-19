@@ -3,8 +3,8 @@ Player
  */
 
 #fullscreenplayer {
-    height: 50vh;
-    width: 100%;
+    height: 100vh;
+    width: 100vw;
     display: flex;
     flex-flow: column nowrap;
 }
@@ -13,32 +13,99 @@ Player
 Table
  */
 
-#fullscreenplayer > .table {
-    flex: 1;
-    overflow: scroll;
-}
-
-#fullscreenplayer > .table > table {
+#fullscreenplayer > table {
     width: 100%;
-    margin: 50px 0;
+    height: 0;
+    flex-grow: 1;
+    overflow-y: scroll;
+    overflow-x: hidden;
     border-top: solid 1px rgba(0, 0, 0, 0.25);
     border-bottom: solid 1px rgba(0, 0, 0, 0.25);
+    display: flex;
+    flex-flow: column nowrap;
 }
 
-#fullscreenplayer > .table > table tr {
+#fullscreenplayer > table > thead {
+    display: none;
+}
+
+#fullscreenplayer > table tr {
+    flex: 1;
+    display: flex;
     cursor: pointer;
+    flex-flow: row nowrap;
     border-bottom: solid 1px rgba(0, 0, 0, 0.25);
+    align-items: center;
+    justify-content: center;
 }
 
-#fullscreenplayer > .table > table tr:hover {
+@media screen and (min-width: 768px) {
+    #fullscreenplayer > table > thead {
+        display: flex;
+    }
+}
+
+#fullscreenplayer > table tr > td:first-child {
+    width: 40px;
+}
+
+#fullscreenplayer > table tr > td:not(:first-child) {
+    display: flex;
+    flex-flow: column nowrap;
+    text-align: left;
+    flex: 1;
+}
+
+#fullscreenplayer > table tr > td > * {
+    overflow: hidden;
+    flex: 2;
+}
+
+@media screen and (min-width: 768px) {
+    #fullscreenplayer > table tr > td:not(:first-child) {
+        flex-flow: row nowrap;
+    }
+}
+
+#fullscreenplayer > table > tbody {
+    flex: 1;
+    overflow-y: scroll;
+}
+
+#fullscreenplayer > table > tbody > tr:hover {
     color: white;
     background-color: dodgerblue;
-    /*or*/
-    /*color: dodgerblue;*/
 }
 
-#fullscreenplayer > .table > table > tbody > tr:last-child {
+#fullscreenplayer > table > table > tbody > tr:last-child {
     border-bottom: none;
+}
+
+#fullscreenplayer > table .bpm,
+#fullscreenplayer > table .pause,
+#fullscreenplayer > table .duration {
+    flex: 1;
+}
+
+#fullscreenplayer > table .bpm,
+#fullscreenplayer > table .duration {
+    display: none;
+}
+
+@media screen and (min-width: 768px) {
+    #fullscreenplayer > table .bpm,
+    #fullscreenplayer > table .duration {
+        display: block;
+    }
+}
+
+#fullscreenplayer > table td > * {
+    margin: 10px;
+}
+
+th, td {
+    margin: 0;
+    padding: 0;
 }
 
 /**
@@ -48,29 +115,48 @@ Controls
 #fullscreenplayer > .controls {
     flex: 0;
     display: flex;
-    flex-flow: row nowrap;
-    justify-content: space-evenly;
+    flex-flow: column wrap;
+    justify-content: space-between;
     align-items: center;
     font-size: 1rem;
     width: 100%;
-    margin: 20px 0;
-    padding: 0 40px;
+}
+
+@media screen and (min-width: 768px) {
+    #fullscreenplayer > .controls {
+        flex-flow: row wrap;
+    }
 }
 
 #fullscreenplayer > .controls > * {
-    flex: 0.1;
+    display: flex;
+    flex-flow: row nowrap;
+    flex: 1;
     text-align: center;
-    margin: 0 1rem;
 }
 
-#fullscreenplayer > .controls > .scrub {
+#fullscreenplayer > .controls .clickable:hover {
+    cursor: pointer;
+    color: dodgerblue;
+}
+
+#fullscreenplayer > .controls > .group {
+    width: 100%;
+}
+
+#fullscreenplayer > .controls > .group > * {
+    flex: 1;
+    margin: 5px;
+}
+
+#fullscreenplayer > .controls .scrub {
     flex: 2;
     display: flex;
     justify-content: center;
     flex-flow: column nowrap;
 }
 
-#fullscreenplayer > .controls > .volume > .slider {
+#fullscreenplayer > .controls .volume > .slider {
     width: 0;
     height: 0;
     top: 50%;
@@ -79,11 +165,11 @@ Controls
     flex: 1;
 }
 
-#fullscreenplayer > .controls > .volume > .slider.show {
+#fullscreenplayer > .controls .volume > .slider.show {
     display: block;
 }
 
-#fullscreenplayer > .controls > .volume > .slider > .outer {
+#fullscreenplayer > .controls .volume > .slider > .outer {
     height: 100px;
     width: 5px;
     top: calc(-10px - 100px);
@@ -91,10 +177,14 @@ Controls
     position: absolute;
 }
 
-#fullscreenplayer > .controls > .scrub > .slider > .outer > .inner {
+#fullscreenplayer > .controls .scrub > .slider > .outer > .inner {
     width: 0
 }
 
-#fullscreenplayer > .controls > .volume > .slider > .outer > .inner {
+#fullscreenplayer > .controls .volume > .slider > .outer > .inner {
     height: 100%;
+}
+
+.song h2, h3, h4 {
+    font-size: 1em;
 }

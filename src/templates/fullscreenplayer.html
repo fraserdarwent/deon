@@ -1,57 +1,64 @@
 <script type="text/template"
         data-route="^player">
     <div id="fullscreenplayer">
-        <div class="table"
-             data-source="$endpoint/catalog/browse"
-             data-process="fullscreenplayerTable">
-        </div>
+        <table
+                data-source="$endpoint/catalog/browse"
+                data-process="fullscreenplayerTable">
+        </table>
         <div class="controls">
-            <div class="title textscroll"
-                 onmouseover="applyScroll.bind(this)()"
-                 onmouseleave="removeScroll.bind(this)()">
+            <div>
+                <div class="title textscroll"
+                     onmouseover="applyScroll.bind(this)()"
+                     onmouseleave="removeScroll.bind(this)()">
+                </div>
             </div>
-            <div class="shuffle faux" onclick="player.shuffle()">
-                <i class="fa fa-random"></i>
+            <div class="group">
+                <div class="shuffle clickable" onclick="player.shuffle()">
+                    <i class="fa fa-random"></i>
+                </div>
+                <div class="previous clickable" onclick="player.previous()">
+                    <i class="fa fa-step-backward"></i>
+                </div>
+                <div class="pause clickable" onclick="player.pause()">
+                    <i class="fa fa-play"></i>
+                </div>
+                <div class="next clickable" onclick="player.next()">
+                    <i class="fa fa-step-forward"></i>
+                </div>
+                <div class="repeat">
+                </div>
             </div>
-            <button class="previous faux" onclick="player.previous()">
-                <i class="fa fa-step-backward"></i>
-            </button>
-            <button class="pause faux" onclick="player.pause()">
-                <i class="fa fa-play"></i>
-            </button>
-            <button class="next faux" onclick="player.next()">
-                <i class="fa fa-step-forward"></i>
-            </button>
-            <div class="repeat">
-            </div>
-            <div class="currentTime">0:00</div>
-            <div class="scrub">
-                <div class="slider horizontal"
-                     onmousedown="controls.scrubs.startDrag(event, this)">
-                    <div class="outer">
-                        <div class="inner"></div>
-                        <div class="handle">
+            <div class="group">
+                <div class="currentTime">0:00</div>
+                <div class="scrub">
+                    <div class="slider horizontal"
+                         onmousedown="controls.scrubs.startDrag(event, this)">
+                        <div class="outer">
                             <div class="inner"></div>
+                            <div class="handle">
+                                <div class="inner"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <div class="duration">0:00</div>
             </div>
-            <div class="duration">0:00</div>
-            <div class="volume"
-                 onmouseover="controls.volumes.show.bind(this)()"
-                 onmouseleave="controls.volumes.hide.bind(this)()">
-                <div class="slider vertical hidden">
-                    <div class="outer">
-                        <div class="inner"></div>
-                        <div class="handle">
+            <div class="group">
+                <div class="volume"
+                     onmouseover="controls.volumes.show.bind(this)()"
+                     onmouseleave="controls.volumes.hide.bind(this)()">
+                    <div class="slider vertical hidden">
+                        <div class="outer">
                             <div class="inner"></div>
+                            <div class="handle">
+                                <div class="inner"></div>
+                            </div>
                         </div>
                     </div>
+                    <i class="fa fa-volume-up clickable"
+                       onclick="player.mute()">
+                    </i>
                 </div>
-                <button class="toggle faux"
-                        onclick="player.mute()">
-                    <i class="fa fa-volume-up"></i>
-                </button>
             </div>
         </div>
     </div>
@@ -59,43 +66,49 @@
 
 <script type="text/template"
         data-template="fullscreenplayerTable">
-    <table>
-        <thead>
-        <tr>
-            <th></th>
-            <th><strong>Title</strong></th>
-            <th><strong>Artist</strong></th>
+    <thead>
+    <tr>
+        <td></td>
+        <td>
+            <strong class="title">Title</strong>
+            <strong class="artist">Artist</strong>
+            <strong class="album">Album</strong>
+            <strong class="duration">Duration</strong>
+            <strong class="bpm">BPM</strong>
+        </td>
+    </tr>
+    </thead>
+    <tbody class="context">
+    {{#results}}
+        <tr class="song {{#inEarlyAccess}} in-early-access{{/inEarlyAccess}}"
+            ondblclick="player.select.bind(this)()"
+            data-play-link="{{playUrl}}"
+            data-title="{{title}}"
+            data-artists-title="{{artistsTitle}}"
+            data-index="{{@index}}"
+            data-track-id="{{_id}}"
+            data-release-id="{{releaseId}}"
+            {{#if streamable}}
+            data-url="https://blobcache.monstercat.com/blobs/{{albums.streamHash}}"
+            {{/if}}>
+            <td>
+                <div class="pause"
+                     onclick="player.select.bind(this.closest('.song'))()">
+                    <i class="fa fa-play-circle"></i>
+                </div>
+            </td>
+            <td>
+                <div class="title"><strong>{{title}}</strong></div>
+                <div class="artist"
+                     onmouseover="applyScroll.bind(this)()"
+                     onmouseleave="removeScroll.bind(this)()">
+                    {{artist}}
+                </div>
+                <div class="release">{{release.title}}</div>
+                <div class="duration">{{duration}}</div>
+                <div class="bpm">{{bpm}}</div>
+            </td>
         </tr>
-        </thead>
-        <tbody class="context">
-        {{#results}}
-            <tr class="song {{#inEarlyAccess}} in-early-access{{/inEarlyAccess}}"
-                onclick="player.select.bind(this)()"
-                data-play-link="{{playUrl}}"
-                data-title="{{title}}"
-                data-artists-title="{{artistsTitle}}"
-                {{#if artists.length}}
-                data-artist="{{#each artists}}{{name}}, {{/each}}"
-                {{/if}}
-                data-index="{{@index}}"
-                data-track-id="{{_id}}"
-                data-release-id="{{releaseId}}"
-                {{#if streamable}}
-                data-url="https://blobcache.monstercat.com/blobs/{{albums.streamHash}}"
-                {{/if}}>
-                <td>
-                    <button class="pause faux">
-                        <i class="fa fa-play-circle"></i>
-                    </button>
-                </td>
-                <td>
-                    <div>{{title}}</div>
-                </td>
-                <td>
-                    <div>{{artistsTitle}}</div>
-                </td>
-            </tr>
-        {{/results}}
-        </tbody>
-    </table>
+    {{/results}}
+    </tbody>
 </script>
