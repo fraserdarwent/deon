@@ -57,6 +57,7 @@ Table
 }
 
 #fullscreenplayer > table tr > td > * {
+    margin: 10px;
     overflow: hidden;
     flex: 2;
 }
@@ -97,10 +98,6 @@ Table
     #fullscreenplayer > table .duration {
         display: block;
     }
-}
-
-#fullscreenplayer > table td > * {
-    margin: 10px;
 }
 
 th, td {
