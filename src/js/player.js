@@ -1,6 +1,6 @@
 /**
  * Object to store player state and functions
- * @type {{audio: HTMLAudioElement, listeners: {playing: Event, paused: Event, seletedsong: Event, changedvolume: Event, updatedPlayer: Event}, song: {}, currentTime: {percent: (function(): number), pretty: (function(): {minutes: number, seconds})}, duration: {pretty: (function(): {minutes: number, seconds})}, events: {}, dispatchEvent: player.dispatchEvent, addEventListener: player.addEventListener, select: player.select, pause: player.pause, previous: player.previous, next: player.next, seek: player.seek, setVolume: player.setVolume, updatePlayer: player.updatePlayer, mute: player.mute, updateControls: player.updateControls}}
+ * @type {{audio: HTMLAudioElement, listeners: {playing: Event, paused: Event, seletedsong: Event, changedvolume: Event, updatedPlayer: Event}, shuffling: boolean, song: {}, currentTime: {percent: (function(): number), pretty: (function(): {minutes: number, seconds})}, duration: {pretty: (function(): {minutes: number, seconds})}, events: {}, dispatchEvent: player.dispatchEvent, addEventListener: player.addEventListener, select: player.select, pause: player.pause, shuffle: player.shuffle, previous: player.previous, next: player.next, seek: player.seek, setVolume: player.setVolume, updatePlayer: player.updatePlayer, mute: player.mute, updateControls: player.updateControls}}
  */
 const player = {
   audio: new Audio(),
@@ -9,16 +9,20 @@ const player = {
     paused: new Event('paused'),
     seletedsong: new Event('selectedsong'),
     changedvolume: new Event('changedvolume'),
-    updatedPlayer: new Event('updatedPlayer')
+    updatedPlayer: new Event('updatedPlayer'),
+    shuffled: new Event('shuffled')
   },
+
   /**
    * Boolean to store whether the user currently has shuffle selected
    */
-  shuffling: true,
+  shuffling: false,
+
   /**
    * Object to store current song
    */
   song: {},
+
   /**
    * Functions for calculating and displaying the current position in song
    */
@@ -33,6 +37,7 @@ const player = {
       }
     }
   },
+
   /**
    * Functions for displaying and displaying duration of current song
    */
@@ -44,10 +49,12 @@ const player = {
       }
     },
   },
+
   /**
    * Object to store key/pair values for listeners and events
    */
   events: {},
+
   /**
    * Dispatch all events for the listener, if it exists
    * @param listener
@@ -59,6 +66,7 @@ const player = {
       })
     }
   },
+
   /**
    * Create empty array if it does not already exist
    * Add event to array of existing events
@@ -68,6 +76,7 @@ const player = {
   addEventListener: function (listener, event) {
     this.events[listener.type] = this.events[listener.type] ? this.events[listener.type].push(event) : [event]
   },
+
   /**
    * Select a new song
    * If currently playing song is selected, pause or resume depending on state
@@ -78,7 +87,6 @@ const player = {
     } else {
       const songs = findNodes(controls.songs.selector, this.closest('.context'))
 
-      console.log(songs)
       if (songs) {
         const index = parseInt(this.dataset.index)
 
@@ -87,7 +95,7 @@ const player = {
         player.song.next = index + 1 < songs.length ? getNextSong(index, songs) : null
 
         /**
-         * Helper function to form a linked list of songs
+         * Helper function to allow ues of recursion to form a linked list of songs
          * @param index
          * @param songs
          * @returns {*}
@@ -95,13 +103,13 @@ const player = {
         function getNextSong(index, songs) {
           const song = songs[index + 1]
 
-          song.previous = 0 < index - 1 ? songs[index] : null
           song.next = index + 1 < songs.length - 1 ? getNextSong(index + 1, songs) : null
           return song
         }
       }
     }
   },
+
   /**
    * Pause or resume current song based on state
    */
@@ -112,12 +120,15 @@ const player = {
       player.audio.pause()
     }
   },
+
   /**
-   * Invert shuffling
+   * Toggle shuffling
    */
   shuffle: function () {
-    this.shuffling = !this.shuffling
+    player.shuffling = !player.shuffling
+    player.dispatchEvent(player.listeners.shuffled)
   },
+
   /**
    * Select previous song in queue by going back up linked list
    */
@@ -127,19 +138,38 @@ const player = {
       player.dispatchEvent(player.listeners.seletedsong)
     }
   },
+
   /**
    * Select next song in queue by following linked list or selecting at random
+   * If shuffling, pull a random song out and re-attach list
    */
   next: function () {
     if (player.song && player.song.next) {
+      let song = player.song
+
       if (player.shuffling) {
-        //Select random song
+        let length = 0
+
+        while (song.next) {
+          length++
+          song = song.next
+        }
+        song = player.song
+        const randomIndex = Math.floor(Math.random() * length)
+
+        for (let i = 1; i < randomIndex; i++) {
+          song = song.next
+        }
+      } else {
+        song = player.song.next
       }
-    } else {
-      player.song = this.song.next
+      song.previous = player.song
+      song.next = player.song.next
+      player.song = song
+      player.dispatchEvent(player.listeners.seletedsong)
     }
-    player.dispatchEvent(player.listeners.seletedsong)
   },
+
   /**
    * Seek to position in song based on value between 0 and 1
    * @param fraction
@@ -147,6 +177,7 @@ const player = {
   seek: function (fraction) {
     player.audio.currentTime = fraction * player.audio.duration
   },
+
   /**
    * Set volume based on value between 0 and 1
    * @param volume
@@ -155,6 +186,7 @@ const player = {
     player.audio.volume = volume
     player.dispatchEvent(player.listeners.changedvolume)
   },
+
   /**
    * Update the player timestamp and progress bar
    * Only call from requestAnimationFrame
@@ -168,6 +200,7 @@ const player = {
     })
     player.dispatchEvent(player.listeners.updatedPlayer)
   },
+
   /**
    * Based on current volume, either store current volume and mute player, or set volume to previously stored volume
    */
@@ -180,6 +213,7 @@ const player = {
     }
     player.dispatchEvent(player.listeners.changedvolume)
   },
+
   /**
    * Update controls
    * Could be bundled in with updatePlayer, but do not want unnecessary DOM operations in that
@@ -188,30 +222,30 @@ const player = {
    * Re-work this functionality so saving of state is not required i.e. directly write the value of the <i>
    */
   updateControls: function (state) {
-    findNodes(controls.pauses.selector).forEach((element) => {
-      const icon = findNode('i', element)
+    findNodes(controls.pauses.pause).forEach((pause) => {
+      const icon = findNode('i', pause)
 
-      if (element.state) {
-        icon.classList.toggle(element.state, false)
+      if (pause.state) {
+        icon.classList.toggle(pause.state, false)
       }
       icon.classList.toggle(controls.pauses.styles.fa[state], true)
-      element.state = controls.pauses.styles.fa[state]
+      pause.state = controls.pauses.styles.fa[state]
     })
 
-    findNodes(controls.songs.selector).forEach((element) => {
-      const icon = findNode('i', element)
+    findNodes(controls.songs.selector).forEach((song) => {
+      const icon = findNode('i', song)
 
-      if (element.state) {
-        icon.classList.toggle(element.state, false)
+      if (song.state) {
+        icon.classList.toggle(song.state, false)
       }
       icon.classList.toggle(controls.songs.styles.fa.paused, true)
-      element.state = controls.songs.styles.fa.paused
-      if (element.dataset.url === this.audio.src) {
-        if (element.state) {
-          icon.classList.toggle(element.state, false)
+      song.state = controls.songs.styles.fa.paused
+      if (song.dataset.url === this.audio.src) {
+        if (song.state) {
+          icon.classList.toggle(song.state, false)
         }
         icon.classList.toggle(controls.songs.styles.fa[state], true)
-        element.state = controls.songs.styles.fa[state]
+        song.state = controls.songs.styles.fa[state]
       }
     })
   }
@@ -227,6 +261,12 @@ player.audio.autoplay = true
  */
 player.addEventListener(player.listeners.seletedsong, function selectedSong() {
   player.audio.src = player.song.dataset.url
+})
+
+player.addEventListener(player.listeners.shuffled, function selectedSong() {
+  findNodes(controls.shuffles.selector).forEach((shuffle) => {
+    shuffle.classList.toggle('active', player.shuffling)
+  })
 })
 
 player.addEventListener(player.listeners.changedvolume, function changedVolume() {

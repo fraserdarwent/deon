@@ -29,6 +29,9 @@ const controls = {
       },
     }
   },
+  shuffles: {
+    selector: '.shuffle'
+  },
   songs: {
     selector: '.song',
     styles: {
