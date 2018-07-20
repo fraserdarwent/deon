@@ -23,9 +23,9 @@ const controls = {
     selector: '.pause',
     styles: {
       fa: {
-        paused: '\f04b',
-        playing: '\f04c',
-        loading: '\f021'
+        paused: '\'\\f04b\'',
+        playing: '\'\\f04c\'',
+        loading: '\'\\f021\''
       },
     }
   },
@@ -36,9 +36,9 @@ const controls = {
     selector: '.song',
     styles: {
       fa: {
-        paused: '\f04b',
-        playing: '\f04c',
-        loading: '\f021'
+        paused: '\'\\f144\'',
+        playing: '\'\\f28b\'',
+        loading: '\'\\f021\''
       }
     }
   },

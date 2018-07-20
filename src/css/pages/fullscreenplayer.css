@@ -109,7 +109,7 @@ th, td {
 Controls
  */
 
-#fullscreenplayer > .controls {
+#fullscreenplayer .controls {
     display: flex;
     flex-flow: row wrap;
     justify-content: space-between;
@@ -118,19 +118,19 @@ Controls
     width: 100%;
 }
 
-#fullscreenplayer > .controls > * {
+#fullscreenplayer .controls > * {
     flex-flow: row nowrap;
     order: 1;
     flex-grow: 1;
     text-align: center;
 }
 
-#fullscreenplayer > .controls .clickable:hover {
+#fullscreenplayer .controls .clickable:hover {
     cursor: pointer;
     color: dodgerblue;
 }
 
-#fullscreenplayer > .controls .scrub {
+#fullscreenplayer .controls .scrub {
     display: flex;
     justify-content: center;
     flex-flow: column nowrap;
@@ -140,13 +140,13 @@ Controls
 }
 
 @media screen and (min-width: 768px) {
-    #fullscreenplayer > .controls > .scrub {
+    #fullscreenplayer .controls > .scrub {
         width: auto;
         order: 1;
     }
 }
 
-#fullscreenplayer > .controls .volume > .slider {
+#fullscreenplayer .controls .volume > .slider {
     width: 0;
     height: 0;
     top: 50%;
@@ -155,11 +155,11 @@ Controls
     flex: 1;
 }
 
-#fullscreenplayer > .controls .volume > .slider.show {
+#fullscreenplayer .controls .volume > .slider.show {
     display: block;
 }
 
-#fullscreenplayer > .controls .volume > .slider > .outer {
+#fullscreenplayer .controls .volume > .slider > .outer {
     height: 100px;
     width: 5px;
     top: calc(-10px - 100px);
@@ -167,11 +167,11 @@ Controls
     position: absolute;
 }
 
-#fullscreenplayer > .controls .scrub > .slider > .outer > .inner {
+#fullscreenplayer .controls .scrub > .slider > .outer > .inner {
     width: 0
 }
 
-#fullscreenplayer > .controls .volume > .slider > .outer > .inner {
+#fullscreenplayer .controls .volume > .slider > .outer > .inner {
     height: 100%;
 }
 
@@ -183,7 +183,7 @@ Controls
     color: dodgerblue;
 }
 
-#fullscreenplayer > .controls i.pause {
+#fullscreenplayer .controls .pause > i {
     /*Play*/
     --content: '\f04b'
     /*Loading*/
@@ -192,22 +192,25 @@ Controls
     /*\f04c*/
 }
 
-#fullscreenplayer > .controls i.next {
+#fullscreenplayer .controls .next > i {
     --content: '\f051'
 }
 
-#fullscreenplayer > .controls i.previous {
+#fullscreenplayer .controls .previous > i {
     --content: '\f048'
 }
 
-#fullscreenplayer > .controls i.shuffle {
+#fullscreenplayer .controls .shuffle > i {
     --content: '\f074'
 }
 
-i.pause:before,
-i.next:before,
-i.previous:before,
-i.shuffle:before {
-    content: var(--content)
+#fullscreenplayer .song .pause > i {
+    --content: '\f144'
 }
 
+.pause > i:before,
+.next > i:before,
+.previous > i:before,
+.shuffle > i:before {
+    content: var(--content)
+}

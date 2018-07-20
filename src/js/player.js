@@ -87,11 +87,13 @@ const player = {
     } else {
       const songs = findNodes(controls.songs.selector, this.closest('.context'))
 
+      songs.forEach((song) => { song = song.dataset })
       if (songs) {
-        const index = parseInt(this.dataset.index)
-
-        player.song = songs[index]
+        player.song = this.dataset
         player.dispatchEvent(player.listeners.seletedsong)
+
+        const index = parseInt(player.song.index)
+
         player.song.next = index + 1 < songs.length ? getNextSong(index, songs) : null
 
         /**
@@ -222,20 +224,21 @@ const player = {
    * Re-work this functionality so saving of state is not required i.e. directly write the value of the <i>
    */
   updateControls: function (state) {
-    findNodes(controls.pauses.selector).forEach((pause) => {
-      const icon = findNode('i', pause)
-        console.log(icon)
-        icon.style['--content'] = controls.pauses.styles.fa[state]
+    findNodes(controls.selector).forEach((control) => {
+      findNodes(controls.pauses.selector, control).forEach((pause) => {
+        const icon = findNode('i', pause)
 
-      // icon.style.color = 'red';
-      // icon.style.setProperty('--content', controls.pauses.styles.fa[state])
+        icon.style.setProperty('--content', controls.pauses.styles.fa[state])
+      })
+
+      findNodes(controls.songs.selector).forEach((song) => {
+        if (song.dataset && song.dataset.url === player.song.url) {
+          const icon = findNode('i', song)
+
+          icon.style.setProperty('--content', controls.songs.styles.fa[state])
+        }
+      })
     })
-
-    // findNodes(controls.songs.selector).forEach((song) => {
-    //   const icon = findNode('i', song)
-    //
-    //   icon.style['--content'] = controls.songs.styles.fa[state]
-    // })
   }
 }
 
@@ -248,7 +251,7 @@ player.audio.autoplay = true
  * Add event listeners to player object
  */
 player.addEventListener(player.listeners.seletedsong, function selectedSong() {
-  player.audio.src = player.song.dataset.url
+  player.audio.src = player.song.url
 })
 
 player.addEventListener(player.listeners.shuffled, function selectedSong() {
@@ -306,7 +309,7 @@ player.audio.addEventListener('loadedmetadata', function loadedMetadata() {
       control.classList.toggle('playing', true)
     }))
     findNodes(controls.titles.selector).forEach((control) => {
-      control.textContent = `${player.song.attributes.getNamedItem('data-title').textContent}`
+      control.textContent = `${player.song.title}`
     })
   })
 })
