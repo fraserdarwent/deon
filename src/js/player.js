@@ -222,32 +222,20 @@ const player = {
    * Re-work this functionality so saving of state is not required i.e. directly write the value of the <i>
    */
   updateControls: function (state) {
-    findNodes(controls.pauses.pause).forEach((pause) => {
+    findNodes(controls.pauses.selector).forEach((pause) => {
       const icon = findNode('i', pause)
+        console.log(icon)
+        icon.style['--content'] = controls.pauses.styles.fa[state]
 
-      if (pause.state) {
-        icon.classList.toggle(pause.state, false)
-      }
-      icon.classList.toggle(controls.pauses.styles.fa[state], true)
-      pause.state = controls.pauses.styles.fa[state]
+      // icon.style.color = 'red';
+      // icon.style.setProperty('--content', controls.pauses.styles.fa[state])
     })
 
-    findNodes(controls.songs.selector).forEach((song) => {
-      const icon = findNode('i', song)
-
-      if (song.state) {
-        icon.classList.toggle(song.state, false)
-      }
-      icon.classList.toggle(controls.songs.styles.fa.paused, true)
-      song.state = controls.songs.styles.fa.paused
-      if (song.dataset.url === this.audio.src) {
-        if (song.state) {
-          icon.classList.toggle(song.state, false)
-        }
-        icon.classList.toggle(controls.songs.styles.fa[state], true)
-        song.state = controls.songs.styles.fa[state]
-      }
-    })
+    // findNodes(controls.songs.selector).forEach((song) => {
+    //   const icon = findNode('i', song)
+    //
+    //   icon.style['--content'] = controls.songs.styles.fa[state]
+    // })
   }
 }
 

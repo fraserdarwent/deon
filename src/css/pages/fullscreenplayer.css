@@ -179,6 +179,34 @@ Controls
     font-size: 1em;
 }
 
-.active{
+.active {
     color: dodgerblue;
+}
+
+#fullscreenplayer > .controls i.pause {
+    /*Play*/
+    --content: '\f04b'
+    /*Loading*/
+    /*--content: '\f021'*/
+    /*Pause*/
+    /*\f04c*/
+}
+
+#fullscreenplayer > .controls i.next {
+    --content: '\f051'
+}
+
+#fullscreenplayer > .controls i.previous {
+    --content: '\f048'
+}
+
+#fullscreenplayer > .controls i.shuffle {
+    --content: '\f074'
+}
+
+i.pause:before,
+i.next:before,
+i.previous:before,
+i.shuffle:before {
+    content: var(--content)
 }
