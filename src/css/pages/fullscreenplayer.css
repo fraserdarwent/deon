@@ -71,6 +71,13 @@ Table
 #fullscreenplayer > table > tbody {
     flex: 1;
     overflow-y: scroll;
+    display: flex;
+    flex-flow: column nowrap;
+}
+
+#fullscreenplayer > table .load {
+    flex: 0;
+    order: 1;
 }
 
 #fullscreenplayer > table > tbody > tr:hover {
@@ -130,7 +137,7 @@ Controls
     color: dodgerblue;
 }
 
-#fullscreenplayer .controls .scrub {
+#fullscreenplayer .controls > .scrub {
     display: flex;
     justify-content: center;
     flex-flow: column nowrap;
@@ -175,21 +182,8 @@ Controls
     height: 100%;
 }
 
-.song h2, h3, h4 {
-    font-size: 1em;
-}
-
-.active {
-    color: dodgerblue;
-}
-
 #fullscreenplayer .controls .pause > i {
-    /*Play*/
     --content: '\f04b'
-    /*Loading*/
-    /*--content: '\f021'*/
-    /*Pause*/
-    /*\f04c*/
 }
 
 #fullscreenplayer .controls .next > i {
@@ -208,9 +202,29 @@ Controls
     --content: '\f144'
 }
 
+#fullscreenplayer .exit {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 50px;
+    width: 50px;
+    background-color: red;
+}
+
+/**
+Page specific
+ */
 .pause > i:before,
 .next > i:before,
 .previous > i:before,
 .shuffle > i:before {
     content: var(--content)
+}
+
+.song h2, h3, h4 {
+    font-size: 1em;
+}
+
+.active {
+    color: dodgerblue;
 }

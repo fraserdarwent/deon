@@ -1,9 +1,31 @@
 <script type="text/template"
         data-route="^player">
     <div id="fullscreenplayer">
-        <table
-                data-source="$endpoint/catalog/browse"
-                data-process="fullscreenplayerTable">
+        <a href="/">
+            <div class="exit"><-</div>
+        </a>
+        <table>
+            <thead>
+            <tr>
+                <td></td>
+                <td>
+                    <strong class="title">Title</strong>
+                    <strong class="artist">Artist</strong>
+                    <strong class="album">Album</strong>
+                    <strong class="duration">Duration</strong>
+                    <strong class="bpm">BPM</strong>
+                </td>
+            </tr>
+            </thead>
+            <tbody class="context"
+                   data-source="$endpoint/catalog/browse"
+                   data-process="fullscreenplayerTable">
+            <tr class="load">
+                <td>
+                    <button onclick="fullscreenplayer.loadMore.bind(this)();">Load more</button>
+                </td>
+            </tr>
+            </tbody>
         </table>
         <div class="controls">
             <div>
@@ -59,21 +81,7 @@
 </script>
 
 <script type="text/template"
-        data-template="fullscreenplayerTable">
-    <thead>
-    <tr>
-        <td></td>
-        <td>
-            <strong class="title">Title</strong>
-            <strong class="artist">Artist</strong>
-            <strong class="album">Album</strong>
-            <strong class="duration">Duration</strong>
-            <strong class="bpm">BPM</strong>
-        </td>
-    </tr>
-    </thead>
-    <tbody class="context">
-    {{#results}}
+        data-template="fullscreenplayerTableRow">
         <tr class="song {{#inEarlyAccess}} in-early-access{{/inEarlyAccess}}"
             ondblclick="player.select.bind(this)()"
             data-play-link="{{playUrl}}"
@@ -103,6 +111,4 @@
                 <div class="bpm">{{bpm}}</div>
             </td>
         </tr>
-    {{/results}}
-    </tbody>
 </script>
