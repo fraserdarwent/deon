@@ -13,103 +13,29 @@ Player
 Table
  */
 
-#fullscreenplayer > table {
-    width: 100%;
-    height: 0;
-    flex-grow: 1;
+#fullscreenplayer > .table {
+    display: grid;
+    grid-template-columns: 100px repeat(5, 1fr);
     overflow-y: scroll;
-    overflow-x: hidden;
-    border-top: solid 1px rgba(0, 0, 0, 0.25);
-    border-bottom: solid 1px rgba(0, 0, 0, 0.25);
-    display: flex;
-    flex-flow: column nowrap;
 }
 
-#fullscreenplayer > table > thead {
-    display: none;
-}
-
-#fullscreenplayer > table tr {
-    flex: 1;
-    display: flex;
-    cursor: pointer;
-    flex-flow: row nowrap;
-    border-bottom: solid 1px rgba(0, 0, 0, 0.25);
-    align-items: center;
-    justify-content: center;
-}
-
-@media screen and (min-width: 768px) {
-    #fullscreenplayer > table > thead {
-        display: flex;
-    }
-}
-
-#fullscreenplayer > table tr > td:first-child {
-    width: 40px;
-}
-
-#fullscreenplayer > table tr > td:not(:first-child) {
-    display: flex;
-    flex-flow: column nowrap;
-    text-align: left;
-    flex: 1;
-}
-
-#fullscreenplayer > table tr > td > * {
-    margin: 10px;
-    overflow: hidden;
-    flex: 2;
-}
-
-@media screen and (min-width: 768px) {
-    #fullscreenplayer > table tr > td:not(:first-child) {
-        flex-flow: row nowrap;
-    }
-}
-
-#fullscreenplayer > table > tbody {
-    flex: 1;
-    overflow-y: scroll;
-    display: flex;
-    flex-flow: column nowrap;
-}
-
-#fullscreenplayer > table .load {
-    flex: 0;
+#fullscreenplayer > .table > .load {
+    grid-column: 1/7;
     order: 1;
 }
 
-#fullscreenplayer > table > tbody > tr:hover {
-    color: white;
-    background-color: dodgerblue;
+#fullscreenplayer .table > * {
+    padding: 10px;
+    border-bottom: solid 1px rgba(0, 0, 0, 0.25);
 }
 
-#fullscreenplayer > table > table > tbody > tr:last-child {
-    border-bottom: none;
+#fullscreenplayer .table > *:hover {
+    color: dodgerblue;
+    cursor: pointer;
 }
 
-#fullscreenplayer > table .bpm,
-#fullscreenplayer > table .pause,
-#fullscreenplayer > table .duration {
-    flex: 1;
-}
-
-#fullscreenplayer > table .bpm,
-#fullscreenplayer > table .duration {
-    display: none;
-}
-
-@media screen and (min-width: 768px) {
-    #fullscreenplayer > table .bpm,
-    #fullscreenplayer > table .duration {
-        display: block;
-    }
-}
-
-th, td {
-    margin: 0;
-    padding: 0;
+#fullscreenplayer .table > *.grey {
+    /*background-color: rgba(0, 0, 0, 0.05);*/
 }
 
 /**
@@ -117,70 +43,43 @@ Controls
  */
 
 #fullscreenplayer .controls {
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 1rem;
+    display: grid;
     width: 100%;
-}
-
-#fullscreenplayer .controls > * {
-    flex-flow: row nowrap;
-    order: 1;
-    flex-grow: 1;
+    grid-template-columns: repeat(6, 1fr);
     text-align: center;
 }
 
-#fullscreenplayer .controls .clickable:hover {
-    cursor: pointer;
-    color: dodgerblue;
+#fullscreenplayer .controls > .title {
+    grid-column: 1/7;
 }
 
 #fullscreenplayer .controls > .scrub {
-    display: flex;
-    justify-content: center;
-    flex-flow: column nowrap;
-    width: 100%;
-    flex-grow: 10;
-    order: 0;
+    grid-column: 2/6;
 }
 
-@media screen and (min-width: 768px) {
-    #fullscreenplayer .controls > .scrub {
-        width: auto;
-        order: 1;
-    }
-}
-
-#fullscreenplayer .controls .volume > .slider {
-    width: 0;
-    height: 0;
-    top: 50%;
-    left: 50%;
-    position: relative;
-    flex: 1;
-}
-
-#fullscreenplayer .controls .volume > .slider.show {
-    display: block;
-}
-
-#fullscreenplayer .controls .volume > .slider > .outer {
-    height: 100px;
-    width: 5px;
-    top: calc(-10px - 100px);
-    left: -2px;
+#fullscreenplayer > .controls > .volume > .slider {
     position: absolute;
+    align-self: flex-end;
+    bottom: calc(100% + 5px);
 }
 
-#fullscreenplayer .controls .scrub > .slider > .outer > .inner {
-    width: 0
+#fullscreenplayer .exit {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 50px;
+    width: 50px;
+    background-color: red;
 }
 
-#fullscreenplayer .controls .volume > .slider > .outer > .inner {
-    height: 100%;
+#fullscreenplayer .controls > *:hover {
+    color: dodgerblue;
+    cursor: pointer;
 }
+
+/**
+Controls Icons
+ */
 
 #fullscreenplayer .controls .pause > i {
     --content: '\f04b'
@@ -198,23 +97,19 @@ Controls
     --content: '\f074'
 }
 
-#fullscreenplayer .song .pause > i {
+#fullscreenplayer .song.pause > i {
     --content: '\f144'
 }
 
-#fullscreenplayer .exit {
-    position: fixed;
-    top: 0;
-    right: 0;
-    height: 50px;
-    width: 50px;
-    background-color: red;
+#fullscreenplayer .controls .repeat > i {
+    --content: '\f01e';
 }
 
 /**
 Page specific
  */
 .pause > i:before,
+.repeat > i:before,
 .next > i:before,
 .previous > i:before,
 .shuffle > i:before {

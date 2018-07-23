@@ -19,17 +19,17 @@ function fullscreenplayerTable(args) {
   }
   case 'finish': {
     console.log(args)
-    args.result.results.forEach((result) => {
+    args.result.results.forEach((result, index) => {
       result.duration = Math.floor(result.duration)
       result.bpm = Math.floor(result.bpm)
       result.artist = ''
       result.artists.forEach((artist, index) => {
         result.artist += `${artist.name}${(index + 1 < result.artists.length) ? ', ' : ''}`
       })
+      result.grey = index % 2 === 0
+      const div = render('fullscreenplayerTableRow', result, document.createElement('div'))
 
-      const div = render('fullscreenplayerTableRow', result, document.createElement('tbody'))
-
-      args.node.appendChild(div.firstElementChild)
+      args.node.innerHTML += div.innerHTML
     })
   }
   }

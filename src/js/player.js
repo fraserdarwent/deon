@@ -87,6 +87,7 @@ const player = {
     } else {
       const songs = findNodes(controls.songs.selector, this.closest('.context'))
 
+      console.log(songs)
       songs.forEach((song) => { song = song.dataset })
       if (songs) {
         player.song = this.dataset
