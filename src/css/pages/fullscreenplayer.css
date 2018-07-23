@@ -86,6 +86,7 @@ Table
 /**
 Controls
  */
+
 #fullscreenplayer .controls {
     display: grid;
     width: 100%;
@@ -123,6 +124,7 @@ Controls
 /**
 Controls Icons
  */
+
 #fullscreenplayer .controls .pause > i {
     --content: '\f04b'
 }
@@ -148,8 +150,9 @@ Controls Icons
 }
 
 /**
-Page specific
+Page wide
  */
+
 .pause > i:before,
 .repeat > i:before,
 .next > i:before,
