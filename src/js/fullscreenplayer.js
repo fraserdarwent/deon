@@ -26,7 +26,6 @@ function fullscreenplayerTable(args) {
       result.artists.forEach((artist, index) => {
         result.artist += `${artist.name}${(index + 1 < result.artists.length) ? ', ' : ''}`
       })
-      result.grey = index % 2 === 0
       const div = render('fullscreenplayerTableRow', result, document.createElement('div'))
 
       args.node.innerHTML += div.innerHTML

@@ -72,7 +72,7 @@
 
 <script type="text/template"
         data-template="fullscreenplayerTableRow">
-    <div class="pause song {{#grey}}grey{{/grey}} {{#inEarlyAccess}}in-early-access{{/inEarlyAccess}}"
+    <div class="pause song {{#inEarlyAccess}}in-early-access{{/inEarlyAccess}}"
          onclick="player.select.bind(this)()"
          ondblclick="player.select.bind(this)()"
          data-title="{{title}}"
@@ -81,13 +81,13 @@
         {{#if streamable}} data-url="https://blobcache.monstercat.com/blobs/{{albums.streamHash}}"{{/if}}>
         <i class="fa"></i>
     </div>
-    <strong class="title {{#grey}}grey{{/grey}}">{{title}}</strong>
-    <div class="artist {{#grey}}grey{{/grey}}"
+    <strong class="title">{{title}}</strong>
+    <div class="artist"
          onmouseover="applyScroll.bind(this)()"
          onmouseleave="removeScroll.bind(this)()">
         {{artist}}
     </div>
-    <div class="release {{#grey}}grey{{/grey}}">{{release.title}}</div>
-    <div class="duration {{#grey}}grey{{/grey}}">{{duration}}</div>
-    <div class="bpm {{#grey}}grey{{/grey}}">{{bpm}}</div>
+    <div class="release">{{release.title}}</div>
+    <div class="duration">{{duration}}</div>
+    <div class="bpm">{{bpm}}</div>
 </script>
