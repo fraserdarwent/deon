@@ -7,16 +7,18 @@
         <div class="table context"
              data-source="$endpoint/catalog/browse"
              data-process="fullscreenplayerTable">
-            <div></div>
-            <strong class="title">Title</strong>
-            <strong class="artist">Artist</strong>
-            <strong class="album">Album</strong>
-            <strong class="duration">Duration</strong>
-            <strong class="bpm">BPM</strong>
-            <button class="load"
-                    onclick="fullscreenplayer.loadMore.bind(this)()">
-                Load more
-            </button>
+            <div class="row column-titles">
+                <div class="pause"></div>
+                <strong class="title">Title</strong>
+                <strong class="artist">Artist</strong>
+                <strong class="album">Album</strong>
+                <strong class="duration">Duration</strong>
+                <strong class="bpm">BPM</strong>
+            </div>
+            <div class="load"
+                 onclick="fullscreenplayer.loadMore.bind(this)()">
+                <strong>Load more</strong>
+            </div>
         </div>
         <div class="controls">
             <div class="title textscroll"
@@ -72,22 +74,24 @@
 
 <script type="text/template"
         data-template="fullscreenplayerTableRow">
-    <div class="pause song {{#inEarlyAccess}}in-early-access{{/inEarlyAccess}}"
-         onclick="player.select.bind(this)()"
-         ondblclick="player.select.bind(this)()"
-         data-title="{{title}}"
-         data-artists-title="{{artistsTitle}}"
-         data-track-id="{{_id}}"
-        {{#if streamable}} data-url="https://blobcache.monstercat.com/blobs/{{albums.streamHash}}"{{/if}}>
-        <i class="fa"></i>
+    <div class="row">
+        <div class="pause song {{#inEarlyAccess}}in-early-access{{/inEarlyAccess}}"
+             onclick="player.select.bind(this)()"
+             ondblclick="player.select.bind(this)()"
+             data-title="{{title}}"
+             data-artists-title="{{artistsTitle}}"
+             data-track-id="{{_id}}"
+            {{#if streamable}} data-url="https://blobcache.monstercat.com/blobs/{{albums.streamHash}}"{{/if}}>
+            <i class="fa"></i>
+        </div>
+        <strong class="title">{{title}}</strong>
+        <div class="artist"
+             onmouseover="applyScroll.bind(this)()"
+             onmouseleave="removeScroll.bind(this)()">
+            {{artist}}
+        </div>
+        <div class="release">{{release.title}}</div>
+        <div class="duration">{{duration}}</div>
+        <div class="bpm">{{bpm}}</div>
     </div>
-    <strong class="title">{{title}}</strong>
-    <div class="artist"
-         onmouseover="applyScroll.bind(this)()"
-         onmouseleave="removeScroll.bind(this)()">
-        {{artist}}
-    </div>
-    <div class="release">{{release.title}}</div>
-    <div class="duration">{{duration}}</div>
-    <div class="bpm">{{bpm}}</div>
 </script>

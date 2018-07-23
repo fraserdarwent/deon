@@ -4,22 +4,23 @@ const fullscreenplayer = {
     selector: '.table'
   },
   loadMore: function () {
-    const table = this.closest('tbody')
+    const table = this.closest(fullscreenplayer.tables.selector)
 
-    table.setAttribute('data-source', `$endpoint/catalog/browse?skip=${table.childElementCount}`)
-    loadNodeSources(this.closest('table'))
+    table.setAttribute('data-source', `$endpoint/catalog/browse?skip=${findNodes(controls.songs.selector, table).length}`)
+    loadNodeSource(table)
   }
 }
 
 function fullscreenplayerTable(args) {
   switch (args.state) {
   case 'start': {
-    // args.node.textContent = 'Loading'
+    findNode('.load', args.node).innerHTML = 'Loading...'
     break
   }
   case 'finish': {
+    findNode('.load', args.node).innerHTML = 'Load more'
     console.log(args)
-    args.result.results.forEach((result, index) => {
+    args.result.results.forEach((result) => {
       result.duration = Math.floor(result.duration)
       result.bpm = Math.floor(result.bpm)
       result.artist = ''
