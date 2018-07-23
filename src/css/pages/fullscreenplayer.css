@@ -55,7 +55,7 @@ Controls
 
 #fullscreenplayer > .controls > .volume > .slider {
     position: absolute;
-    align-self: flex-end;
+    align-self: self-end;
     bottom: calc(100% + 5px);
 }
 
@@ -104,6 +104,7 @@ Controls Icons
 /**
 Page specific
  */
+
 .pause > i:before,
 .repeat > i:before,
 .next > i:before,
