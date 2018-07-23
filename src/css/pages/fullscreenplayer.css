@@ -7,6 +7,7 @@ Player
     width: 100vw;
     display: flex;
     flex-flow: column nowrap;
+    text-align: center;
 }
 
 /**
@@ -16,17 +17,18 @@ Table
 #fullscreenplayer > .table {
     display: flex;
     overflow-y: scroll;
-    text-align: center;
     flex-flow: column nowrap;
 }
 
+#fullscreenplayer > .column-titles,
 #fullscreenplayer > .table > .row {
     grid-template-columns: 50px 3fr 2fr 2fr 1fr 1fr;
     grid-auto-flow: row;
     display: grid;
     width: 100%;
-    border-bottom: solid 1px #cccccc;
+    border-bottom: solid 1px rgba(0, 0, 0, 0.25);
     padding: 10px;
+    margin: 0;
 }
 
 #fullscreenplayer > .table > .load {
@@ -45,17 +47,13 @@ Table
 }
 
 @media screen and (max-width: 768px) {
+    #fullscreenplayer > .column-titles {
+        display: none;
+    }
+
     #fullscreenplayer > .table > .row {
         grid-template-columns: 50px 2fr 1fr;
         grid-auto-flow: column;
-    }
-
-    #fullscreenplayer .table > .row {
-        border-bottom: solid 1px rgba(0, 0, 0, 0.25);
-    }
-
-    #fullscreenplayer > .table > .column-titles {
-        display: none;
     }
 
     #fullscreenplayer > .table > .row > .pause {
@@ -92,7 +90,6 @@ Controls
     display: grid;
     width: 100%;
     grid-template-columns: repeat(6, 1fr);
-    text-align: center;
 }
 
 #fullscreenplayer .controls > .title {

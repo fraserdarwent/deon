@@ -4,17 +4,17 @@
         <a href="/">
             <div class="exit"><-</div>
         </a>
+        <div class="column-titles">
+            <div class="pause"></div>
+            <strong class="title">Title</strong>
+            <strong class="artist">Artist</strong>
+            <strong class="album">Album</strong>
+            <strong class="duration">Duration</strong>
+            <strong class="bpm">BPM</strong>
+        </div>
         <div class="table context"
              data-source="$endpoint/catalog/browse"
              data-process="fullscreenplayerTable">
-            <div class="row column-titles">
-                <div class="pause"></div>
-                <strong class="title">Title</strong>
-                <strong class="artist">Artist</strong>
-                <strong class="album">Album</strong>
-                <strong class="duration">Duration</strong>
-                <strong class="bpm">BPM</strong>
-            </div>
             <div class="load"
                  onclick="fullscreenplayer.loadMore.bind(this)()">
                 <strong>Load more</strong>
